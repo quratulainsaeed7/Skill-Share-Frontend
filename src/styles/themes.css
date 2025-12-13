@@ -1,0 +1,79 @@
+/* src/styles/themes.css */
+
+/* Light Theme */
+[data-theme='light'] {
+    /* Brand Colors */
+    --color-primary: #3730A3;
+    /* Purplish Blue (Indigo 800) */
+    --color-primary-hover: #312E81;
+    --color-primary-light: #6366F1;
+
+    --color-secondary: #F97316;
+    /* Orange (Orange 500) */
+    --color-secondary-hover: #EA580C;
+    --color-secondary-light: #FDBA74;
+
+    /* Neutral Colors */
+    --color-bg-body: #F8FAFC;
+    /* Slate 50 */
+    --color-bg-card: #FFFFFF;
+    --color-bg-input: #FFFFFF;
+
+    --color-text-primary: #0F172A;
+    /* Slate 900 */
+    --color-text-secondary: #475569;
+    /* Slate 600 */
+    --color-text-muted: #94A3B8;
+    /* Slate 400 */
+
+    --color-border: #E2E8F0;
+    /* Slate 200 */
+    --color-divider: #F1F5F9;
+    /* Slate 100 */
+
+    /* Status Colors */
+    --color-success: #10B981;
+    --color-error: #EF4444;
+    --color-warning: #F59E0B;
+    --color-info: #3B82F6;
+}
+
+/* Dark Theme */
+[data-theme='dark'] {
+    /* Brand Colors */
+    --color-primary: #6366F1;
+    /* Primary Light */
+    --color-primary-hover: #818CF8;
+    --color-primary-light: #A5B4FC;
+
+    --color-secondary: #F97316;
+    /* Same orange serves well, maybe slightly brighter? */
+    --color-secondary-hover: #FB923C;
+    --color-secondary-light: #FED7AA;
+
+    /* Neutral Colors */
+    --color-bg-body: #0F172A;
+    /* Slate 900 */
+    --color-bg-card: #1E293B;
+    /* Slate 800 */
+    --color-bg-input: #0F172A;
+    /* Dark input bg */
+
+    --color-text-primary: #F8FAFC;
+    /* Slate 50 */
+    --color-text-secondary: #CBD5E1;
+    /* Slate 300 */
+    --color-text-muted: #64748B;
+    /* Slate 500 */
+
+    --color-border: #334155;
+    /* Slate 700 */
+    --color-divider: #1E293B;
+    /* Slate 800 */
+
+    /* Status Colors */
+    --color-success: #34D399;
+    --color-error: #F87171;
+    --color-warning: #FBBF24;
+    --color-info: #60A5FA;
+}
