@@ -1,4 +1,5 @@
 // src/services/authService.js
+import { UserApi } from '../api/UserApi';
 import { v4 as uuidv4 } from 'uuid';
 
 const USERS_KEY = 'skillshare_users';
@@ -18,16 +19,12 @@ const saveUsers = (users) => {
 
 export const authService = {
     // Check if email exists
-    checkEmailExists: (email) => {
-        const users = getUsers();
-        return users.some((u) => u.email === email);
+    checkEmailExists: async (email) => {
+        return await UserApi.checkEmailExists(email);
     },
 
     // Register new user
     register: async (userData) => {
-        // Simulate API delay
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-
         const users = getUsers();
         if (users.some((u) => u.email === userData.email)) {
             throw new Error('Email already exists');
@@ -37,8 +34,9 @@ export const authService = {
             throw new Error('Phone number already exists');
         }
 
+        const response = await UserApi.createUser(userData);
         const newUser = {
-            id: uuidv4(),
+            id: response.userId,
             ...userData,
             isVerified: false,
             profileCompleted: false,
@@ -53,20 +51,9 @@ export const authService = {
 
     // Login user
     login: async (email, password) => {
-        await new Promise((resolve) => setTimeout(resolve, 800));
+        const user = await UserApi.verifyCredentials(email, password);
 
-        const users = getUsers();
-        const user = users.find((u) => u.email === email && u.password === password);
-
-        if (!user) {
-            throw new Error('Invalid email or password');
-        }
-
-        if (!user.isVerified) {
-            throw new Error('Please verify your email first');
-        }
-
-        const token = uuidv4(); // Mock token
+        const token = uuidv4();
         localStorage.setItem(TOKEN_KEY, token);
         localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
 
@@ -75,12 +62,12 @@ export const authService = {
 
     // Verify email
     verifyEmail: async (email) => {
-        await new Promise((resolve) => setTimeout(resolve, 500));
         const users = getUsers();
         const userIndex = users.findIndex((u) => u.email === email);
 
         if (userIndex === -1) throw new Error('User not found');
 
+        await UserApi.verifyUser(users[userIndex].id);
         users[userIndex].isVerified = true;
         saveUsers(users);
 
@@ -94,9 +81,7 @@ export const authService = {
 
         // Always refresh from "DB" to get latest data
         const user = JSON.parse(userStr);
-        const users = getUsers();
-        const freshUser = users.find(u => u.id === user.id);
-        return freshUser || user;
+        return user;
     },
 
     // Logout
@@ -107,22 +92,21 @@ export const authService = {
 
     // Update Profile
     updateProfile: async (userId, profileData) => {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const updatedUser = await UserApi.updateUser(userId, profileData);
 
         const users = getUsers();
-        const index = users.findIndex(u => u.id === userId);
+        const index = users.findIndex((u) => u.id === userId);
 
-        if (index === -1) throw new Error('User not found');
+        if (index !== -1) {
+            users[index] = {
+                ...users[index],
+                ...profileData,
+                profileCompleted: true,
+            };
+            saveUsers(users);
+        }
 
-        users[index] = {
-            ...users[index],
-            ...profileData,
-            profileCompleted: true
-        };
-
-        saveUsers(users);
-        localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(users[index]));
-
-        return users[index];
-    }
+        localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(updatedUser));
+        return updatedUser;
+    },
 };

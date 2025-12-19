@@ -18,19 +18,19 @@ const TIME_SLOTS = ['Morning', 'Afternoon', 'Evening'];
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 const ProfileSetup = () => {
-    const { user, completeProfile } = useAuth();
+    var { user, completeProfile } = useAuth();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [activeTab, setActiveTab] = useState('learner'); // 'learner' | 'mentor'
 
     // Separate state for learner and mentor profiles
-    const [learnerProfile, setLearnerProfile] = useState({
+    var [learnerProfile, setLearnerProfile] = useState({
         bio: '',
         interests: [],
         goals: '',
     });
 
-    const [mentorProfile, setMentorProfile] = useState({
+    var [mentorProfile, setMentorProfile] = useState({
         bio: '',
         experience: '',
         skills: [], // { name, proficiency, years }
@@ -91,7 +91,7 @@ const ProfileSetup = () => {
     const handleSubmit = async () => {
         setLoading(true);
         try {
-            const profileData = {};
+            var profileData = {};
             if (isLearner) profileData.learnerProfile = learnerProfile;
             if (isMentor) profileData.mentorProfile = mentorProfile;
 
