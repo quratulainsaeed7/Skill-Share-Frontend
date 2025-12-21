@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import Card from '../../components/common/Card/Card';
 import Button from '../../components/common/Button/Button';
@@ -7,7 +6,6 @@ import Input from '../../components/common/Input/Input'; // Assuming we can simp
 import styles from './Settings.module.css';
 
 const Settings = () => {
-    const { user, logout } = useAuth();
     const navigate = useNavigate();
     const [privacySettings, setPrivacySettings] = useState({
         showProfile: true,

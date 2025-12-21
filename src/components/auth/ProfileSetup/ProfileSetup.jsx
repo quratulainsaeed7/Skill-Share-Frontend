@@ -1,7 +1,7 @@
 // src/components/auth/ProfileSetup/ProfileSetup.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../../context/AuthContext';
+
 import Button from '../../common/Button/Button';
 import Input from '../../common/Input/Input';
 import Card from '../../common/Card/Card';

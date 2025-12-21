@@ -5,28 +5,25 @@ import { FaUserGraduate, FaChalkboardTeacher, FaUsers } from 'react-icons/fa';
 import Button from '../../common/Button/Button';
 import Input from '../../common/Input/Input';
 import Card from '../../common/Card/Card';
-import { useAuth } from '../../../context/AuthContext';
 import styles from './SignupForm.module.css';
 import clsx from 'clsx';
-import { authService } from '../../../services/authService'; // Direct check for uniqueness
+import UserService from '../../../services/UserService';
 
-const PAK_CITIES = [
-    'Karachi', 'Lahore', 'Islamabad', 'Rawalpindi', 'Faisalabad', 'Multan',
-    'Peshawar', 'Quetta', 'Sialkot', 'Gujranwala', 'Hyderabad'
-];
+
+
 
 const SignupForm = () => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
-    const { signup } = useAuth();
+
 
     const [formData, setFormData] = useState({
         fullName: '',
         email: '',
-        phone: '',
+
         password: '',
         confirmPassword: '',
-        city: '',
+
         role: '',
         termsAccepted: false
     });
@@ -79,8 +76,6 @@ const SignupForm = () => {
         if (!formData.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/))
             newErrors.email = "Invalid email address";
 
-        if (!formData.phone.match(/^(\+92|03)\d{9}$/))
-            newErrors.phone = "Invalid Pakistani phone number (+92... or 03...)";
 
         if (formData.password.length < 8)
             newErrors.password = "Password must be at least 8 characters";
@@ -88,7 +83,7 @@ const SignupForm = () => {
         if (formData.password !== formData.confirmPassword)
             newErrors.confirmPassword = "Passwords do not match";
 
-        if (!formData.city) newErrors.city = "Please select a city";
+
         if (!formData.role) newErrors.role = "Please select a role";
         if (!formData.termsAccepted) newErrors.termsAccepted = "You must accept the terms";
 
@@ -102,15 +97,9 @@ const SignupForm = () => {
 
         setLoading(true);
         try {
-            await signup({
-                fullName: formData.fullName,
-                email: formData.email,
-                phone: formData.phone,
-                password: formData.password,
-                city: formData.city,
-                role: formData.role
-            });
-            navigate('/verify-email?email=' + encodeURIComponent(formData.email));
+            await UserService.registerUser(formData);
+            console.log('Registration successful');
+            navigate('/verify-email');
         } catch (err) {
             setErrors(prev => ({ ...prev, form: err.message }));
         } finally {
@@ -180,27 +169,7 @@ const SignupForm = () => {
                 placeholder="your.email@example.com"
             />
 
-            <Input
-                label="Phone"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                error={errors.phone}
-                placeholder="+92 3XX XXXXXXX"
-            />
 
-            <Input
-                label="City"
-                name="city"
-                value={formData.city}
-                onChange={handleChange}
-                error={errors.city}
-                placeholder="Select your city"
-                list="cities"
-            />
-            <datalist id="cities">
-                {PAK_CITIES.map(city => <option key={city} value={city} />)}
-            </datalist>
 
             <div>
                 <Input

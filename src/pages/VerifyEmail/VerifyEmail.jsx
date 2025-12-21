@@ -3,20 +3,21 @@ import React, { useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import Card from '../../components/common/Card/Card';
 import Button from '../../components/common/Button/Button';
-import { useAuth } from '../../context/AuthContext';
+
 import { MdEmail } from 'react-icons/md';
+import UserService from '../../services/UserService';
 
 const VerifyEmail = () => {
     const [searchParams] = useSearchParams();
     const email = searchParams.get('email');
     const navigate = useNavigate();
-    const { verifyEmail } = useAuth();
+
     const [verifying, setVerifying] = useState(false);
 
     const handleVerify = async () => {
         setVerifying(true);
         try {
-            await verifyEmail(email);
+            await UserService.verifyEmail();
             alert('Email verified successfully!');
             navigate('/login');
         } catch (err) {

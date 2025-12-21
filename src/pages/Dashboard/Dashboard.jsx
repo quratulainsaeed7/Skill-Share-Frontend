@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+
 import LearnerDashboard from '../../components/dashboard/LearnerDashboard';
 import MentorDashboard from '../../components/dashboard/MentorDashboard';
 
 const Dashboard = () => {
-    const { user } = useAuth();
+
     const [searchParams, setSearchParams] = useSearchParams();
     const viewParam = searchParams.get('view');
 
