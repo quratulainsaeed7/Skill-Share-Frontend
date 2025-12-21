@@ -18,6 +18,7 @@ class UserService {
             console.log('User registered:', user);
             localStorage.setItem('userID', user.userId);
             localStorage.setItem('name', user.name);
+            localStorage.setItem('role', user.role);
 
             return { success: true, data: user };
 
@@ -46,6 +47,7 @@ class UserService {
             console.log('User logged in:', user);
             localStorage.setItem('userID', user.userId);
             localStorage.setItem('name', user.name);
+            localStorage.setItem('role', user.role);
             if (!user.isVerified) {
                 Navigate({ to: '/verify-email' });
             }
