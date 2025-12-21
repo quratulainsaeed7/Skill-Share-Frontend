@@ -6,15 +6,19 @@ import ThemeToggle from '../ThemeToggle/ThemeToggle';
 import styles from './Navbar.module.css';
 import dropdownStyles from './NavbarDropdown.module.css';
 import { MdPerson, MdWallet, MdSettings, MdLogout, MdDashboard, MdBook } from 'react-icons/md';
-
+import UserService from '../../../services/UserService';
 const Navbar = () => {
 
+    const user = {
+        role: localStorage.getItem('role') || 'learner',
+        Userid: localStorage.getItem('userID') || null
+    };
     const navigate = useNavigate();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
 
     const handleLogout = () => {
-        logout();
+        UserService.logout();
         navigate('/login');
         setIsDropdownOpen(false);
     };
@@ -54,27 +58,27 @@ const Navbar = () => {
                 </NavLink>
 
                 {
-                    // <>
-                    //     {/* Learner Links */}
-                    //     {(user.role === 'learner' || user.role === 'both') && (
-                    //         <NavLink
-                    //             to="/dashboard"
-                    //             className={({ isActive }) => `${styles.navLink} ${isActive ? styles.active : ''}`}
-                    //         >
-                    //             My Learnings
-                    //         </NavLink>
-                    //     )}
+                    <>
+                        {/* Learner Links */}
+                        {(user.role === 'learner' || user.role === 'both') && (
+                            <NavLink
+                                to="/dashboard"
+                                className={({ isActive }) => `${styles.navLink} ${isActive ? styles.active : ''}`}
+                            >
+                                My Learnings
+                            </NavLink>
+                        )}
 
-                    //     {/* Mentor Links */}
-                    //     {(user.role === 'mentor' || user.role === 'both') && (
-                    //         <NavLink
-                    //             to="/dashboard?view=mentor" // We'll handle this query param in Dashboard
-                    //             className={({ isActive }) => `${styles.navLink} ${isActive ? styles.active : ''}`}
-                    //         >
-                    //             My Bookings
-                    //         </NavLink>
-                    //     )}
-                    // </>
+                        {/* Mentor Links */}
+                        {(user.role === 'mentor' || user.role === 'both') && (
+                            <NavLink
+                                to="/dashboard?view=mentor" // We'll handle this query param in Dashboard
+                                className={({ isActive }) => `${styles.navLink} ${isActive ? styles.active : ''}`}
+                            >
+                                My Bookings
+                            </NavLink>
+                        )}
+                    </>
                 }
 
                 {(
@@ -90,7 +94,7 @@ const Navbar = () => {
             <div className={styles.actions}>
                 <ThemeToggle />
                 <div className={styles.authButtons}>
-                    {/* {user ? (
+                    {user ? (
                         <div className={dropdownStyles.dropdownContainer} ref={dropdownRef}>
                             <button
                                 className={dropdownStyles.profileButton}
@@ -130,7 +134,7 @@ const Navbar = () => {
                                 <Button variant="primary" size="sm">Sign Up</Button>
                             </Link>
                         </>
-                    )} */}
+                    )}
                 </div>
             </div>
         </nav>

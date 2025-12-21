@@ -1,8 +1,9 @@
-import { Navigate, useRevalidator } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import UserApi from '../api/UserApi';
 
 
 class UserService {
+
 
     static async registerUser(userData) {
 
@@ -48,15 +49,21 @@ class UserService {
             localStorage.setItem('userID', user.userId);
             localStorage.setItem('name', user.name);
             localStorage.setItem('role', user.role);
-            if (!user.isVerified) {
-                Navigate({ to: '/verify-email' });
-            }
+
 
             return { success: true, data: user };
         } catch (error) {
             throw new Error(error.response?.data?.message || 'Login failed');
         }
     };
+
+    static logout() {
+
+        localStorage.removeItem('userID');
+        localStorage.removeItem('name');
+        localStorage.removeItem('role');
+
+    }
 }
 
 export default UserService;
