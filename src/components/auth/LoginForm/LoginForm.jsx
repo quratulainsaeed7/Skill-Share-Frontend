@@ -3,12 +3,13 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Button from '../../common/Button/Button';
 import Input from '../../common/Input/Input';
-import { useAuth } from '../../../context/AuthContext';
+
 import styles from './LoginForm.module.css';
+import UserService from '../../../services/UserService';
 
 const LoginForm = () => {
     const navigate = useNavigate();
-    const { login } = useAuth();
+
 
     const [formData, setFormData] = useState({
         email: '',
@@ -29,7 +30,7 @@ const LoginForm = () => {
         setError('');
 
         try {
-            const user = await login(formData.email, formData.password);
+            const user = await UserService.loginUser(formData);
             if (user.profileCompleted) {
                 navigate('/skills');
             } else {

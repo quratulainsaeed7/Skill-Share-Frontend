@@ -17,7 +17,7 @@ const Skills = () => {
         mode: 'all',
         city: '',
         priceTypes: [],
-        priceRange: [0, 50000],
+        priceRange: [0, 10000],
         minRating: 0,
         sortBy: 'relevance'
     });
@@ -57,7 +57,7 @@ const Skills = () => {
                 mode: 'all',
                 city: '',
                 priceTypes: [],
-                priceRange: [0, 50000],
+                priceRange: [0, 10000],
                 minRating: 0,
                 sortBy: 'relevance'
             });

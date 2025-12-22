@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MOCK_SKILLS } from '../../mock/skills';
 import Button from '../../components/common/Button/Button';
-import EnrollmentModal from '../../components/booking/EnrollmentModal/EnrollmentModal';
 import styles from './SkillDetails.module.css';
 
 const SkillDetails = () => {
@@ -10,7 +9,6 @@ const SkillDetails = () => {
     const navigate = useNavigate();
     const [skill, setSkill] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [showEnrollmentModal, setShowEnrollmentModal] = useState(false);
 
     useEffect(() => {
         // Simulate API fetch delay
@@ -22,20 +20,6 @@ const SkillDetails = () => {
 
         return () => clearTimeout(timer);
     }, [skillId]);
-
-    const handleEnrollClick = () => {
-        setShowEnrollmentModal(true);
-    };
-
-    const handleEnrollConfirm = (selectedPlan) => {
-        // Close the modal
-        setShowEnrollmentModal(false);
-        
-        // Navigate to meetings page after successful enrollment
-        setTimeout(() => {
-            navigate('/meetings');
-        }, 500);
-    };
 
     if (loading) return <div className="loading">Loading...</div>;
     if (!skill) return <div className="error">Skill not found</div>;
@@ -138,7 +122,7 @@ const SkillDetails = () => {
                 {/* Price Card */}
                 <div className={styles.priceCard}>
                     <img src={skill.image} alt={skill.title} className={styles.previewImage} />
-                    <div className={styles.prceBlock}>
+                    <div className={styles.priceBlock}>
                         <div className={styles.priceLarge}>Rs. {skill.priceCash}</div>
                         {skill.priceType === 'both' && (
                             <div className={styles.credits}>or {skill.priceCredits} Credits</div>
@@ -149,7 +133,7 @@ const SkillDetails = () => {
                         variant="primary"
                         size="lg"
                         className={styles.enrollButton}
-                        onClick={handleEnrollClick}
+                        onClick={() => alert('Enrollment logic to be implemented')}
                     >
                         Enroll Now
                     </Button>
@@ -177,15 +161,6 @@ const SkillDetails = () => {
                     </Button>
                 </div>
             </div>
-
-            {/* Enrollment Modal */}
-            {showEnrollmentModal && (
-                <EnrollmentModal 
-                    skill={skill}
-                    onClose={() => setShowEnrollmentModal(false)}
-                    onEnroll={handleEnrollConfirm}
-                />
-            )}
         </div>
     );
 };

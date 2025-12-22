@@ -8,7 +8,7 @@
     font-size: 2rem;
     font-weight: 700;
     margin-bottom: 2rem;
-    color: var(--color-text-primary);
+    color: var(--text-primary);
 }
 
 .section {
@@ -19,12 +19,12 @@
     font-size: 1.25rem;
     font-weight: 600;
     margin-bottom: 1rem;
-    color: var(--color-text-primary);
+    color: var(--text-primary);
 }
 
 .card {
-    background-color: var(--color-bg-card);
-    border: 1px solid var(--color-border);
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 1.5rem;
 }
@@ -40,17 +40,17 @@
     font-size: 1rem;
     font-weight: 500;
     margin-bottom: 0.25rem;
-    color: var(--color-text-primary);
+    color: var(--text-primary);
 }
 
 .settingInfo p {
     font-size: 0.875rem;
-    color: var(--color-text-secondary);
+    color: var(--text-secondary);
 }
 
 .divider {
     height: 1px;
-    background-color: var(--color-border);
+    background-color: var(--border-color);
     margin: 0.5rem 0;
 }
 
@@ -60,7 +60,6 @@
     display: inline-block;
     width: 50px;
     height: 26px;
-    flex-shrink: 0;
 }
 
 .switch input {
@@ -76,10 +75,10 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: var(--color-border);
+    background-color: var(--bg-secondary);
     transition: .4s;
     border-radius: 34px;
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--border-color);
 }
 
 .slider:before {
@@ -89,20 +88,18 @@
     width: 18px;
     left: 3px;
     bottom: 3px;
-    background-color: var(--color-bg-card);
+    background-color: white;
     transition: .4s;
     border-radius: 50%;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 input:checked+.slider {
-    background-color: var(--color-primary);
-    border-color: var(--color-primary);
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
 }
 
 input:checked+.slider:before {
     transform: translateX(24px);
-    background-color: var(--color-bg-card);
 }
 
 .actionRow {
@@ -112,8 +109,8 @@ input:checked+.slider:before {
 }
 
 .logoutBtn {
-    color: var(--color-error);
-    border-color: var(--color-error);
+    color: var(--error-color);
+    border-color: var(--error-color);
 }
 
 .logoutBtn:hover {

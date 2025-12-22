@@ -2,19 +2,23 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import Button from '../Button/Button';
 import ThemeToggle from '../ThemeToggle/ThemeToggle';
-import { useAuth } from '../../../context/AuthContext';
+
 import styles from './Navbar.module.css';
 import dropdownStyles from './NavbarDropdown.module.css';
-import { MdPerson, MdWallet, MdSettings, MdLogout, MdDashboard, MdBook, MdVideoCall } from 'react-icons/md';
-
+import { MdPerson, MdWallet, MdSettings, MdLogout, MdDashboard, MdBook } from 'react-icons/md';
+import UserService from '../../../services/UserService';
 const Navbar = () => {
-    const { user, logout } = useAuth();
+
+    const user = {
+        role: localStorage.getItem('role') || 'learner',
+        Userid: localStorage.getItem('userID') || null
+    };
     const navigate = useNavigate();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
 
     const handleLogout = () => {
-        logout();
+        UserService.logout();
         navigate('/login');
         setIsDropdownOpen(false);
     };
@@ -53,24 +57,16 @@ const Navbar = () => {
                     Browse Skills
                 </NavLink>
 
-                {user && (
+                {
                     <>
                         {/* Learner Links */}
                         {(user.role === 'learner' || user.role === 'both') && (
-                            <>
-                                <NavLink
-                                    to="/dashboard"
-                                    className={({ isActive }) => `${styles.navLink} ${isActive ? styles.active : ''}`}
-                                >
-                                    My Learnings
-                                </NavLink>
-                                <NavLink
-                                    to="/meetings"
-                                    className={({ isActive }) => `${styles.navLink} ${isActive ? styles.active : ''}`}
-                                >
-                                    My Meetings
-                                </NavLink>
-                            </>
+                            <NavLink
+                                to="/dashboard"
+                                className={({ isActive }) => `${styles.navLink} ${isActive ? styles.active : ''}`}
+                            >
+                                My Learnings
+                            </NavLink>
                         )}
 
                         {/* Mentor Links */}
@@ -83,9 +79,9 @@ const Navbar = () => {
                             </NavLink>
                         )}
                     </>
-                )}
+                }
 
-                {!user && (
+                {(
                     <NavLink
                         to="/mentors"
                         className={({ isActive }) => `${styles.navLink} ${isActive ? styles.active : ''}`}

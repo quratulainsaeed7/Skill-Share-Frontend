@@ -114,6 +114,7 @@ export const skillService = {
     getSkillById: async (id) => {
         await new Promise(resolve => setTimeout(resolve, 200));
         return MOCK_SKILLS.find(s => s.id === id);
+<<<<<<< HEAD
     },
 
     getEnrolledCourses: async (userId) => {
@@ -145,5 +146,7 @@ export const skillService = {
             { id: 's3', name: 'Hassan Raza', avatar: 'https://i.pravatar.cc/150?u=hassan', course: 'Web Development', progress: 45 },
             { id: 's4', name: 'Ayesha Malik', avatar: 'https://i.pravatar.cc/150?u=ayesha', course: 'UI/UX Design', progress: 90 },
         ];
+=======
+>>>>>>> f44c5604b95719689d3e0cd40753e1c0e405bc92
     }
 };

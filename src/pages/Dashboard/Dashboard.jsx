@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
 import LearnerDashboard from '../../components/dashboard/LearnerDashboard';
 import MentorDashboard from '../../components/dashboard/MentorDashboard';
 
 const Dashboard = () => {
-    const { user } = useAuth();
+    const user = localStorage.getItem('userID')
+    const role = localStorage.getItem('role')
     const [searchParams, setSearchParams] = useSearchParams();
     const viewParam = searchParams.get('view');
 
@@ -14,12 +14,12 @@ const Dashboard = () => {
     useEffect(() => {
         if (viewParam) {
             setActiveView(viewParam);
-        } else if (user?.role === 'mentor') {
+        } else if (role === 'mentor') {
             setActiveView('mentor');
         } else {
             setActiveView('learner');
         }
-    }, [viewParam, user]);
+    }, [viewParam, role]);
 
     const handleViewChange = (view) => {
         setActiveView(view);
@@ -33,7 +33,7 @@ const Dashboard = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
                 <h1>Dashboard</h1>
 
-                {user.role === 'both' && (
+                {role === 'BOTH' && (
                     <div style={{ display: 'flex', background: 'var(--color-bg-card)', padding: '4px', borderRadius: '8px' }}>
                         <button
                             onClick={() => handleViewChange('learner')}
