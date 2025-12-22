@@ -114,39 +114,5 @@ export const skillService = {
     getSkillById: async (id) => {
         await new Promise(resolve => setTimeout(resolve, 200));
         return MOCK_SKILLS.find(s => s.id === id);
-<<<<<<< HEAD
-    },
-
-    getEnrolledCourses: async (userId) => {
-        await new Promise(resolve => setTimeout(resolve, 400));
-        // Mock: Return first 3 skills as enrolled courses
-        // In a real app, this would fetch from a backend with user enrollment data
-        const enrolledCourseIds = localStorage.getItem(`enrolled_courses_${userId}`);
-        if (!enrolledCourseIds) {
-            // Return first 3 skills as default enrolled courses
-            return MOCK_SKILLS.slice(0, 3);
-        }
-        const ids = JSON.parse(enrolledCourseIds);
-        return MOCK_SKILLS.filter(skill => ids.includes(skill.id));
-    },
-
-    getTaughtCourses: async (userId) => {
-        await new Promise(resolve => setTimeout(resolve, 400));
-        // Mock: Return courses that match the user as mentor
-        // In a real app, this would fetch courses where mentorId === userId
-        return MOCK_SKILLS.slice(0, 4); // Return first 4 as taught courses
-    },
-
-    getEnrolledStudents: async (userId) => {
-        await new Promise(resolve => setTimeout(resolve, 400));
-        // Mock: Return list of students enrolled in mentor's courses
-        return [
-            { id: 's1', name: 'Ahmad Ali', avatar: 'https://i.pravatar.cc/150?u=ahmad', course: 'Web Development', progress: 75 },
-            { id: 's2', name: 'Fatima Khan', avatar: 'https://i.pravatar.cc/150?u=fatima', course: 'Graphic Design', progress: 60 },
-            { id: 's3', name: 'Hassan Raza', avatar: 'https://i.pravatar.cc/150?u=hassan', course: 'Web Development', progress: 45 },
-            { id: 's4', name: 'Ayesha Malik', avatar: 'https://i.pravatar.cc/150?u=ayesha', course: 'UI/UX Design', progress: 90 },
-        ];
-=======
->>>>>>> f44c5604b95719689d3e0cd40753e1c0e405bc92
     }
 };

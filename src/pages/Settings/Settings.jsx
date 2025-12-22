@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import Card from '../../components/common/Card/Card';
 import Button from '../../components/common/Button/Button';
 import Input from '../../components/common/Input/Input'; // Assuming we can simple input for now or just toggles
@@ -7,6 +8,7 @@ import styles from './Settings.module.css';
 
 const Settings = () => {
     const navigate = useNavigate();
+    const { user, logout } = useAuth();
     const [privacySettings, setPrivacySettings] = useState({
         showProfile: true,
         showCourses: true,
