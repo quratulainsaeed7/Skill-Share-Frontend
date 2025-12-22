@@ -1,0 +1,104 @@
+/* src/components/auth/SignupForm/SignupForm.module.css */
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+.row {
+    display: flex;
+    gap: var(--spacing-4);
+}
+
+.terms {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+.roles {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-3);
+    margin-bottom: var(--spacing-2);
+}
+
+.roleCard {
+    border: 2px solid var(--color-border);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-3);
+    text-align: center;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    background-color: var(--color-bg-card);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-2);
+}
+
+.roleCard:hover {
+    border-color: var(--color-primary-light);
+}
+
+.roleCard.selected {
+    border-color: var(--color-primary);
+    background-color: rgba(99, 102, 241, 0.05);
+}
+
+.roleIcon {
+    font-size: var(--font-size-2xl);
+    color: var(--color-text-muted);
+}
+
+.roleCard.selected .roleIcon {
+    color: var(--color-primary);
+}
+
+.roleTitle {
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-sm);
+}
+
+.roleDesc {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    line-height: 1.2;
+}
+
+.passwordStrength {
+    display: flex;
+    gap: var(--spacing-1);
+    margin-top: var(--spacing-1);
+    height: 4px;
+}
+
+.strengthBar {
+    flex: 1;
+    background-color: var(--color-border);
+    border-radius: var(--border-radius-full);
+    transition: background-color var(--transition-fast);
+}
+
+.strengthBar.active {
+    background-color: var(--color-error);
+}
+
+.strengthBar.medium {
+    background-color: var(--color-warning);
+}
+
+.strengthBar.strong {
+    background-color: var(--color-success);
+}
+
+@media (max-width: 600px) {
+    .roles {
+        grid-template-columns: 1fr;
+    }
+}
