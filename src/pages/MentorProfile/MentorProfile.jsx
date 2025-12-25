@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { MOCK_SKILLS } from '../../mock/skills';
+import { skillService } from '../../services/skillService';
 import SkillCard from '../../components/skills/SkillCard/SkillCard';
 import styles from './MentorProfile.module.css';
 
@@ -9,35 +9,44 @@ const MentorProfile = () => {
     const [mentor, setMentor] = useState(null);
     const [mentorCourses, setMentorCourses] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        // Simulate API fetch
-        const timer = setTimeout(() => {
-            // Find mentor details from the first skill that matches mentorId
-            // In a real app, we would fetch from /api/mentors/:id
-            const courses = MOCK_SKILLS.filter(s => s.mentorId === mentorId);
+        const fetchMentorData = async () => {
+            try {
+                setLoading(true);
+                setError(null);
 
-            if (courses.length > 0) {
-                const firstCourse = courses[0];
-                setMentor({
-                    id: firstCourse.mentorId,
-                    name: firstCourse.mentorName,
-                    avatar: firstCourse.mentorAvatar,
-                    bio: firstCourse.mentorBio || 'Expert Mentor',
-                    role: 'Senior Instructor', // Hardcoded for now
-                    totalStudents: courses.reduce((acc, curr) => acc + (curr.lectures || 0), 0), // Using lectures count as student count proxy for mock
-                    reviews: courses.reduce((acc, curr) => acc + curr.reviewsCount, 0),
-                    rating: (courses.reduce((acc, curr) => acc + curr.rating, 0) / courses.length).toFixed(1)
-                });
-                setMentorCourses(courses);
+                // Fetch courses taught by this mentor
+                const courses = await skillService.getTaughtCourses(mentorId);
+
+                if (courses && courses.length > 0) {
+                    const firstCourse = courses[0];
+                    setMentor({
+                        id: firstCourse.mentorId,
+                        name: firstCourse.mentorName,
+                        avatar: firstCourse.mentorAvatar,
+                        bio: firstCourse.mentorBio || 'Expert Mentor',
+                        role: 'Senior Instructor',
+                        totalStudents: courses.reduce((acc, curr) => acc + (curr.studentsCount || curr.lectures || 0), 0),
+                        reviews: courses.reduce((acc, curr) => acc + (curr.reviewsCount || 0), 0),
+                        rating: (courses.reduce((acc, curr) => acc + (curr.rating || 0), 0) / courses.length).toFixed(1)
+                    });
+                    setMentorCourses(courses);
+                }
+            } catch (err) {
+                console.error('Failed to fetch mentor data:', err);
+                setError(err.message || 'Failed to load mentor profile');
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
-        }, 500);
+        };
 
-        return () => clearTimeout(timer);
+        fetchMentorData();
     }, [mentorId]);
 
     if (loading) return <div>Loading...</div>;
+    if (error) return <div>{error}</div>;
     if (!mentor) return <div>Mentor not found</div>;
 
     return (

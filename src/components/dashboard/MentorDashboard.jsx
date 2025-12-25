@@ -1,8 +1,37 @@
-import React from 'react';
-import { MOCK_SKILLS } from '../../mock/skills';
+import React, { useState, useEffect } from 'react';
+import { skillService } from '../../services/skillService';
+import UserService from '../../services/UserService';
 
 const MentorDashboard = () => {
-    // Mock data for analytics
+    const [bookings, setBookings] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const user = UserService.getUser();
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                if (user?.userId) {
+                    const students = await skillService.getEnrolledStudents(user.userId);
+                    // Map students to booking format
+                    setBookings(students.map((student, index) => ({
+                        id: student.id || index,
+                        student: student.name,
+                        course: student.enrolledCourse,
+                        date: student.enrolledAt || new Date().toISOString().split('T')[0],
+                        status: student.status || 'Confirmed',
+                        avatar: student.avatar || `https://i.pravatar.cc/150?u=${student.id}`
+                    })));
+                }
+            } catch (error) {
+                console.error('Failed to fetch bookings:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, [user?.userId]);
+
+    // Analytics data (would come from a dedicated analytics API in production)
     const analytics = [
         { label: 'Total Students', value: '1,234', change: '+12%' },
         { label: 'Total Earnings', value: 'PKR 150k', change: '+8%' },
@@ -11,12 +40,11 @@ const MentorDashboard = () => {
     ];
 
     // Mock students
-    const bookings = [
+    setBookings([
         { id: 1, student: 'Ahmed Ali', course: 'Web Development Bootcamp', date: '2024-12-07', status: 'Confirmed', avatar: 'https://i.pravatar.cc/150?u=ahmed' },
         { id: 2, student: 'Fatima Noor', course: 'Graphic Design Masterclass', date: '2024-12-08', status: 'Pending', avatar: 'https://i.pravatar.cc/150?u=fatima_n' },
         { id: 3, student: 'Zain Khan', course: 'Web Development Bootcamp', date: '2024-12-09', status: 'Confirmed', avatar: 'https://i.pravatar.cc/150?u=zain' },
-    ];
-
+    ]);
     return (
         <div>
             {/* Analytics Cards */}

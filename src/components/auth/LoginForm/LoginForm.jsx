@@ -6,6 +6,7 @@ import Input from '../../common/Input/Input';
 
 import styles from './LoginForm.module.css';
 import UserService from '../../../services/UserService';
+import ProfileService from '../../../services/ProfileService';
 
 const LoginForm = () => {
     const navigate = useNavigate();
@@ -31,11 +32,20 @@ const LoginForm = () => {
 
         try {
             const user = await UserService.loginUser(formData);
-            if (user.profileCompleted) {
-                navigate('/skills');
-            } else {
-                navigate('/complete-profile');
+
+            if (user.data.isVerified === false) {
+
+                navigate('/verify-email');
+                return;
             }
+
+            const userProfile = await ProfileService.getUserProfile();
+            console.log('User profile:', userProfile);
+            if (!userProfile.profileId) {
+                navigate('/complete-profile');
+                return;
+            }
+            navigate('/dashboard');
         } catch (err) {
             setError(err.message);
         } finally {

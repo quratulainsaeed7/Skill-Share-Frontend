@@ -1,152 +1,136 @@
 // src/services/skillService.js
-import { MOCK_SKILLS, CATEGORIES } from '../mock/skills';
+/**
+ * skillService - Service layer for skill/course operations.
+ * 
+ * REFACTORED: Removed all mock data dependencies.
+ * Now uses SkillApi for real backend API calls.
+ * Filtering and sorting are delegated to the backend.
+ */
+import SkillApi from '../api/SkillApi';
 
 export const skillService = {
+    /**
+     * Get all categories with subcategories.
+     * @returns {Promise<Array>} Array of category objects
+     */
     getCategories: async () => {
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 300));
-        return CATEGORIES;
+        try {
+            return await SkillApi.getCategories();
+        } catch (error) {
+            console.error('Failed to fetch categories:', error);
+            throw error;
+        }
     },
 
+    /**
+     * Get all skills without filters.
+     * @returns {Promise<Array>} Array of all skill objects
+     */
     getAllSkills: async () => {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        return MOCK_SKILLS;
+        try {
+            return await SkillApi.getAllSkills();
+        } catch (error) {
+            console.error('Failed to fetch all skills:', error);
+            throw error;
+        }
     },
 
+    /**
+     * Get skills with filters applied.
+     * All filtering/sorting is handled by the backend.
+     * 
+     * @param {Object} filters - Filter options:
+     *   - search: string - Search query for title, description, mentor, tags
+     *   - categories: string[] - Array of category/subcategory names
+     *   - mode: 'online' | 'in-person' | 'all' - Teaching mode filter
+     *   - city: string - City filter (for in-person mode)
+     *   - priceTypes: string[] - ['cash', 'credits', 'both']
+     *   - priceRange: [number, number] - [min, max] cash price range
+     *   - minRating: number - Minimum rating filter
+     *   - sortBy: string - 'highest_rated' | 'lowest_price' | 'highest_price' | 'most_reviews'
+     * 
+     * @returns {Promise<Array>} Filtered array of skill objects
+     */
     getSkills: async (filters = {}) => {
-        await new Promise(resolve => setTimeout(resolve, 600)); // Simulate network latency
-
-        let results = [...MOCK_SKILLS];
-
-        // Search Query
-        if (filters.search) {
-            const q = filters.search.toLowerCase();
-            results = results.filter(skill =>
-                skill.title.toLowerCase().includes(q) ||
-                skill.description.toLowerCase().includes(q) ||
-                skill.mentorName.toLowerCase().includes(q) ||
-                skill.tags.some(tag => tag.toLowerCase().includes(q))
-            );
+        try {
+            return await SkillApi.getSkills(filters);
+        } catch (error) {
+            console.error('Failed to fetch skills with filters:', error);
+            throw error;
         }
-
-        // Category Filter (Array of selected subcategories/categories)
-        if (filters.categories && filters.categories.length > 0) {
-            results = results.filter(skill =>
-                filters.categories.includes(skill.category) ||
-                filters.categories.includes(skill.subcategory)
-            );
-        }
-
-        // Mode Filter
-        if (filters.mode && filters.mode !== 'all') {
-            results = results.filter(skill =>
-                // If mode is 'online', match 'Online'
-                // If mode is 'in-person', match 'In-Person'
-                skill.mode.toLowerCase() === filters.mode.toLowerCase()
-            );
-        }
-
-        // City Filter (only if in-person is selected or mode is all/filtered)
-        if (filters.city && (filters.mode === 'in-person' || !filters.mode || filters.mode === 'all')) {
-            // If a specific city is selected, show skills in that city (mostly for in-person)
-            // But also allow checking if mentor is from that city even if online? 
-            // Requirement says "Only shows if In-Person mode selected" for the filter UI.
-            // Logic: if city is present, filter by it.
-            results = results.filter(skill => skill.city === filters.city);
-        }
-
-        // Price Type
-        if (filters.priceTypes && filters.priceTypes.length > 0) {
-            results = results.filter(skill => {
-                // skill.priceType can be 'cash', 'credits', 'both'
-                // filter.priceTypes e.g. ['cash'] or ['credits'] or ['both'] ... wait logic check
-                // If user selects 'Cash', show 'cash' and 'both'.
-                // If user selects 'Credits', show 'credits' and 'both'.
-
-                let matches = false;
-                if (filters.priceTypes.includes('cash') && (skill.priceType === 'cash' || skill.priceType === 'both')) matches = true;
-                if (filters.priceTypes.includes('credits') && (skill.priceType === 'credits' || skill.priceType === 'both')) matches = true;
-                if (filters.priceTypes.includes('both') && skill.priceType === 'both') matches = true; // redundancy check
-
-                return matches;
-            });
-        }
-
-        // Price Range (Cash)
-        if (filters.priceRange && filters.priceRange.length === 2) {
-            const [min, max] = filters.priceRange;
-            results = results.filter(skill => {
-                if (!skill.priceCash) return false; // If no cash price, exclude? Or keep if it matches other filters?
-                // Assuming if filtering by cash range, we only care about cash skills
-                return skill.priceCash >= min && skill.priceCash <= max;
-            });
-        }
-
-        // Rating
-        if (filters.minRating) {
-            results = results.filter(skill => skill.rating >= filters.minRating);
-        }
-
-        // Sorting
-        if (filters.sortBy) {
-            switch (filters.sortBy) {
-                case 'highest_rated':
-                    results.sort((a, b) => b.rating - a.rating);
-                    break;
-                case 'lowest_price':
-                    // Prefer cash price for sorting
-                    results.sort((a, b) => (a.priceCash || 0) - (b.priceCash || 0));
-                    break;
-                case 'highest_price':
-                    results.sort((a, b) => (b.priceCash || 0) - (a.priceCash || 0));
-                    break;
-                case 'most_reviews':
-                    results.sort((a, b) => b.reviewsCount - a.reviewsCount);
-                    break;
-                default: // Relevance (id/default order)
-                    break;
-            }
-        }
-
-        return results;
     },
 
+    /**
+     * Get a single skill by its ID.
+     * @param {string} id - Skill ID
+     * @returns {Promise<Object|null>} Skill object or null if not found
+     */
     getSkillById: async (id) => {
-        await new Promise(resolve => setTimeout(resolve, 200));
-        return MOCK_SKILLS.find(s => s.id === id);
-<<<<<<< HEAD
-    },
-
-    getEnrolledCourses: async (userId) => {
-        await new Promise(resolve => setTimeout(resolve, 400));
-        // Mock: Return first 3 skills as enrolled courses
-        // In a real app, this would fetch from a backend with user enrollment data
-        const enrolledCourseIds = localStorage.getItem(`enrolled_courses_${userId}`);
-        if (!enrolledCourseIds) {
-            // Return first 3 skills as default enrolled courses
-            return MOCK_SKILLS.slice(0, 3);
+        try {
+            return await SkillApi.getSkillById(id);
+        } catch (error) {
+            console.error(`Failed to fetch skill ${id}:`, error);
+            throw error;
         }
-        const ids = JSON.parse(enrolledCourseIds);
-        return MOCK_SKILLS.filter(skill => ids.includes(skill.id));
     },
 
+    /**
+     * Get courses enrolled by a learner.
+     * @param {string} userId - Learner's user ID
+     * @returns {Promise<Array>} Array of enrolled course objects
+     */
+    getEnrolledCourses: async (userId) => {
+        if (!userId) return [];
+        try {
+            return await SkillApi.getEnrolledCourses(userId);
+        } catch (error) {
+            console.error(`Failed to fetch enrolled courses for user ${userId}:`, error);
+            throw error;
+        }
+    },
+
+    /**
+     * Get courses taught by a mentor.
+     * @param {string} userId - Mentor's user ID
+     * @returns {Promise<Array>} Array of taught course objects
+     */
     getTaughtCourses: async (userId) => {
-        await new Promise(resolve => setTimeout(resolve, 400));
-        // Mock: Return courses that match the user as mentor
-        // In a real app, this would fetch courses where mentorId === userId
-        return MOCK_SKILLS.slice(0, 4); // Return first 4 as taught courses
+        if (!userId) return [];
+        try {
+            return await SkillApi.getTaughtCourses(userId);
+        } catch (error) {
+            console.error(`Failed to fetch taught courses for user ${userId}:`, error);
+            throw error;
+        }
     },
 
+    /**
+     * Get students enrolled in mentor's courses.
+     * @param {string} userId - Mentor's user ID
+     * @returns {Promise<Array>} Array of student objects
+     */
     getEnrolledStudents: async (userId) => {
-        await new Promise(resolve => setTimeout(resolve, 400));
-        // Mock: Return list of students enrolled in mentor's courses
-        return [
-            { id: 's1', name: 'Ahmad Ali', avatar: 'https://i.pravatar.cc/150?u=ahmad', course: 'Web Development', progress: 75 },
-            { id: 's2', name: 'Fatima Khan', avatar: 'https://i.pravatar.cc/150?u=fatima', course: 'Graphic Design', progress: 60 },
-            { id: 's3', name: 'Hassan Raza', avatar: 'https://i.pravatar.cc/150?u=hassan', course: 'Web Development', progress: 45 },
-            { id: 's4', name: 'Ayesha Malik', avatar: 'https://i.pravatar.cc/150?u=ayesha', course: 'UI/UX Design', progress: 90 },
-        ];
-=======
->>>>>>> f44c5604b95719689d3e0cd40753e1c0e405bc92
+        if (!userId) return [];
+        try {
+            return await SkillApi.getEnrolledStudents(userId);
+        } catch (error) {
+            console.error(`Failed to fetch enrolled students for mentor ${userId}:`, error);
+            throw error;
+        }
+    },
+
+    /**
+     * Enroll a learner in a skill/course.
+     * @param {string} skillId - Skill ID to enroll in
+     * @param {string} userId - Learner's user ID
+     * @returns {Promise<Object>} Enrollment result
+     */
+    enrollInSkill: async (skillId, userId) => {
+        try {
+            return await SkillApi.enrollInSkill(skillId, userId);
+        } catch (error) {
+            console.error(`Failed to enroll user ${userId} in skill ${skillId}:`, error);
+            throw error;
+        }
     }
 };

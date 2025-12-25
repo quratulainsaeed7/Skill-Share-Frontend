@@ -2,10 +2,14 @@ import React, { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import LearnerDashboard from '../../components/dashboard/LearnerDashboard';
 import MentorDashboard from '../../components/dashboard/MentorDashboard';
+import Login from '../Login/Login';
+import UserService from '../../services/UserService';
 
 const Dashboard = () => {
-    const user = localStorage.getItem('userID')
-    const role = localStorage.getItem('role')
+    // Use centralized UserService instead of direct localStorage access
+    const currentUser = UserService.getUser();
+    const user = currentUser?.userId || null;
+    const role = currentUser?.role || null;
     const [searchParams, setSearchParams] = useSearchParams();
     const viewParam = searchParams.get('view');
 
@@ -26,7 +30,7 @@ const Dashboard = () => {
         setSearchParams({ view });
     };
 
-    if (!user) return null;
+    if (!user) return <Login />;
 
     return (
         <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>

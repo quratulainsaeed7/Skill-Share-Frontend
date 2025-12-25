@@ -1,12 +1,29 @@
 // src/components/skills/SkillFilter/SkillFilter.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './SkillFilter.module.css';
 import Button from '../../common/Button/Button';
-import { CATEGORIES } from '../../../mock/skills';
+import { skillService } from '../../../services/skillService';
 import { MdExpandMore, MdExpandLess } from 'react-icons/md';
 
 const SkillFilter = ({ filters, onFilterChange }) => {
     const [expandedCategories, setExpandedCategories] = useState({});
+    const [categories, setCategories] = useState([]);
+    const [loadingCategories, setLoadingCategories] = useState(true);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const data = await skillService.getCategories();
+                setCategories(data || []);
+            } catch (error) {
+                console.error('Failed to fetch categories:', error);
+                setCategories([]);
+            } finally {
+                setLoadingCategories(false);
+            }
+        };
+        fetchCategories();
+    }, []);
 
     const toggleCategory = (catName) => {
         setExpandedCategories(prev => ({ ...prev, [catName]: !prev[catName] }));
@@ -48,31 +65,35 @@ const SkillFilter = ({ filters, onFilterChange }) => {
             {/* Categories */}
             <div className={styles.section}>
                 <div className={styles.sectionTitle}>Categories</div>
-                <div className={styles.checkboxGroup}>
-                    {CATEGORIES.map(cat => (
-                        <div key={cat.name}>
-                            <div className={styles.accordionHeader} onClick={() => toggleCategory(cat.name)}>
-                                <span>{cat.name}</span>
-                                {expandedCategories[cat.name] ? <MdExpandLess /> : <MdExpandMore />}
-                            </div>
-
-                            {expandedCategories[cat.name] && (
-                                <div className={styles.accordionContent}>
-                                    {cat.subcategories.map(sub => (
-                                        <label key={sub} className={styles.checkboxLabel}>
-                                            <input
-                                                type="checkbox"
-                                                checked={filters.categories?.includes(sub)}
-                                                onChange={() => handleCheckboxChange('categories', sub)}
-                                            />
-                                            {sub}
-                                        </label>
-                                    ))}
+                {loadingCategories ? (
+                    <div style={{ padding: '0.5rem', color: 'var(--text-secondary)' }}>Loading...</div>
+                ) : (
+                    <div className={styles.checkboxGroup}>
+                        {categories.map(cat => (
+                            <div key={cat.name}>
+                                <div className={styles.accordionHeader} onClick={() => toggleCategory(cat.name)}>
+                                    <span>{cat.name}</span>
+                                    {expandedCategories[cat.name] ? <MdExpandLess /> : <MdExpandMore />}
                                 </div>
-                            )}
-                        </div>
-                    ))}
-                </div>
+
+                                {expandedCategories[cat.name] && (
+                                    <div className={styles.accordionContent}>
+                                        {cat.subcategories.map(sub => (
+                                            <label key={sub} className={styles.checkboxLabel}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={filters.categories?.includes(sub)}
+                                                    onChange={() => handleCheckboxChange('categories', sub)}
+                                                />
+                                                {sub}
+                                            </label>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
 
             {/* Mode */}

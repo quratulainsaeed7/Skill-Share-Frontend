@@ -70,11 +70,17 @@ export const UserApi = {
         return request(`${USERS_ENDPOINT}/${userId}`, {
             method: 'PATCH',
             body: JSON.stringify({
-                // ...(updateData.email && { email: updateData.email }),
-                // ...(updateData.name && { name: updateData.name }),
-                // ...(updateData.fullName && { name: updateData.fullName }),
-                // ...(updateData.password && { password: updateData.password }),
-                // ...(updateData.role && { role: updateData.role.toUpperCase() }),
+                ...(updateData.email && { email: updateData.email }),
+                ...(updateData.name && { name: updateData.name }),
+                ...(updateData.fullName && { name: updateData.fullName }),
+                ...(updateData.password && { password: updateData.password }),
+                ...(updateData.role && { role: updateData.role.toUpperCase() }),
+                ...(updateData.bio && { bio: updateData.bio }),
+                ...(updateData.phone && { phone: updateData.phone }),
+                ...(updateData.city && { city: updateData.city }),
+                ...(updateData.profileCompleted !== undefined && { profileCompleted: updateData.profileCompleted }),
+                ...(updateData.learnerProfile && { learnerProfile: updateData.learnerProfile }),
+                ...(updateData.mentorProfile && { mentorProfile: updateData.mentorProfile }),
             }),
         });
     },

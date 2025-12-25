@@ -13,17 +13,19 @@ import Settings from './pages/Settings/Settings';
 import VerifyEmail from './pages/VerifyEmail/VerifyEmail';
 import CompleteProfile from './pages/CompleteProfile/CompleteProfile';
 import Dashboard from './pages/Dashboard/Dashboard';
+import Profile from './pages/Profile/Profile';
+import Wallet from './pages/Wallet/Wallet';
+import Meetings from './pages/Meetings/Meetings';
+import UserService from './services/UserService';
 import styles from './App.module.css';
 
-// Protected Route Wrapper
+// Protected Route Wrapper - uses UserService for auth check
 const ProtectedRoute = () => {
+  // Use centralized UserService instead of direct localStorage access
+  const isAuthenticated = UserService.isAuthenticated();
 
-  // if (loading) return <div>Loading...</div>;
-  // if (!user) return <Navigate to="/login" replace />;
-  // if (!user.isVerified) return <Navigate to={`/verify-email?email=${user.email}`} replace />;
-  // if (!user.profileCompleted && window.location.pathname !== '/complete-profile') {
-  //   return <Navigate to="/complete-profile" replace />;
-  // }
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+
   return <Outlet />;
 };
 
@@ -44,9 +46,13 @@ function App() {
               <Route path="/mentors/:mentorId" element={<MentorProfile />} />
 
               {/* Protected Routes */}
+              {/* Protected Routes */}
               <Route element={<ProtectedRoute />}>
                 <Route path="/complete-profile" element={<CompleteProfile />} />
                 <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/wallet" element={<Wallet />} />
+                <Route path="/meetings" element={<Meetings />} />
                 <Route path="/settings" element={<Settings />} />
               </Route>
             </Route>

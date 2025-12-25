@@ -1,5 +1,5 @@
 // src/pages/VerifyEmail/VerifyEmail.jsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import Card from '../../components/common/Card/Card';
 import Button from '../../components/common/Button/Button';
@@ -13,12 +13,28 @@ const VerifyEmail = () => {
     const navigate = useNavigate();
     const [verifying, setVerifying] = useState(false);
 
+    useEffect(() => {
+        // Check verification status via UserService (centralized)
+        const checkVerificationStatus = () => {
+            try {
+                const user = UserService.getUser();
+                if (user?.isVerified === true) {
+                    navigate('/dashboard');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        };
+        checkVerificationStatus();
+    }, [navigate]);
+
+
     const handleVerify = async () => {
         setVerifying(true);
         try {
             await UserService.verifyEmail();
             alert('Email verified successfully!');
-            navigate('/login');
+            navigate('/dashboard');
         } catch (err) {
             alert(err.message);
         } finally {

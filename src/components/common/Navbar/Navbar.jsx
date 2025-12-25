@@ -7,12 +7,14 @@ import styles from './Navbar.module.css';
 import dropdownStyles from './NavbarDropdown.module.css';
 import { MdPerson, MdWallet, MdSettings, MdLogout, MdDashboard, MdBook } from 'react-icons/md';
 import UserService from '../../../services/UserService';
-const Navbar = () => {
 
-    const user = {
-        role: localStorage.getItem('role') || 'learner',
-        Userid: localStorage.getItem('userID') || null
-    };
+const Navbar = () => {
+    // Use centralized UserService instead of direct localStorage access
+    const user = UserService.getUser();
+    const userRole = user?.role || null;
+    const userName = user?.name || null;
+    const userID = user?.userId || null;
+
     const navigate = useNavigate();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
@@ -60,17 +62,25 @@ const Navbar = () => {
                 {
                     <>
                         {/* Learner Links */}
-                        {(user.role === 'learner' || user.role === 'both') && (
-                            <NavLink
-                                to="/dashboard"
-                                className={({ isActive }) => `${styles.navLink} ${isActive ? styles.active : ''}`}
-                            >
-                                My Learnings
-                            </NavLink>
+                        {(userRole === 'learner' || userRole === 'BOTH') && (
+                            <>
+                                <NavLink
+                                    to="/dashboard"
+                                    className={({ isActive }) => `${styles.navLink} ${isActive ? styles.active : ''}`}
+                                >
+                                    My Learnings
+                                </NavLink>
+                                <NavLink
+                                    to="/meetings"
+                                    className={({ isActive }) => `${styles.navLink} ${isActive ? styles.active : ''}`}
+                                >
+                                    My Meetings
+                                </NavLink>
+                            </>
                         )}
 
                         {/* Mentor Links */}
-                        {(user.role === 'mentor' || user.role === 'both') && (
+                        {(userRole === 'mentor' || userRole === 'BOTH') && (
                             <NavLink
                                 to="/dashboard?view=mentor" // We'll handle this query param in Dashboard
                                 className={({ isActive }) => `${styles.navLink} ${isActive ? styles.active : ''}`}
@@ -94,21 +104,21 @@ const Navbar = () => {
             <div className={styles.actions}>
                 <ThemeToggle />
                 <div className={styles.authButtons}>
-                    {user ? (
+                    {userID ? (
                         <div className={dropdownStyles.dropdownContainer} ref={dropdownRef}>
                             <button
                                 className={dropdownStyles.profileButton}
                                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                             >
                                 <div className={dropdownStyles.avatar}>
-                                    {getInitials(user.name)}
+                                    {getInitials(userName)}
                                 </div>
                             </button>
 
                             <div className={`${dropdownStyles.dropdownMenu} ${isDropdownOpen ? dropdownStyles.open : ''}`}>
                                 <div className={dropdownStyles.userInfo}>
-                                    <span className={dropdownStyles.userName}>{user.name || 'User'}</span>
-                                    <span className={dropdownStyles.userEmail}>{user.email}</span>
+                                    <span className={dropdownStyles.userName}>{userName || 'User'}</span>
+                                    {/* <span className={dropdownStyles.userEmail}>{user.email}</span> */}
                                 </div>
 
                                 <Link to="/profile" className={dropdownStyles.menuItem} onClick={() => setIsDropdownOpen(false)}>

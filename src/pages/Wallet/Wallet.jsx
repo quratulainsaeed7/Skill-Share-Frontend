@@ -1,6 +1,5 @@
 // src/pages/Wallet/Wallet.jsx
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../context/AuthContext';
 import { walletService } from '../../services/walletService';
 import { generateSampleWalletData } from '../../mock/walletData';
 import styles from './Wallet.module.css';
@@ -8,9 +7,13 @@ import PaymentMethodCard from '../../components/payment/PaymentMethod/PaymentMet
 import AddPaymentMethod from '../../components/payment/PaymentMethod/AddPaymentMethod';
 import TransactionList from '../../components/payment/CreditWallet/TransactionList';
 import Button from '../../components/common/Button/Button';
+import UserService from '../../services/UserService';
 
 const Wallet = () => {
-    const { user } = useAuth();
+    // Use centralized UserService instead of useAuth
+    const user = UserService.getUser();
+    // Use userId for consistency with UserService storage format
+    const userId = user?.userId || user?.id || null;
     const [paymentMethods, setPaymentMethods] = useState([]);
     const [transactions, setTransactions] = useState([]);
     const [stats, setStats] = useState({
@@ -23,18 +26,20 @@ const Wallet = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (user) {
+        // Only load data when userId is available
+        if (userId) {
             loadWalletData();
         }
-    }, [user]);
+    }, [userId]);
 
     const loadWalletData = async () => {
         try {
             setLoading(true);
+            // Use userId variable for consistency with UserService
             const [methods, trans, walletStats] = await Promise.all([
-                walletService.getPaymentMethods(user.id),
-                walletService.getTransactions(user.id),
-                walletService.getTransactionStats(user.id),
+                walletService.getPaymentMethods(userId),
+                walletService.getTransactions(userId),
+                walletService.getTransactionStats(userId),
             ]);
 
             setPaymentMethods(methods);
@@ -49,7 +54,7 @@ const Wallet = () => {
 
     const handleAddPaymentMethod = async (methodData) => {
         try {
-            await walletService.addPaymentMethod(user.id, methodData);
+            await walletService.addPaymentMethod(userId, methodData);
             await loadWalletData();
             setShowAddModal(false);
         } catch (error) {
@@ -71,7 +76,7 @@ const Wallet = () => {
 
     const handleSetDefaultPaymentMethod = async (methodId) => {
         try {
-            await walletService.setDefaultPaymentMethod(user.id, methodId);
+            await walletService.setDefaultPaymentMethod(userId, methodId);
             await loadWalletData();
         } catch (error) {
             console.error('Error setting default payment method:', error);

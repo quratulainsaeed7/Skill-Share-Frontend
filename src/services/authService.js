@@ -1,137 +1,142 @@
 // src/services/authService.js
-import { v4 as uuidv4 } from 'uuid';
+/**
+ * authService - Authentication facade that delegates to UserService.
+ * 
+ * REFACTORED: Removed all localStorage "database" logic.
+ * Now uses UserService + UserApi as the single source of truth.
+ * User data comes from backend API, stored only in sessionStorage via UserService.
+ */
+import UserService from './UserService';
+import UserApi from '../api/UserApi';
 
-const USERS_KEY = 'skillshare_users';
-const CURRENT_USER_KEY = 'skillshare_current_user';
+// Token storage key (sessionStorage only)
 const TOKEN_KEY = 'skillshare_auth_token';
 
-// Helper to get users from localStorage
-const getUsers = () => {
-    const users = localStorage.getItem(USERS_KEY);
-    return users ? JSON.parse(users) : [];
-};
-
-// Helper to save users
-const saveUsers = (users) => {
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
-};
-
 export const authService = {
-    // Check if email exists
-    checkEmailExists: (email) => {
-        const users = getUsers();
-        return users.some((u) => u.email === email);
+    /**
+     * Check if email already exists in the backend.
+     * Uses real API call via UserApi.
+     */
+    checkEmailExists: async (email) => {
+        try {
+            return await UserApi.checkEmailExists(email);
+        } catch (error) {
+            console.error('Error checking email:', error);
+            return false;
+        }
     },
 
-    // Register new user
+    /**
+     * Register a new user via the backend API.
+     * User is stored in sessionStorage via UserService after successful registration.
+     */
     register: async (userData) => {
-        // Simulate API delay
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-
-        const users = getUsers();
-        if (users.some((u) => u.email === userData.email)) {
-            throw new Error('Email already exists');
+        try {
+            // Use UserService.registerUser which calls the real API
+            const result = await UserService.registerUser(userData);
+            return {
+                success: true,
+                message: 'User registered successfully',
+                userId: result.data?.userId || result.data?.id
+            };
+        } catch (error) {
+            throw new Error(error.message || 'Registration failed');
         }
-
-        if (users.some((u) => u.phone === userData.phone)) {
-            throw new Error('Phone number already exists');
-        }
-
-        const newUser = {
-            id: uuidv4(),
-            ...userData,
-            isVerified: false,
-            profileCompleted: false,
-            createdAt: new Date().toISOString(),
-        };
-
-        users.push(newUser);
-        saveUsers(users);
-
-        return { success: true, message: 'User registered successfully', userId: newUser.id };
     },
 
-    // Login user
+    /**
+     * Login user via the backend API.
+     * User is stored in sessionStorage via UserService after successful login.
+     */
     login: async (email, password) => {
-        await new Promise((resolve) => setTimeout(resolve, 800));
+        try {
+            // Use UserService.loginUser which calls the real API
+            const result = await UserService.loginUser({ email, password });
+            const user = result.data;
 
-        const users = getUsers();
-        const user = users.find((u) => u.email === email && u.password === password);
+            // Generate a session token (in production, this would come from the backend)
+            const token = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString();
+            sessionStorage.setItem(TOKEN_KEY, token);
 
-        if (!user) {
-            throw new Error('Invalid email or password');
+            return { user, token };
+        } catch (error) {
+            throw new Error(error.message || 'Login failed');
         }
-
-        if (!user.isVerified) {
-            throw new Error('Please verify your email first');
-        }
-
-        const token = uuidv4(); // Mock token
-        localStorage.setItem(TOKEN_KEY, token);
-        localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
-
-        return { user, token };
     },
 
-    // Verify email
+    /**
+     * Verify user's email via the backend API.
+     * Updates the stored user object with verified status.
+     */
     verifyEmail: async (email) => {
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        const users = getUsers();
-        const userIndex = users.findIndex((u) => u.email === email);
-
-        if (userIndex === -1) throw new Error('User not found');
-
-        users[userIndex].isVerified = true;
-        saveUsers(users);
-
-        return true;
-    },
-
-    // Get current user (for page reloads)
-    getCurrentUser: () => {
-        const userStr = localStorage.getItem(CURRENT_USER_KEY);
-        if (!userStr) return null;
-
-        // Always refresh from "DB" to get latest data
-        const user = JSON.parse(userStr);
-        const users = getUsers();
-        const freshUser = users.find(u => u.id === user.id);
-        return freshUser || user;
-    },
-
-    // Logout
-    logout: () => {
-        localStorage.removeItem(TOKEN_KEY);
-        localStorage.removeItem(CURRENT_USER_KEY);
-    },
-
-    // Update Profile
-    updateProfile: async (userId, profileData) => {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-
-        const users = getUsers();
-        const index = users.findIndex(u => u.id === userId);
-
-        if (index === -1) throw new Error('User not found');
-
-        // Merge learner profile data into top-level user object for easier access
-        const updatedUser = {
-            ...users[index],
-            ...profileData,
-            profileCompleted: true
-        };
-
-        // If learner profile has degree/institution, add to user level
-        if (profileData.learnerProfile) {
-            updatedUser.degree = profileData.learnerProfile.degree;
-            updatedUser.institution = profileData.learnerProfile.institution;
+        try {
+            // Use UserService.verifyEmail which calls the real API
+            await UserService.verifyEmail();
+            return true;
+        } catch (error) {
+            throw new Error(error.message || 'Email verification failed');
         }
+    },
 
-        users[index] = updatedUser;
+    /**
+     * Get the current authenticated user from sessionStorage.
+     * No localStorage database - user comes only from sessionStorage.
+     */
+    getCurrentUser: () => {
+        return UserService.getUser();
+    },
 
-        saveUsers(users);
-        localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(users[index]));
+    /**
+     * Logout the current user.
+     * Clears sessionStorage via UserService.
+     */
+    logout: () => {
+        sessionStorage.removeItem(TOKEN_KEY);
+        UserService.clearUser();
+    },
 
-        return users[index];
+    /**
+     * Update user profile via the backend API.
+     * Updates the stored user object after successful update.
+     */
+    updateProfile: async (userId, profileData) => {
+        try {
+            // Call the real API to update user profile
+            const updatedUser = await UserApi.updateUser(userId, profileData);
+
+            // Merge the update with stored user and save to sessionStorage
+            const currentUser = UserService.getUser();
+            const mergedUser = {
+                ...currentUser,
+                ...updatedUser,
+                ...profileData,
+                profileCompleted: true
+            };
+
+            // Handle learner profile specific fields
+            if (profileData.learnerProfile) {
+                mergedUser.degree = profileData.learnerProfile.degree;
+                mergedUser.institution = profileData.learnerProfile.institution;
+            }
+
+            UserService.setUser(mergedUser);
+            return mergedUser;
+        } catch (error) {
+            throw new Error(error.message || 'Profile update failed');
+        }
+    },
+
+    /**
+     * Check if user is currently authenticated.
+     */
+    isAuthenticated: () => {
+        return UserService.isAuthenticated();
+    },
+
+    /**
+     * Get the current auth token from sessionStorage.
+     */
+    getToken: () => {
+        return sessionStorage.getItem(TOKEN_KEY);
     }
 };

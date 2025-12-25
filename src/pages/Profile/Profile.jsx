@@ -1,32 +1,63 @@
 // src/pages/Profile/Profile.jsx
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../context/AuthContext';
+
 import { skillService } from '../../services/skillService';
+import ProfileService from '../../services/ProfileService';
 import { MdEmail, MdPhone, MdLocationOn, MdSchool, MdWork, MdEdit, MdStar } from 'react-icons/md';
 import Button from '../../components/common/Button/Button';
 import Card from '../../components/common/Card/Card';
 import SkillCard from '../../components/skills/SkillCard/SkillCard';
 import styles from './Profile.module.css';
 import { Link } from 'react-router-dom';
+import UserService from '../../services/UserService';
 
 const Profile = () => {
-    const { user } = useAuth();
+    // Use centralized UserService for basic auth check
+    const sessionUser = UserService.getUser();
+    const userID = sessionUser?.userId || null;
+
+    // Profile data fetched from ProfileService (API)
+    const [profileData, setProfileData] = useState(null);
     const [enrolledCourses, setEnrolledCourses] = useState([]);
     const [mentors, setMentors] = useState([]);
     const [taughtCourses, setTaughtCourses] = useState([]);
     const [students, setStudents] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [profileError, setProfileError] = useState(null);
 
-    const isLearner = user?.role === 'learner' || user?.role === 'both';
-    const isMentor = user?.role === 'mentor' || user?.role === 'both';
+    // Merge session user with fetched profile data (profile data takes precedence)
+    const user = profileData ? { ...sessionUser, ...profileData } : sessionUser;
+    const userRole = user?.role || null;
+    const isLearner = userRole === 'learner' || userRole === 'LEARNER' || userRole === 'both' || userRole === 'BOTH';
+    const isMentor = userRole === 'mentor' || userRole === 'MENTOR' || userRole === 'both' || userRole === 'BOTH';
+    const userName = user?.name || null;
 
     useEffect(() => {
         const fetchUserData = async () => {
             setLoading(true);
+            setProfileError(null);
+
             try {
-                if (isLearner) {
+                // Fetch profile data from ProfileService (API)
+                if (userID) {
+                    try {
+                        const profile = await ProfileService.getUserProfile();
+                        setProfileData(profile);
+
+                        // Update session storage with latest profile data
+                        if (profile) {
+                            UserService.updateStoredUser(profile);
+                        }
+                    } catch (profileErr) {
+                        console.warn('Could not fetch profile from API, using session data:', profileErr.message);
+                        // Continue with session data if profile fetch fails
+                    }
+                }
+
+                // Fetch role-specific data
+                if (isLearner && userID) {
                     // Fetch enrolled courses for learners
-                    const mockEnrolledCourses = await skillService.getEnrolledCourses(user?.id);
+                    const mockEnrolledCourses = await skillService.getEnrolledCourses(userID);
                     setEnrolledCourses(mockEnrolledCourses);
 
                     // Fetch mentors for enrolled courses
@@ -40,39 +71,61 @@ const Profile = () => {
                     setMentors(mentorData);
                 }
 
-                if (isMentor) {
-                    // Fetch courses taught by mentor
-                    const mockTaughtCourses = await skillService.getTaughtCourses(user?.id);
+                if (isMentor && userID) {
+                    // Fetch courses taught by mentor - use userID for consistency
+                    const mockTaughtCourses = await skillService.getTaughtCourses(userID);
                     setTaughtCourses(mockTaughtCourses);
 
                     // Fetch students enrolled in mentor's courses
-                    const mockStudents = await skillService.getEnrolledStudents(user?.id);
+                    const mockStudents = await skillService.getEnrolledStudents(userID);
                     setStudents(mockStudents);
                 }
             } catch (error) {
                 console.error('Failed to fetch profile data:', error);
+                setProfileError(error.message);
             } finally {
                 setLoading(false);
             }
         };
 
-        if (user) {
-            fetchUserData();
-        }
-    }, [user, isLearner, isMentor]);
-
-    if (!user) {
-        return (
-            <div className={styles.container}>
-                <p>Please log in to view your profile.</p>
-            </div>
-        );
-    }
+        // Call the fetch function
+        fetchUserData();
+    }, [isLearner, isMentor, userID]);
 
     const getInitials = (name) => {
         if (!name) return 'U';
         return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
     };
+
+    // Helper to format role display text safely
+    const formatRole = (role) => {
+        if (!role) return 'User';
+        const lowerRole = role.toLowerCase();
+        if (lowerRole === 'both') return 'Learner & Mentor';
+        return role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
+    };
+
+    // Safely handle null user state (no authenticated session)
+    if (!sessionUser) {
+        return (
+            <div className={styles.container}>
+                <Card className={styles.userInfoCard}>
+                    <p>Please log in to view your profile.</p>
+                </Card>
+            </div>
+        );
+    }
+
+    // Show loading state while fetching profile
+    if (loading && !user) {
+        return (
+            <div className={styles.container}>
+                <Card className={styles.userInfoCard}>
+                    <p>Loading profile...</p>
+                </Card>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.container}>
@@ -80,17 +133,17 @@ const Profile = () => {
             <Card className={styles.userInfoCard}>
                 <div className={styles.profileHeader}>
                     <div className={styles.avatarWrapper}>
-                        {user.avatar ? (
-                            <img src={user.avatar} alt={user.name} className={styles.avatar} />
+                        {user?.avatar ? (
+                            <img src={user.avatar} alt={userName || 'User'} className={styles.avatar} />
                         ) : (
                             <div className={styles.avatarPlaceholder}>
-                                {getInitials(user.name)}
+                                {getInitials(userName)}
                             </div>
                         )}
                     </div>
                     <div className={styles.headerInfo}>
-                        <h1 className={styles.userName}>{user.name}</h1>
-                        <p className={styles.userRole}>{user.role === 'both' ? 'Learner & Mentor' : user.role.charAt(0).toUpperCase() + user.role.slice(1)}</p>
+                        <h1 className={styles.userName}>{userName || 'User'}</h1>
+                        <p className={styles.userRole}>{formatRole(userRole)}</p>
                         <Link to="/settings">
                             <Button variant="secondary" size="sm" icon={<MdEdit />}>
                                 Edit Profile
@@ -126,7 +179,7 @@ const Profile = () => {
                                     {user.degree && (
                                         <div className={styles.infoItem}>
                                             <MdSchool className={styles.icon} />
-                                            <span>{user.degree}</span>
+                                            {/* <span>{user.degree}</span> */}
                                         </div>
                                     )}
                                     {user.institution && (
@@ -138,7 +191,7 @@ const Profile = () => {
                                 </div>
                             </div>
                         )}
-                        
+
                         {user.learnerProfile.bio && (
                             <div className={styles.bioSection}>
                                 <h4>About Me</h4>

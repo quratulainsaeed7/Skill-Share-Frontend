@@ -1,12 +1,38 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import SkillCard from '../skills/SkillCard/SkillCard';
-import { MOCK_SKILLS } from '../../mock/skills';
+import { skillService } from '../../services/skillService';
+import UserService from '../../services/UserService';
 import Button from '../common/Button/Button';
 
 const LearnerDashboard = () => {
-    // Simulate fetching enrolled courses
-    const activeCourses = MOCK_SKILLS.slice(0, 2);
-    const completedCourses = MOCK_SKILLS.slice(2, 3);
+    const [activeCourses, setActiveCourses] = useState([]);
+    const [completedCourses, setCompletedCourses] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const user = UserService.getUser();
+
+    useEffect(() => {
+        const fetchCourses = async () => {
+            try {
+                if (user?.userId) {
+                    const enrolled = await skillService.getEnrolledCourses(user.userId);
+                    // Split courses by progress (completed = 100%)
+                    const active = enrolled.filter(c => (c.progress || 0) < 100);
+                    const completed = enrolled.filter(c => (c.progress || 0) >= 100);
+                    setActiveCourses(active);
+                    setCompletedCourses(completed);
+                }
+            } catch (error) {
+                console.error('Failed to fetch enrolled courses:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchCourses();
+    }, [user?.userId]);
+
+    if (loading) {
+        return <div>Loading your courses...</div>;
+    }
 
     return (
         <div>

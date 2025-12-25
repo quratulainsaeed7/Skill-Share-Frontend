@@ -4,9 +4,12 @@ import Card from '../../components/common/Card/Card';
 import Button from '../../components/common/Button/Button';
 import Input from '../../components/common/Input/Input'; // Assuming we can simple input for now or just toggles
 import styles from './Settings.module.css';
+import UserService from '../../services/UserService';
 
 const Settings = () => {
     const navigate = useNavigate();
+    // Use centralized UserService for user data
+    const user = UserService.getUser();
     const [privacySettings, setPrivacySettings] = useState({
         showProfile: true,
         showCourses: true,
@@ -26,10 +29,12 @@ const Settings = () => {
     };
 
     const handleLogout = () => {
-        logout();
+        // Use UserService for centralized logout
+        UserService.logout();
         navigate('/login');
     };
 
+    // Safely handle null user state
     if (!user) return null;
 
     return (

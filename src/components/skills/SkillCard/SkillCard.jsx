@@ -64,20 +64,12 @@ const SkillCard = ({ skill, viewMode = 'grid' }) => {
                 <div className={styles.priceContainer}>
                     {priceCash && (
                         <div className={styles.price}>
-<<<<<<< HEAD
-                            PKR {priceCash.toLocaleString()}
-=======
                             PKR {priceCash.toLocaleString()} <span className={styles.priceText}>/hr</span>
->>>>>>> f44c5604b95719689d3e0cd40753e1c0e405bc92
                         </div>
                     )}
                     {priceCredits && (
                         <div style={{ color: 'var(--color-secondary)', fontWeight: 'bold' }}>
-<<<<<<< HEAD
-                            {priceCredits} Credits
-=======
                             {priceCredits} Credits <span className={styles.priceText}>/hr</span>
->>>>>>> f44c5604b95719689d3e0cd40753e1c0e405bc92
                         </div>
                     )}
                 </div>

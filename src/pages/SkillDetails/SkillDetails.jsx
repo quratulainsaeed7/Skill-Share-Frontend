@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { MOCK_SKILLS } from '../../mock/skills';
+import { skillService } from '../../services/skillService';
 import Button from '../../components/common/Button/Button';
 import styles from './SkillDetails.module.css';
 
@@ -9,19 +9,28 @@ const SkillDetails = () => {
     const navigate = useNavigate();
     const [skill, setSkill] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        // Simulate API fetch delay
-        const timer = setTimeout(() => {
-            const foundSkill = MOCK_SKILLS.find(s => s.id === skillId);
-            setSkill(foundSkill);
-            setLoading(false);
-        }, 500);
+        const fetchSkill = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                const foundSkill = await skillService.getSkillById(skillId);
+                setSkill(foundSkill);
+            } catch (err) {
+                console.error('Failed to fetch skill:', err);
+                setError(err.message || 'Failed to load skill details');
+            } finally {
+                setLoading(false);
+            }
+        };
 
-        return () => clearTimeout(timer);
+        fetchSkill();
     }, [skillId]);
 
     if (loading) return <div className="loading">Loading...</div>;
+    if (error) return <div className="error">{error}</div>;
     if (!skill) return <div className="error">Skill not found</div>;
 
     return (
