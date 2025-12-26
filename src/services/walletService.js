@@ -1,228 +1,190 @@
 // src/services/walletService.js
-import { v4 as uuidv4 } from 'uuid';
+// REFACTORED: Removed all localStorage logic - now fully backed by wallet-service API
 
-const PAYMENT_METHODS_KEY = 'skillshare_payment_methods';
-const TRANSACTIONS_KEY = 'skillshare_transactions';
-
-// Helper to get payment methods from localStorage
-const getPaymentMethods = () => {
-    const methods = localStorage.getItem(PAYMENT_METHODS_KEY);
-    return methods ? JSON.parse(methods) : [];
-};
-
-// Helper to save payment methods
-const savePaymentMethods = (methods) => {
-    localStorage.setItem(PAYMENT_METHODS_KEY, JSON.stringify(methods));
-};
-
-// Helper to get transactions from localStorage
-const getTransactions = () => {
-    const transactions = localStorage.getItem(TRANSACTIONS_KEY);
-    return transactions ? JSON.parse(transactions) : [];
-};
-
-// Helper to save transactions
-const saveTransactions = (transactions) => {
-    localStorage.setItem(TRANSACTIONS_KEY, JSON.stringify(transactions));
-};
+import { WalletApi } from '../api/WalletApi';
 
 export const walletService = {
-    // Get all payment methods for a user
-    getPaymentMethods: async (userId) => {
-        await new Promise((resolve) => setTimeout(resolve, 300));
-        const methods = getPaymentMethods();
-        return methods.filter((m) => m.userId === userId);
-    },
-
-    // Add a new payment method
-    addPaymentMethod: async (userId, methodData) => {
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        
-        const methods = getPaymentMethods();
-        const newMethod = {
-            id: uuidv4(),
-            userId,
-            ...methodData,
-            createdAt: new Date().toISOString(),
-        };
-
-        methods.push(newMethod);
-        savePaymentMethods(methods);
-        return newMethod;
-    },
-
-    // Update a payment method
-    updatePaymentMethod: async (methodId, updates) => {
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        
-        const methods = getPaymentMethods();
-        const index = methods.findIndex((m) => m.id === methodId);
-        
-        if (index === -1) {
-            throw new Error('Payment method not found');
-        }
-
-        methods[index] = {
-            ...methods[index],
-            ...updates,
-            updatedAt: new Date().toISOString(),
-        };
-
-        savePaymentMethods(methods);
-        return methods[index];
-    },
-
-    // Delete a payment method
-    deletePaymentMethod: async (methodId) => {
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        
-        const methods = getPaymentMethods();
-        const filtered = methods.filter((m) => m.id !== methodId);
-        savePaymentMethods(filtered);
-        return true;
-    },
-
-    // Set a payment method as default
-    setDefaultPaymentMethod: async (userId, methodId) => {
-        await new Promise((resolve) => setTimeout(resolve, 300));
-        
-        const methods = getPaymentMethods();
-        const userMethods = methods.map((m) => {
-            if (m.userId === userId) {
-                return {
-                    ...m,
-                    isDefault: m.id === methodId,
-                };
-            }
-            return m;
-        });
-
-        savePaymentMethods(userMethods);
-        return true;
-    },
-
-    // Get all transactions for a user
-    getTransactions: async (userId, filters = {}) => {
-        await new Promise((resolve) => setTimeout(resolve, 300));
-        
-        let transactions = getTransactions();
-        transactions = transactions.filter((t) => 
-            t.userId === userId || t.recipientId === userId
-        );
-
-        // Apply filters
-        if (filters.type) {
-            transactions = transactions.filter((t) => t.type === filters.type);
-        }
-
-        if (filters.paymentMethodId) {
-            transactions = transactions.filter((t) => t.paymentMethodId === filters.paymentMethodId);
-        }
-
-        if (filters.startDate) {
-            transactions = transactions.filter((t) => 
-                new Date(t.createdAt) >= new Date(filters.startDate)
-            );
-        }
-
-        if (filters.endDate) {
-            transactions = transactions.filter((t) => 
-                new Date(t.createdAt) <= new Date(filters.endDate)
-            );
-        }
-
-        // Sort by date (newest first)
-        transactions.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-        return transactions;
-    },
-
-    // Create a new transaction (when booking a course)
-    createTransaction: async (transactionData) => {
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        
-        const transactions = getTransactions();
-        const newTransaction = {
-            id: uuidv4(),
-            ...transactionData,
-            status: 'completed',
-            createdAt: new Date().toISOString(),
-        };
-
-        transactions.push(newTransaction);
-        saveTransactions(transactions);
-        return newTransaction;
-    },
-
-    // Get wallet balance (total incoming - total outgoing)
+    /**
+     * Get wallet balance for a user
+     * @param {string} userId - User ID
+     * @returns {Promise<number>} Balance in credits
+     */
     getBalance: async (userId) => {
-        await new Promise((resolve) => setTimeout(resolve, 300));
-        
-        const transactions = getTransactions();
-        const userTransactions = transactions.filter((t) => 
-            (t.userId === userId || t.recipientId === userId) && t.status === 'completed'
-        );
-
-        const balance = userTransactions.reduce((acc, transaction) => {
-            if (transaction.type === 'incoming' || transaction.recipientId === userId) {
-                return acc + transaction.amount;
-            } else {
-                return acc - transaction.amount;
-            }
-        }, 0);
-
-        return balance;
+        try {
+            const data = await WalletApi.getBalance(userId);
+            return data.balance;
+        } catch (error) {
+            console.error('Error fetching balance:', error);
+            throw new Error('Failed to fetch wallet balance');
+        }
     },
 
-    // Get transaction statistics
+    /**
+     * Get full wallet details including statistics
+     * @param {string} userId - User ID
+     * @returns {Promise<Object>} Wallet data with balance, totalEarned, totalSpent
+     */
+    getWallet: async (userId) => {
+        try {
+            return await WalletApi.getWallet(userId);
+        } catch (error) {
+            console.error('Error fetching wallet:', error);
+            throw new Error('Failed to fetch wallet details');
+        }
+    },
+
+    /**
+     * Get transaction history for a user
+     * Server-side filtering and sorting applied
+     * @param {string} userId - User ID
+     * @param {Object} filters - Filter options (not implemented client-side, backend handles all filtering)
+     * @returns {Promise<Array>} Array of transactions
+     */
+    getTransactions: async (userId, filters = {}) => {
+        try {
+            // Backend returns transactions already sorted by date (newest first)
+            return await WalletApi.getTransactions(userId);
+        } catch (error) {
+            console.error('Error fetching transactions:', error);
+            throw new Error('Failed to fetch transactions');
+        }
+    },
+
+    /**
+     * Get transaction statistics
+     * Calculated server-side from wallet entity
+     * @param {string} userId - User ID
+     * @returns {Promise<Object>} Stats including totalEarned, totalSpent, balance, transactionCount
+     */
     getTransactionStats: async (userId) => {
-        await new Promise((resolve) => setTimeout(resolve, 300));
-        
-        const transactions = getTransactions();
-        const userTransactions = transactions.filter((t) => 
-            (t.userId === userId || t.recipientId === userId) && t.status === 'completed'
-        );
+        try {
+            const wallet = await WalletApi.getWallet(userId);
+            const transactions = await WalletApi.getTransactions(userId);
 
-        const totalIncoming = userTransactions
-            .filter((t) => t.type === 'incoming' || t.recipientId === userId)
-            .reduce((sum, t) => sum + t.amount, 0);
-
-        const totalOutgoing = userTransactions
-            .filter((t) => t.type === 'outgoing' && t.userId === userId)
-            .reduce((sum, t) => sum + t.amount, 0);
-
-        return {
-            totalIncoming,
-            totalOutgoing,
-            balance: totalIncoming - totalOutgoing,
-            transactionCount: userTransactions.length,
-        };
+            return {
+                totalIncoming: wallet.totalEarned,
+                totalOutgoing: wallet.totalSpent,
+                balance: wallet.balance,
+                transactionCount: transactions.length,
+            };
+        } catch (error) {
+            console.error('Error fetching transaction stats:', error);
+            throw new Error('Failed to fetch transaction statistics');
+        }
     },
 
-    // Initialize demo data for testing (can be called from Wallet page)
-    initializeDemoData: async (userId, demoData) => {
-        await new Promise((resolve) => setTimeout(resolve, 300));
-        
-        // Add demo payment methods
-        const currentMethods = getPaymentMethods();
-        const newMethods = [
-            ...currentMethods,
-            ...demoData.paymentMethods.filter(
-                (dm) => !currentMethods.some((cm) => cm.userId === userId && cm.cardNumber === dm.cardNumber)
-            ),
-        ];
-        savePaymentMethods(newMethods);
+    /**
+     * Earn credits (when completing a lesson as mentor)
+     * @param {string} userId - User ID
+     * @param {Object} data - Transaction data
+     * @param {number} data.amount - Credits to earn
+     * @param {string} [data.bookingId] - Related booking ID
+     * @param {string} [data.description] - Transaction description
+     * @returns {Promise<Object>} Updated wallet
+     */
+    earnCredits: async (userId, data) => {
+        try {
+            return await WalletApi.earnCredits(userId, data);
+        } catch (error) {
+            console.error('Error earning credits:', error);
+            throw new Error('Failed to earn credits');
+        }
+    },
 
-        // Add demo transactions
-        const currentTransactions = getTransactions();
-        const newTransactions = [
-            ...currentTransactions,
-            ...demoData.transactions.filter(
-                (dt) => !currentTransactions.some((ct) => ct.userId === userId && ct.description === dt.description)
-            ),
-        ];
-        saveTransactions(newTransactions);
+    /**
+     * Spend credits (when booking a lesson as learner)
+     * @param {string} userId - User ID
+     * @param {Object} data - Transaction data
+     * @param {number} data.amount - Credits to spend
+     * @param {string} data.bookingId - Related booking ID (required)
+     * @param {string} [data.description] - Transaction description
+     * @returns {Promise<Object>} Updated wallet
+     */
+    spendCredits: async (userId, data) => {
+        try {
+            return await WalletApi.spendCredits(userId, data);
+        } catch (error) {
+            console.error('Error spending credits:', error);
+            // Backend will throw if insufficient balance
+            throw new Error(error.response?.data?.message || 'Failed to spend credits');
+        }
+    },
 
-        return true;
+    /**
+     * Create a transaction (legacy method for backward compatibility)
+     * Maps to spendCredits for outgoing or earnCredits for incoming
+     * @deprecated Use spendCredits or earnCredits directly
+     */
+    createTransaction: async (transactionData) => {
+        const { userId, type, amount, description, bookingId } = transactionData;
+
+        if (type === 'outgoing') {
+            return await walletService.spendCredits(userId, {
+                amount,
+                bookingId: bookingId || 'legacy-transaction',
+                description,
+            });
+        } else if (type === 'incoming') {
+            return await walletService.earnCredits(userId, {
+                amount,
+                bookingId,
+                description,
+            });
+        } else {
+            throw new Error('Invalid transaction type. Use "incoming" or "outgoing"');
+        }
+    },
+
+    // =======================================================================
+    // Payment Methods - NOT SUPPORTED BY BACKEND
+    // The wallet-service uses a credit-based system, not external payment methods
+    // These methods return empty arrays for backward compatibility with UI
+    // =======================================================================
+
+    /**
+     * Get payment methods - NOT SUPPORTED
+     * Backend uses credit-based wallet system
+     * @deprecated Backend does not support external payment methods
+     * @returns {Promise<Array>} Empty array
+     */
+    getPaymentMethods: async (userId) => {
+        console.warn('Payment methods are not supported by backend wallet-service');
+        return [];
+    },
+
+    /**
+     * Add payment method - NOT SUPPORTED
+     * @deprecated Backend does not support external payment methods
+     * @throws {Error} Always throws unsupported operation error
+     */
+    addPaymentMethod: async (userId, methodData) => {
+        throw new Error('Payment methods are not supported. Backend uses credit-based wallet system.');
+    },
+
+    /**
+     * Update payment method - NOT SUPPORTED
+     * @deprecated Backend does not support external payment methods
+     * @throws {Error} Always throws unsupported operation error
+     */
+    updatePaymentMethod: async (methodId, updates) => {
+        throw new Error('Payment methods are not supported. Backend uses credit-based wallet system.');
+    },
+
+    /**
+     * Delete payment method - NOT SUPPORTED
+     * @deprecated Backend does not support external payment methods
+     * @throws {Error} Always throws unsupported operation error
+     */
+    deletePaymentMethod: async (methodId) => {
+        throw new Error('Payment methods are not supported. Backend uses credit-based wallet system.');
+    },
+
+    /**
+     * Set default payment method - NOT SUPPORTED
+     * @deprecated Backend does not support external payment methods
+     * @throws {Error} Always throws unsupported operation error
+     */
+    setDefaultPaymentMethod: async (userId, methodId) => {
+        throw new Error('Payment methods are not supported. Backend uses credit-based wallet system.');
     },
 };

@@ -132,5 +132,20 @@ export const skillService = {
             console.error(`Failed to enroll user ${userId} in skill ${skillId}:`, error);
             throw error;
         }
+    },
+
+    /**
+     * Unenroll a learner from a skill/course.
+     * @param {string} skillId - Skill ID to unenroll from
+     * @param {string} userId - Learner's user ID
+     * @returns {Promise<Object>} Unenrollment result with refund info
+     */
+    unenrollFromSkill: async (skillId, userId) => {
+        try {
+            return await SkillApi.unenrollFromSkill(skillId, userId);
+        } catch (error) {
+            console.error(`Failed to unenroll user ${userId} from skill ${skillId}:`, error);
+            throw error;
+        }
     }
 };

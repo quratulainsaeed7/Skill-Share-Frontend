@@ -46,13 +46,20 @@ const request = async (url, options = {}) => {
 
         return resData;
     } catch (error) {
-        if (!error.response) {
-            throw new Error('Network error: Unable to reach the skill service. Is the backend running?');
+        // If it's already an Error we threw above, re-throw it
+        if (error.message && !error.response) {
+            throw error;
         }
 
-        const { status, statusText, data: errData } = error.response;
-        const errorMessage = errData?.message || errData?.error || `HTTP ${status}: ${statusText || ''}`.trim();
-        throw new Error(Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage);
+        // Handle axios network/response errors
+        if (error.response) {
+            const { status, statusText, data: errData } = error.response;
+            const errorMessage = errData?.message || errData?.error || `HTTP ${status}: ${statusText || ''}`.trim();
+            throw new Error(Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage);
+        }
+
+        // Network error - no response received
+        throw new Error('Unable to connect to server. Please check your connection.');
     }
 };
 
@@ -172,6 +179,19 @@ export const SkillApi = {
      */
     enrollInSkill: async (skillId, userId) => {
         return request(`${SKILLS_ENDPOINT}/${skillId}/enroll`, {
+            method: 'POST',
+            body: JSON.stringify({ userId }),
+        });
+    },
+
+    /**
+     * Unenroll a learner from a skill/course.
+     * @param {string} skillId - Skill ID
+     * @param {string} userId - Learner's user ID
+     * @returns {Promise<Object>} Unenrollment result with refund info
+     */
+    unenrollFromSkill: async (skillId, userId) => {
+        return request(`${SKILLS_ENDPOINT}/${skillId}/unenroll`, {
             method: 'POST',
             body: JSON.stringify({ userId }),
         });

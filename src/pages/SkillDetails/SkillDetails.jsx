@@ -15,6 +15,8 @@ const SkillDetails = () => {
     const [enrolling, setEnrolling] = useState(false);
     const [enrollmentError, setEnrollmentError] = useState(null);
     const [enrollmentSuccess, setEnrollmentSuccess] = useState(false);
+    const [isEnrolled, setIsEnrolled] = useState(false);
+    const [checkingEnrollment, setCheckingEnrollment] = useState(false);
 
     useEffect(() => {
         const fetchSkill = async () => {
@@ -31,6 +33,21 @@ const SkillDetails = () => {
                         setMentor(mentorData);
                     } catch (mentorErr) {
                         console.warn('Could not fetch mentor details:', mentorErr);
+                    }
+                }
+
+                // Check enrollment status
+                const user = UserService.getUser();
+                if (user?.userId) {
+                    setCheckingEnrollment(true);
+                    try {
+                        const enrolledCourses = await skillService.getEnrolledCourses(user.userId);
+                        const enrolled = enrolledCourses.some(course => course.skillId === skillId);
+                        setIsEnrolled(enrolled);
+                    } catch (err) {
+                        console.warn('Could not check enrollment status:', err);
+                    } finally {
+                        setCheckingEnrollment(false);
                     }
                 }
             } catch (err) {
@@ -57,12 +74,45 @@ const SkillDetails = () => {
         try {
             await skillService.enrollInSkill(skillId, user.userId);
             setEnrollmentSuccess(true);
+            setIsEnrolled(true);
             setTimeout(() => {
                 navigate('/profile');
             }, 1500);
         } catch (err) {
             console.error('Enrollment failed:', err);
             setEnrollmentError(err.message || 'Failed to enroll in the skill');
+        } finally {
+            setEnrolling(false);
+        }
+    };
+
+    const handleUnenroll = async () => {
+        const user = UserService.getUser();
+        if (!user || !user.userId) {
+            navigate('/login');
+            return;
+        }
+
+        if (!window.confirm('Are you sure you want to unenroll? You may be eligible for a refund if within 30 days.')) {
+            return;
+        }
+
+        setEnrolling(true);
+        setEnrollmentError(null);
+
+        try {
+            const result = await skillService.unenrollFromSkill(skillId, user.userId);
+            setIsEnrolled(false);
+            const message = result.refunded
+                ? `Successfully unenrolled! You've been refunded ${result.refundAmount} credits.`
+                : 'Successfully unenrolled. No refund available (enrolled more than 30 days ago).';
+            alert(message);
+            setTimeout(() => {
+                navigate('/profile');
+            }, 1000);
+        } catch (err) {
+            console.error('Unenrollment failed:', err);
+            setEnrollmentError(err.message || 'Failed to unenroll from the skill');
         } finally {
             setEnrolling(false);
         }
@@ -196,10 +246,13 @@ const SkillDetails = () => {
                         variant="primary"
                         size="lg"
                         className={styles.enrollButton}
-                        onClick={handleEnroll}
-                        disabled={enrolling || enrollmentSuccess}
+                        onClick={isEnrolled ? handleUnenroll : handleEnroll}
+                        disabled={enrolling || enrollmentSuccess || checkingEnrollment}
                     >
-                        {enrolling ? 'Enrolling...' : enrollmentSuccess ? 'Enrolled!' : 'Enroll Now'}
+                        {checkingEnrollment ? 'Checking...' :
+                            enrolling ? (isEnrolled ? 'Unenrolling...' : 'Enrolling...') :
+                                enrollmentSuccess ? 'Enrolled!' :
+                                    isEnrolled ? 'Unenroll' : 'Enroll Now'}
                     </Button>
 
                     <p className={styles.guarantee}>30-Day Money-Back Guarantee</p>
@@ -217,11 +270,11 @@ const SkillDetails = () => {
                                     <span className={styles.mentorRole}>Mentor</span>
                                 </div>
                             </div>
-                            <p className={styles.mentorBio}>
+                            <div className={styles.mentorBio}>
                                 {mentor.email && <div style={{ marginBottom: '0.5rem' }}>📧 {mentor.email}</div>}
                                 {mentor.phone && <div style={{ marginBottom: '0.5rem' }}>📱 {mentor.phone}</div>}
                                 {mentor.city && <div>📍 {mentor.city}</div>}
-                            </p>
+                            </div>
                             <Button
                                 variant="outline"
                                 className={styles.viewProfileBtn}
