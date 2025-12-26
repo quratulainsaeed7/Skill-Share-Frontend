@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { skillService } from '../../services/skillService';
+import UserService from '../../services/UserService';
 import SkillCard from '../../components/skills/SkillCard/SkillCard';
 import styles from './MentorProfile.module.css';
 
@@ -17,20 +18,30 @@ const MentorProfile = () => {
                 setLoading(true);
                 setError(null);
 
+                // Fetch mentor user data
+                const mentorData = await UserService.getUserById(mentorId);
+
                 // Fetch courses taught by this mentor
                 const courses = await skillService.getTaughtCourses(mentorId);
 
-                if (courses && courses.length > 0) {
-                    const firstCourse = courses[0];
+                // Fetch enrolled students for this mentor
+                const students = await skillService.getEnrolledStudents(mentorId);
+
+                if (mentorData) {
                     setMentor({
-                        id: firstCourse.mentorId,
-                        name: firstCourse.mentorName,
-                        avatar: firstCourse.mentorAvatar,
-                        bio: firstCourse.mentorBio || 'Expert Mentor',
-                        role: 'Senior Instructor',
-                        totalStudents: courses.reduce((acc, curr) => acc + (curr.studentsCount || curr.lectures || 0), 0),
+                        id: mentorData.userId,
+                        name: mentorData.name,
+                        avatar: mentorData.avatar,
+                        bio: mentorData.bio || 'Expert Mentor',
+                        email: mentorData.email,
+                        phone: mentorData.phone,
+                        city: mentorData.city,
+                        role: 'Mentor',
+                        totalStudents: students?.length || 0,
                         reviews: courses.reduce((acc, curr) => acc + (curr.reviewsCount || 0), 0),
-                        rating: (courses.reduce((acc, curr) => acc + (curr.rating || 0), 0) / courses.length).toFixed(1)
+                        rating: courses.length > 0
+                            ? (courses.reduce((acc, curr) => acc + (curr.rating || 0), 0) / courses.length).toFixed(1)
+                            : '0.0'
                     });
                     setMentorCourses(courses);
                 }
@@ -52,11 +63,19 @@ const MentorProfile = () => {
     return (
         <div className={styles.pageContainer}>
             <div className={styles.profileHeader}>
-                <img src={mentor.avatar} alt={mentor.name} className={styles.avatar} />
+                {mentor.avatar && <img src={mentor.avatar} alt={mentor.name} className={styles.avatar} />}
                 <div className={styles.info}>
                     <h1 className={styles.name}>{mentor.name}</h1>
                     <div className={styles.role}>{mentor.role}</div>
                     <p className={styles.bio}>{mentor.bio}</p>
+
+                    {(mentor.email || mentor.phone || mentor.city) && (
+                        <div style={{ marginTop: '1rem', color: 'var(--text-secondary)' }}>
+                            {mentor.email && <div style={{ marginBottom: '0.5rem' }}>📧 {mentor.email}</div>}
+                            {mentor.phone && <div style={{ marginBottom: '0.5rem' }}>📱 {mentor.phone}</div>}
+                            {mentor.city && <div>📍 {mentor.city}</div>}
+                        </div>
+                    )}
 
                     <div className={styles.stats}>
                         <div className={styles.statItem}>
@@ -82,7 +101,7 @@ const MentorProfile = () => {
             <h2 className={styles.sectionTitle}>Courses by {mentor.name}</h2>
             <div className={styles.coursesGrid}>
                 {mentorCourses.map(course => (
-                    <SkillCard key={course.id} skill={course} />
+                    <SkillCard key={course.skillId} skill={course} />
                 ))}
             </div>
         </div>

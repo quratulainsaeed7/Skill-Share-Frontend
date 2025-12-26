@@ -132,6 +132,10 @@ export const UserApi = {
                 password: credentials.password,
             }),
         });
+    },
+
+    getUserById: async (userId) => {
+        return request(`${USERS_ENDPOINT}/${userId}`);
     }
 };
 

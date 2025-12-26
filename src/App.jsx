@@ -16,6 +16,7 @@ import Dashboard from './pages/Dashboard/Dashboard';
 import Profile from './pages/Profile/Profile';
 import Wallet from './pages/Wallet/Wallet';
 import Meetings from './pages/Meetings/Meetings';
+import CreateSkill from './pages/CreateSkill/CreateSkill';
 import UserService from './services/UserService';
 import styles from './App.module.css';
 
@@ -51,6 +52,7 @@ function App() {
                 <Route path="/complete-profile" element={<CompleteProfile />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/create-skill" element={<CreateSkill />} />
                 <Route path="/wallet" element={<Wallet />} />
                 <Route path="/meetings" element={<Meetings />} />
                 <Route path="/settings" element={<Settings />} />

@@ -147,6 +147,18 @@ class UserService {
         this.setUser(updatedUser);
         return updatedUser;
     }
+
+    /**
+     * Gets user/mentor details by user ID from the backend.
+     */
+    static async getUserById(userId: string) {
+        try {
+            return await UserApi.getUserById(userId);
+        } catch (error) {
+            console.error(`Failed to fetch user ${userId}:`, error);
+            throw error;
+        }
+    }
 }
 
 export default UserService;

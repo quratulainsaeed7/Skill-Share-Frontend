@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { skillService } from '../../services/skillService';
+import UserService from '../../services/UserService';
 import Button from '../../components/common/Button/Button';
 import styles from './SkillDetails.module.css';
 
@@ -8,8 +9,12 @@ const SkillDetails = () => {
     const { skillId } = useParams();
     const navigate = useNavigate();
     const [skill, setSkill] = useState(null);
+    const [mentor, setMentor] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [enrolling, setEnrolling] = useState(false);
+    const [enrollmentError, setEnrollmentError] = useState(null);
+    const [enrollmentSuccess, setEnrollmentSuccess] = useState(false);
 
     useEffect(() => {
         const fetchSkill = async () => {
@@ -18,6 +23,16 @@ const SkillDetails = () => {
                 setError(null);
                 const foundSkill = await skillService.getSkillById(skillId);
                 setSkill(foundSkill);
+
+                // Fetch mentor details if mentorId exists
+                if (foundSkill?.mentorId) {
+                    try {
+                        const mentorData = await UserService.getUserById(foundSkill.mentorId);
+                        setMentor(mentorData);
+                    } catch (mentorErr) {
+                        console.warn('Could not fetch mentor details:', mentorErr);
+                    }
+                }
             } catch (err) {
                 console.error('Failed to fetch skill:', err);
                 setError(err.message || 'Failed to load skill details');
@@ -28,6 +43,30 @@ const SkillDetails = () => {
 
         fetchSkill();
     }, [skillId]);
+
+    const handleEnroll = async () => {
+        const user = UserService.getUser();
+        if (!user || !user.userId) {
+            navigate('/login');
+            return;
+        }
+
+        setEnrolling(true);
+        setEnrollmentError(null);
+
+        try {
+            await skillService.enrollInSkill(skillId, user.userId);
+            setEnrollmentSuccess(true);
+            setTimeout(() => {
+                navigate('/profile');
+            }, 1500);
+        } catch (err) {
+            console.error('Enrollment failed:', err);
+            setEnrollmentError(err.message || 'Failed to enroll in the skill');
+        } finally {
+            setEnrolling(false);
+        }
+    };
 
     if (loading) return <div className="loading">Loading...</div>;
     if (error) return <div className="error">{error}</div>;
@@ -40,26 +79,32 @@ const SkillDetails = () => {
                 {/* Hero Section */}
                 <div className={styles.hero}>
                     <div className={styles.breadcrumbs}>
-                        {skill.category} &gt; {skill.subcategory}
+                        {skill.category?.name} &gt;
                     </div>
-                    <h1 className={styles.title}>{skill.title}</h1>
+                    <h1 className={styles.title}>{skill.name}</h1>
                     <p className={styles.subtitle}>{skill.description}</p>
 
                     <div className={styles.meta}>
+                        {skill.rating && (
+                            <div className={styles.metaItem}>
+                                <span>⭐</span> {skill.rating} ({skill.reviewsCount || 0} ratings)
+                            </div>
+                        )}
                         <div className={styles.metaItem}>
-                            <span>⭐</span> {skill.rating} ({skill.reviewsCount} ratings)
+                            <span>👨‍🎓</span> {skill.lectures || 0} students
                         </div>
-                        <div className={styles.metaItem}>
-                            <span>👨‍🎓</span> {skill.lectures || 20} students
-                        </div>
-                        <div className={styles.metaItem}>
-                            <span>🕒</span> {skill.duration}
-                        </div>
+                        {skill.duration && (
+                            <div className={styles.metaItem}>
+                                <span>🕒</span> {skill.duration}
+                            </div>
+                        )}
                     </div>
 
-                    <div className={styles.metaItem}>
-                        Created by <strong>{skill.mentorName}</strong>
-                    </div>
+                    {mentor && (
+                        <div className={styles.metaItem}>
+                            Created by <strong>{mentor.name || 'Mentor'}</strong>
+                        </div>
+                    )}
                 </div>
 
                 {/* What you'll learn */}
@@ -130,21 +175,31 @@ const SkillDetails = () => {
             <div className={styles.sidebar}>
                 {/* Price Card */}
                 <div className={styles.priceCard}>
-                    <img src={skill.image} alt={skill.title} className={styles.previewImage} />
+                    <img src={skill.imageUrl} alt={skill.name} className={styles.previewImage} />
                     <div className={styles.priceBlock}>
-                        <div className={styles.priceLarge}>Rs. {skill.priceCash}</div>
-                        {skill.priceType === 'both' && (
-                            <div className={styles.credits}>or {skill.priceCredits} Credits</div>
-                        )}
+                        <div className={styles.priceLarge}>${parseFloat(skill.price).toLocaleString()}</div>
                     </div>
+
+                    {enrollmentSuccess && (
+                        <div style={{ padding: '0.75rem', background: '#d4edda', color: '#155724', borderRadius: '8px', marginBottom: '1rem', textAlign: 'center' }}>
+                            Enrolled successfully! Redirecting...
+                        </div>
+                    )}
+
+                    {enrollmentError && (
+                        <div style={{ padding: '0.75rem', background: '#f8d7da', color: '#721c24', borderRadius: '8px', marginBottom: '1rem', textAlign: 'center' }}>
+                            {enrollmentError}
+                        </div>
+                    )}
 
                     <Button
                         variant="primary"
                         size="lg"
                         className={styles.enrollButton}
-                        onClick={() => alert('Enrollment logic to be implemented')}
+                        onClick={handleEnroll}
+                        disabled={enrolling || enrollmentSuccess}
                     >
-                        Enroll Now
+                        {enrolling ? 'Enrolling...' : enrollmentSuccess ? 'Enrolled!' : 'Enroll Now'}
                     </Button>
 
                     <p className={styles.guarantee}>30-Day Money-Back Guarantee</p>
@@ -153,21 +208,31 @@ const SkillDetails = () => {
                 {/* Mentor Card */}
                 <div className={styles.mentorCard}>
                     <h3 className={styles.sectionTitle} style={{ fontSize: '1.2rem' }}>About the Mentor</h3>
-                    <div className={styles.mentorHeader} onClick={() => navigate(`/mentors/${skill.mentorId || '1'}`)}>
-                        <img src={skill.mentorAvatar} alt={skill.mentorName} className={styles.mentorAvatar} />
-                        <div className={styles.mentorInfo}>
-                            <h3>{skill.mentorName}</h3>
-                            <span className={styles.mentorRole}>Mentor</span>
-                        </div>
-                    </div>
-                    <p className={styles.mentorBio}>{skill.mentorBio || 'Passionate educator and industry expert.'}</p>
-                    <Button
-                        variant="outline"
-                        className={styles.viewProfileBtn}
-                        onClick={() => navigate(`/mentors/${skill.mentorId || '1'}`)}
-                    >
-                        View Profile
-                    </Button>
+                    {mentor ? (
+                        <>
+                            <div className={styles.mentorHeader} onClick={() => navigate(`/mentors/${skill.mentorId}`)}>
+                                {mentor.avatar && <img src={mentor.avatar} alt={mentor.name} className={styles.mentorAvatar} />}
+                                <div className={styles.mentorInfo}>
+                                    <h3>{mentor.name}</h3>
+                                    <span className={styles.mentorRole}>Mentor</span>
+                                </div>
+                            </div>
+                            <p className={styles.mentorBio}>
+                                {mentor.email && <div style={{ marginBottom: '0.5rem' }}>📧 {mentor.email}</div>}
+                                {mentor.phone && <div style={{ marginBottom: '0.5rem' }}>📱 {mentor.phone}</div>}
+                                {mentor.city && <div>📍 {mentor.city}</div>}
+                            </p>
+                            <Button
+                                variant="outline"
+                                className={styles.viewProfileBtn}
+                                onClick={() => navigate(`/mentors/${skill.mentorId}`)}
+                            >
+                                View Profile
+                            </Button>
+                        </>
+                    ) : (
+                        <div style={{ padding: '1rem', color: 'var(--text-secondary)' }}>Loading mentor details...</div>
+                    )}
                 </div>
             </div>
         </div>

@@ -176,6 +176,18 @@ export const SkillApi = {
             body: JSON.stringify({ userId }),
         });
     },
+
+    /**
+     * Create a new skill/course.
+     * @param {Object} skillData - Skill data including mentorId, name, description, etc.
+     * @returns {Promise<Object>} Created skill object
+     */
+    createSkill: async (skillData) => {
+        return request(SKILLS_ENDPOINT, {
+            method: 'POST',
+            body: JSON.stringify(skillData),
+        });
+    },
 };
 
 export default SkillApi;

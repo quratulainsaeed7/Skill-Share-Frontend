@@ -33,18 +33,12 @@ const MentorDashboard = () => {
 
     // Analytics data (would come from a dedicated analytics API in production)
     const analytics = [
-        { label: 'Total Students', value: '1,234', change: '+12%' },
+        { label: 'Total Students', value: bookings.length, change: '+12%' },
         { label: 'Total Earnings', value: 'PKR 150k', change: '+8%' },
         { label: 'Course Rating', value: '4.8', change: '+0.2' },
         { label: 'Pending Bookings', value: '5', change: '-2' },
     ];
 
-    // Mock students
-    setBookings([
-        { id: 1, student: 'Ahmed Ali', course: 'Web Development Bootcamp', date: '2024-12-07', status: 'Confirmed', avatar: 'https://i.pravatar.cc/150?u=ahmed' },
-        { id: 2, student: 'Fatima Noor', course: 'Graphic Design Masterclass', date: '2024-12-08', status: 'Pending', avatar: 'https://i.pravatar.cc/150?u=fatima_n' },
-        { id: 3, student: 'Zain Khan', course: 'Web Development Bootcamp', date: '2024-12-09', status: 'Confirmed', avatar: 'https://i.pravatar.cc/150?u=zain' },
-    ]);
     return (
         <div>
             {/* Analytics Cards */}

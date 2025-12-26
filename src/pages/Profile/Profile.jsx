@@ -1,17 +1,18 @@
 // src/pages/Profile/Profile.jsx
 import React, { useState, useEffect } from 'react';
 
-import { skillService } from '../../services/skillService';
+import { SkillApi } from '../../api/SkillApi';
 import ProfileService from '../../services/ProfileService';
 import { MdEmail, MdPhone, MdLocationOn, MdSchool, MdWork, MdEdit, MdStar } from 'react-icons/md';
 import Button from '../../components/common/Button/Button';
 import Card from '../../components/common/Card/Card';
 import SkillCard from '../../components/skills/SkillCard/SkillCard';
 import styles from './Profile.module.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import UserService from '../../services/UserService';
 
 const Profile = () => {
+    const navigate = useNavigate();
     // Use centralized UserService for basic auth check
     const sessionUser = UserService.getUser();
     const userID = sessionUser?.userId || null;
@@ -20,7 +21,7 @@ const Profile = () => {
     const [profileData, setProfileData] = useState(null);
     const [enrolledCourses, setEnrolledCourses] = useState([]);
     const [mentors, setMentors] = useState([]);
-    const [taughtCourses, setTaughtCourses] = useState([]);
+    const [taughtCourses, setTaughtCourses] = useState();
     const [students, setStudents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [profileError, setProfileError] = useState(null);
@@ -57,28 +58,29 @@ const Profile = () => {
                 // Fetch role-specific data
                 if (isLearner && userID) {
                     // Fetch enrolled courses for learners
-                    const mockEnrolledCourses = await skillService.getEnrolledCourses(userID);
-                    setEnrolledCourses(mockEnrolledCourses);
+                    const enrolledCoursesData = await SkillApi.getEnrolledCourses(userID);
+                    setEnrolledCourses(enrolledCoursesData);
 
                     // Fetch mentors for enrolled courses
-                    const uniqueMentorIds = [...new Set(mockEnrolledCourses.map(course => course.mentorId))];
+                    const uniqueMentorIds = [...new Set(enrolledCoursesData.map(course => course.mentorId))];
                     const mentorData = uniqueMentorIds.map(id => ({
                         id,
-                        name: mockEnrolledCourses.find(c => c.mentorId === id)?.mentorName,
-                        avatar: mockEnrolledCourses.find(c => c.mentorId === id)?.mentorAvatar,
-                        specialization: mockEnrolledCourses.find(c => c.mentorId === id)?.category
+                        name: enrolledCoursesData.find(c => c.mentorId === id)?.mentorName,
+                        avatar: enrolledCoursesData.find(c => c.mentorId === id)?.mentorAvatar,
+                        specialization: enrolledCoursesData.find(c => c.mentorId === id)?.category
                     }));
                     setMentors(mentorData);
                 }
 
                 if (isMentor && userID) {
                     // Fetch courses taught by mentor - use userID for consistency
-                    const mockTaughtCourses = await skillService.getTaughtCourses(userID);
-                    setTaughtCourses(mockTaughtCourses);
+                    const taughtCoursesData = await SkillApi.getTaughtCourses(userID);
+                    setTaughtCourses(taughtCoursesData);
+                    console.log('Taught Courses Data:', taughtCoursesData);
 
                     // Fetch students enrolled in mentor's courses
-                    const mockStudents = await skillService.getEnrolledStudents(userID);
-                    setStudents(mockStudents);
+                    const studentsData = await SkillApi.getEnrolledStudents(userID);
+                    setStudents(studentsData);
                 }
             } catch (error) {
                 console.error('Failed to fetch profile data:', error);
@@ -243,7 +245,7 @@ const Profile = () => {
                 {isMentor && (
                     <>
                         <Card className={styles.statCard}>
-                            <div className={styles.statValue}>{taughtCourses.length}</div>
+                            <div className={styles.statValue}>{taughtCourses?.length || 0}</div>
                             <div className={styles.statLabel}>Courses Teaching</div>
                         </Card>
                         <Card className={styles.statCard}>
@@ -294,7 +296,7 @@ const Profile = () => {
                     ) : (
                         <div className={styles.coursesGrid}>
                             {enrolledCourses.map(course => (
-                                <SkillCard key={course.id} skill={course} viewMode="grid" />
+                                <SkillCard key={course.SkillId} skill={course} viewMode="grid" />
                             ))}
                         </div>
                     )}
@@ -306,9 +308,9 @@ const Profile = () => {
                 <section className={styles.section}>
                     <div className={styles.sectionHeader}>
                         <h2>My Courses</h2>
-                        <Link to="/skills">
-                            <Button variant="secondary" size="sm">Create Course</Button>
-                        </Link>
+                        <Button variant="secondary" size="sm" onClick={() => navigate('/create-skill')}>
+                            Create Course
+                        </Button>
                     </div>
 
                     {loading ? (
@@ -316,12 +318,14 @@ const Profile = () => {
                     ) : taughtCourses.length === 0 ? (
                         <Card className={styles.emptyState}>
                             <p>You haven't created any courses yet.</p>
-                            <Button variant="primary">Create Your First Course</Button>
+                            <Button variant="primary" onClick={() => navigate('/create-skill')}>
+                                Create Your First Course
+                            </Button>
                         </Card>
                     ) : (
                         <div className={styles.coursesGrid}>
                             {taughtCourses.map(course => (
-                                <SkillCard key={course.id} skill={course} viewMode="grid" />
+                                <SkillCard key={course.skillId} skill={course} viewMode="grid" />
                             ))}
                         </div>
                     )}
@@ -357,7 +361,7 @@ const Profile = () => {
                                         </div>
                                         <div className={styles.mentorInfo}>
                                             <h4>{mentor.name}</h4>
-                                            <p>{mentor.specialization}</p>
+
                                             <div className={styles.mentorRating}>
                                                 <MdStar className={styles.star} />
                                                 <span>4.8</span>

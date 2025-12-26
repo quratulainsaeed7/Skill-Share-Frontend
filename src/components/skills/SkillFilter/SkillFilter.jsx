@@ -70,22 +70,22 @@ const SkillFilter = ({ filters, onFilterChange }) => {
                 ) : (
                     <div className={styles.checkboxGroup}>
                         {categories.map(cat => (
-                            <div key={cat.name}>
+                            <div key={cat.categoryId || cat.name}>
                                 <div className={styles.accordionHeader} onClick={() => toggleCategory(cat.name)}>
                                     <span>{cat.name}</span>
                                     {expandedCategories[cat.name] ? <MdExpandLess /> : <MdExpandMore />}
                                 </div>
 
-                                {expandedCategories[cat.name] && (
+                                {expandedCategories[cat.name] && cat.tags && cat.tags.length > 0 && (
                                     <div className={styles.accordionContent}>
-                                        {cat.subcategories.map(sub => (
-                                            <label key={sub} className={styles.checkboxLabel}>
+                                        {cat.tags.map(tag => (
+                                            <label key={tag} className={styles.checkboxLabel}>
                                                 <input
                                                     type="checkbox"
-                                                    checked={filters.categories?.includes(sub)}
-                                                    onChange={() => handleCheckboxChange('categories', sub)}
+                                                    checked={filters.categories?.includes(tag)}
+                                                    onChange={() => handleCheckboxChange('categories', tag)}
                                                 />
-                                                {sub}
+                                                {tag}
                                             </label>
                                         ))}
                                     </div>
@@ -113,8 +113,8 @@ const SkillFilter = ({ filters, onFilterChange }) => {
                         <input
                             type="radio"
                             name="mode"
-                            checked={filters.mode === 'online'}
-                            onChange={() => handleRadioChange('mode', 'online')}
+                            checked={filters.mode === 'ONLINE'}
+                            onChange={() => handleRadioChange('mode', 'ONLINE')}
                         />
                         Online Only
                     </label>
@@ -122,16 +122,25 @@ const SkillFilter = ({ filters, onFilterChange }) => {
                         <input
                             type="radio"
                             name="mode"
-                            checked={filters.mode === 'in-person'}
-                            onChange={() => handleRadioChange('mode', 'in-person')}
+                            checked={filters.mode === 'OFFLINE'}
+                            onChange={() => handleRadioChange('mode', 'OFFLINE')}
                         />
-                        In-Person Only
+                        Offline Only
+                    </label>
+                    <label className={styles.checkboxLabel}>
+                        <input
+                            type="radio"
+                            name="mode"
+                            checked={filters.mode === 'HYBRID'}
+                            onChange={() => handleRadioChange('mode', 'HYBRID')}
+                        />
+                        Hybrid
                     </label>
                 </div>
             </div>
 
-            {/* City - Only if In-Person */}
-            {(filters.mode === 'in-person' || !filters.mode || filters.mode === 'all') && (
+            {/* City - Only if Offline/Hybrid */}
+            {(filters.mode === 'OFFLINE' || filters.mode === 'HYBRID' || !filters.mode || filters.mode === 'all') && (
                 <div className={styles.section}>
                     <div className={styles.sectionTitle}>City</div>
                     <select
