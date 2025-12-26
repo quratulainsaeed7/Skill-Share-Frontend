@@ -5,8 +5,8 @@ import Button from '../../common/Button/Button';
 import Input from '../../common/Input/Input';
 
 import styles from './LoginForm.module.css';
-import UserService from '../../../services/UserService';
-import ProfileService from '../../../services/ProfileService';
+import UserService from '../../../services/userService';
+import ProfileService from '../../../services/profileService';
 
 const LoginForm = () => {
     const navigate = useNavigate();

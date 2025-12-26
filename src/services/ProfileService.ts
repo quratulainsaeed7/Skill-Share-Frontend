@@ -1,5 +1,5 @@
 import ProfileApi from "../api/ProfileApi";
-import UserService from "./UserService";
+import UserService from "./userService";
 
 /**
  * ProfileService - Handles user profile operations.

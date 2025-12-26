@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { skillService } from '../../services/skillService';
-import UserService from '../../services/UserService';
+import UserService from '../../services/userService';
 import Button from '../../components/common/Button/Button';
 import styles from './SkillDetails.module.css';
 

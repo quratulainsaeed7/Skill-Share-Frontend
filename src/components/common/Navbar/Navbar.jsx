@@ -6,7 +6,7 @@ import ThemeToggle from '../ThemeToggle/ThemeToggle';
 import styles from './Navbar.module.css';
 import dropdownStyles from './NavbarDropdown.module.css';
 import { MdPerson, MdWallet, MdSettings, MdLogout, MdDashboard, MdBook } from 'react-icons/md';
-import UserService from '../../../services/UserService';
+import UserService from '../../../services/userService';
 
 const Navbar = () => {
     // Use centralized UserService instead of direct localStorage access

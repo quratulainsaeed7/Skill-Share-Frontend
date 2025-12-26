@@ -5,7 +5,7 @@ import Card from '../../components/common/Card/Card';
 import Button from '../../components/common/Button/Button';
 
 import { MdEmail } from 'react-icons/md';
-import UserService from '../../services/UserService';
+import UserService from '../../services/userService';
 
 const VerifyEmail = () => {
     const [searchParams] = useSearchParams();

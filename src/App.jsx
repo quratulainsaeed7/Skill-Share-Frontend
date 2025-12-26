@@ -17,7 +17,7 @@ import Profile from './pages/Profile/Profile';
 import Wallet from './pages/Wallet/Wallet';
 import Meetings from './pages/Meetings/Meetings';
 import CreateSkill from './pages/CreateSkill/CreateSkill';
-import UserService from './services/UserService';
+import UserService from './services/userService';
 import styles from './App.module.css';
 
 // Protected Route Wrapper - uses UserService for auth check

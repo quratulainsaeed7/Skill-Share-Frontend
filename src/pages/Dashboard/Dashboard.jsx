@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import LearnerDashboard from '../../components/dashboard/LearnerDashboard';
 import MentorDashboard from '../../components/dashboard/MentorDashboard';
 import Login from '../Login/Login';
-import UserService from '../../services/UserService';
+import UserService from '../../services/userService';
 
 const Dashboard = () => {
     // Use centralized UserService instead of direct localStorage access

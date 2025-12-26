@@ -2,14 +2,14 @@
 import React, { useState, useEffect } from 'react';
 
 import { SkillApi } from '../../api/SkillApi';
-import ProfileService from '../../services/ProfileService';
+import ProfileService from '../../services/profileService';
 import { MdEmail, MdPhone, MdLocationOn, MdSchool, MdWork, MdEdit, MdStar } from 'react-icons/md';
 import Button from '../../components/common/Button/Button';
 import Card from '../../components/common/Card/Card';
 import SkillCard from '../../components/skills/SkillCard/SkillCard';
 import styles from './Profile.module.css';
 import { Link, useNavigate } from 'react-router-dom';
-import UserService from '../../services/UserService';
+import UserService from '../../services/userService';
 
 const Profile = () => {
     const navigate = useNavigate();
