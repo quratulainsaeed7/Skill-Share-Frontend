@@ -67,30 +67,6 @@ export const BookingApi = {
     // ==================== BOOKING ENDPOINTS ====================
 
     /**
-     * Create a new booking with Credits (immediate confirmation).
-     * @param {Object} bookingData - Booking data with paymentMethod: 'wallet'
-     * @returns {Promise<Object>} Created and confirmed booking object
-     */
-    createBookingWithCredits: async (bookingData) => {
-        return request(BOOKINGS_ENDPOINT, {
-            method: 'POST',
-            body: JSON.stringify({ ...bookingData, paymentMethod: 'wallet' }),
-        });
-    },
-
-    /**
-     * Create a new booking with Cash/Card (pending payment).
-     * @param {Object} bookingData - Booking data with paymentMethod (credit_card, debit_card, paypal, etc.)
-     * @returns {Promise<Object>} Created booking object with pending status
-     */
-    createBookingWithCash: async (bookingData) => {
-        return request(BOOKINGS_ENDPOINT, {
-            method: 'POST',
-            body: JSON.stringify(bookingData),
-        });
-    },
-
-    /**
      * Create a new booking.
      * @param {Object} bookingData - Booking data (learnerId, mentorId, lessonId, bookingDate, etc.)
      * @returns {Promise<Object>} Created booking object
@@ -164,7 +140,7 @@ export const BookingApi = {
     /**
      * Accept a pending booking (mentor action).
      * @param {string} bookingId - Booking ID
-     * @returns {Promise<Object>} Confirmed booking object
+     * @returns {Promise<Object>} Accepted booking object
      */
     acceptBooking: async (bookingId) => {
         return request(`${BOOKINGS_ENDPOINT}/${bookingId}/accept`, {
@@ -173,7 +149,7 @@ export const BookingApi = {
     },
 
     /**
-     * Reject a pending booking (mentor action). If paid with credits, will trigger refund.
+     * Reject a pending booking (mentor action).
      * @param {string} bookingId - Booking ID
      * @returns {Promise<Object>} Rejected booking object
      */
@@ -205,33 +181,6 @@ export const BookingApi = {
         return request(PAYMENTS_ENDPOINT, {
             method: 'POST',
             body: JSON.stringify(paymentData),
-        });
-    },
-
-    /**
-     * Initialize payment with payment gateway (for cash/card payments).
-     * @param {string} bookingId - Booking ID
-     * @param {number} amount - Payment amount
-     * @param {string} gateway - Payment gateway (stripe, paypal, razorpay)
-     * @returns {Promise<Object>} Payment URL and transaction ID
-     */
-    initializePayment: async (bookingId, amount, gateway) => {
-        return request(`${PAYMENTS_ENDPOINT}/initialize`, {
-            method: 'POST',
-            body: JSON.stringify({ bookingId, amount, gateway }),
-        });
-    },
-
-    /**
-     * Handle payment callback from payment gateway.
-     * @param {string} transactionId - Transaction ID from payment gateway
-     * @param {string} status - Payment status ('success' or 'failed')
-     * @returns {Promise<Object>} Updated payment object
-     */
-    paymentCallback: async (transactionId, status) => {
-        return request(`${PAYMENTS_ENDPOINT}/callback`, {
-            method: 'POST',
-            body: JSON.stringify({ transactionId, status }),
         });
     },
 
