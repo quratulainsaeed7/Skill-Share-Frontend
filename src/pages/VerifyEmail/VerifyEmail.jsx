@@ -6,6 +6,7 @@ import Button from '../../components/common/Button/Button';
 
 import { MdEmail } from 'react-icons/md';
 import UserService from '../../services/userService';
+import ProfileService from '../../services/profileService';
 
 const VerifyEmail = () => {
     const [searchParams] = useSearchParams();
@@ -18,8 +19,14 @@ const VerifyEmail = () => {
         const checkVerificationStatus = () => {
             try {
                 const user = UserService.getUser();
+                const profileComplete = ProfileService.isUserProfileComplete(); // Placeholder for profile completeness check
                 if (user?.isVerified === true) {
-                    navigate('/dashboard');
+                    // check user profile completeness
+                    if (profileComplete) {
+                        navigate('/dashboard');
+                    } else {
+                        navigate('/complete-profile');
+                    }
                 }
             } catch (err) {
                 console.error(err);

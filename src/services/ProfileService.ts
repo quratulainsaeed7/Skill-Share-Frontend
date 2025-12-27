@@ -15,7 +15,10 @@ class ProfileService {
             }
 
             const profile = await ProfileApi.getProfile(user.userId);
-            console.log('Fetched user profile:', profile);
+            if (!profile) {
+                throw new Error('Profile not found');
+                return null;
+            }
             return profile;
         } catch (error) {
             throw new Error(error.response?.data?.message || 'Failed to fetch user profile');
@@ -39,6 +42,24 @@ class ProfileService {
         } catch (error) {
             throw new Error(error.response?.data?.message || 'Failed to complete user profile');
         }
+    }
+    // check if user profile is complete
+    static async isUserProfileComplete() {
+        try {
+            const profile = await this.getUserProfile();
+            // Define your criteria for a complete profile
+            if (profile == null) {
+                console.log('Profile is incomplete: no profile data found');
+                return false;
+            }
+            else {
+                return true;
+            }
+        } catch (error) {
+            console.error('Error checking profile completeness:', error);
+            return false;
+        }
+
     }
 }
 
