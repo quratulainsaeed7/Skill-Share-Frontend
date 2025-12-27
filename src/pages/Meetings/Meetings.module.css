@@ -1,0 +1,435 @@
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.header {
+    margin-bottom: 3rem;
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    margin: 0 0 0.5rem 0;
+    color: var(--color-text);
+}
+
+.subtitle {
+    color: var(--color-text-secondary);
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.section {
+    margin-bottom: 3rem;
+}
+
+.sectionTitle {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.5rem;
+    margin: 0 0 1.5rem 0;
+    color: var(--color-text);
+}
+
+.icon {
+    font-size: 1.75rem;
+}
+
+.meetingsGrid {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.meetingCard {
+    background: var(--color-card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid var(--color-border);
+    transition: all 0.3s ease;
+}
+
+.meetingCard:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.pastCard {
+    opacity: 0.8;
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+}
+
+.mentorInfo {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.skillTitle {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.2rem;
+    color: var(--color-text);
+}
+
+.mentorName {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+}
+
+.statusBadge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    background: var(--color-primary-light);
+    color: var(--color-primary);
+}
+
+.completedBadge {
+    background: var(--color-success-light, #d4edda);
+    color: var(--color-success, #28a745);
+}
+
+.meetingDetails {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: var(--color-background);
+    border-radius: 8px;
+}
+
+.detailItem {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-text);
+}
+
+.detailIcon {
+    font-size: 1.25rem;
+}
+
+.actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.emptyState {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: var(--color-card-bg);
+    border-radius: 12px;
+    border: 2px dashed var(--color-border);
+}
+
+.emptyIcon {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.emptyState p {
+    color: var(--color-text-secondary);
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+/* Tabs */
+.tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid var(--color-border);
+}
+
+.tab {
+    background: none;
+    border: none;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    margin-bottom: -2px;
+}
+
+.tab:hover {
+    color: var(--color-text-primary);
+}
+
+.activeTab {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+}
+
+/* Messages Container */
+.messagesContainer {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 1.5rem;
+    height: 600px;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* Mentor List */
+.mentorList {
+    background: var(--color-bg-card);
+    border-right: 1px solid var(--color-border);
+    overflow-y: auto;
+}
+
+.mentorListTitle {
+    padding: 1.5rem;
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--color-text-primary);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.mentorListItem {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-bottom: 1px solid var(--color-border);
+    position: relative;
+}
+
+.mentorListItem:hover {
+    background: var(--color-bg-body);
+}
+
+.activeMentor {
+    background: var(--color-bg-body);
+    border-left: 3px solid var(--color-primary);
+}
+
+.mentorListAvatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.mentorListInfo {
+    flex: 1;
+}
+
+.mentorListInfo h4 {
+    margin: 0 0 0.25rem 0;
+    font-size: 0.95rem;
+    color: var(--color-text-primary);
+}
+
+.mentorSkill {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.messageCount {
+    background: var(--color-primary);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Chat Area */
+.chatArea {
+    display: flex;
+    flex-direction: column;
+    background: var(--color-bg-card);
+}
+
+.chatHeader {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-bg-body);
+}
+
+.chatAvatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.chatHeader h3 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.1rem;
+    color: var(--color-text-primary);
+}
+
+.chatSubtitle {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+}
+
+.chatMessages {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.message {
+    display: flex;
+}
+
+.messageReceived {
+    justify-content: flex-start;
+}
+
+.messageSent {
+    justify-content: flex-end;
+}
+
+.messageBubble {
+    max-width: 70%;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+}
+
+.messageReceived .messageBubble {
+    background: var(--color-bg-body);
+    border-bottom-left-radius: 4px;
+}
+
+.messageSent .messageBubble {
+    background: var(--color-primary);
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+
+.messageBubble p {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.95rem;
+}
+
+.messageTime {
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+
+.chatInput {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--color-border);
+    background: var(--color-bg-body);
+}
+
+.messageInputField {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: var(--color-bg-card);
+    color: var(--color-text-primary);
+    font-size: 0.95rem;
+}
+
+.messageInputField:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+.emptyChat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--color-text-secondary);
+}
+
+.emptyChatIcon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.emptyChat p {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .header h1 {
+        font-size: 2rem;
+    }
+
+    .meetingDetails {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .actions {
+        flex-direction: column;
+    }
+
+    .actions button {
+        width: 100%;
+    }
+
+    .cardHeader {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .messagesContainer {
+        grid-template-columns: 1fr;
+        height: 500px;
+    }
+
+    .mentorList {
+        display: none;
+    }
+
+    .tabs {
+        gap: 0.5rem;
+    }
+
+    .tab {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+    }
+}
