@@ -48,7 +48,7 @@ const AdminDashboard = () => {
                     <p className={styles.number}>{stats.activeSkills}</p>
                 </div>
             </div>
-
+<!--abhi ruk jao-->
             <div className={styles.chartsArea}>
                 <div className={styles.chartContainer}>
                     <h3>Recent Activity</h3>
