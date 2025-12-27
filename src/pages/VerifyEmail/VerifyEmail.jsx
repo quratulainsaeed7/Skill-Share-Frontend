@@ -19,10 +19,10 @@ const VerifyEmail = () => {
         const checkVerificationStatus = () => {
             try {
                 const user = UserService.getUser();
-                const profileComplete = ProfileService.isUserProfileComplete(); // Placeholder for profile completeness check
+                profileComplete = ProfileService.isUserProfileComplete(); // Placeholder for profile completeness check
                 if (user?.isVerified === true) {
                     // check user profile completeness
-                    if (profileComplete) {
+                    if (profileComplete == true) {
                         navigate('/dashboard');
                     } else {
                         navigate('/complete-profile');
@@ -40,8 +40,16 @@ const VerifyEmail = () => {
         setVerifying(true);
         try {
             await UserService.verifyEmail();
+            const profileComplete = await ProfileService.isUserProfileComplete();
             alert('Email verified successfully!');
-            navigate('/dashboard');
+            console.log(profileComplete);
+            if (profileComplete == true) {
+                navigate('/dashboard');
+            }
+            else {
+                navigate('/complete-profile');
+            }
+
         } catch (err) {
             alert(err.message);
         } finally {

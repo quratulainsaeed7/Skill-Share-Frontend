@@ -14,11 +14,12 @@ class ProfileService {
                 throw new Error('No authenticated user found');
             }
 
-            const profile = await ProfileApi.getProfile(user.userId);
-            if (!profile) {
-                throw new Error('Profile not found');
-                return null;
-            }
+            const profile = await ProfileApi.getProfile(user.userId).catch(err => {
+                if (err.response && err.response.status === 404) {
+                    return null; // No profile found
+                }
+            });
+
             return profile;
         } catch (error) {
             throw new Error(error.response?.data?.message || 'Failed to fetch user profile');
