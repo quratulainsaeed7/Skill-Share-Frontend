@@ -1,0 +1,163 @@
+.container {
+    color: var(--color-text);
+}
+
+.header {
+    margin-bottom: 24px;
+}
+
+.tableCard {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+@media (prefers-color-scheme: dark) {
+    .tableCard {
+        background: #1e1e2d;
+    }
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    padding: 16px 24px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+@media (prefers-color-scheme: dark) {
+
+    .table th,
+    .table td {
+        border-color: #2b2b40;
+    }
+}
+
+.table th {
+    background-color: #f9f9f9;
+    font-weight: 600;
+    color: #666;
+}
+
+@media (prefers-color-scheme: dark) {
+    .table th {
+        background-color: #151521;
+        color: #a2a3b7;
+    }
+}
+
+.badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.badge.learner {
+    background-color: #e1f0ff;
+    color: #3699ff;
+}
+
+.badge.mentor {
+    background-color: #fff4de;
+    color: #ffa800;
+}
+
+.badge.admin {
+    background-color: #ffe2e5;
+    color: #f64e60;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+}
+
+.iconBtn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 5px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.iconBtn:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Modal Styles */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal {
+    background: var(--bg-card);
+    padding: 25px;
+    border-radius: var(--radius-md);
+    width: 400px;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border-color);
+}
+
+.modal h3 {
+    margin-bottom: 20px;
+    color: var(--text-primary);
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.formGroup input,
+.formGroup select,
+.modal select {
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.modalActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.saveBtn {
+    padding: 8px 16px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+}
+
+.cancelBtn {
+    padding: 8px 16px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+}
