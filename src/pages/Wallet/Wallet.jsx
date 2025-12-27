@@ -26,7 +26,6 @@ const Wallet = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Only load data when userId is available
         if (userId) {
             loadWalletData();
         }
@@ -134,6 +133,15 @@ const Wallet = () => {
                         <p className={styles.statLabel}>Total Incoming</p>
                         <h2 className={`${styles.statValue} ${styles.incoming}`}>
                             {formatCurrency(stats.totalIncoming)}
+                        </h2>
+                    </div>
+                </div>
+                <div className={styles.statCard}>
+                    <div className={styles.statIcon}>↓</div>
+                    <div className={styles.statContent}>
+                        <p className={styles.statLabel}>Total Incoming</p>
+                        <h2 className={`${styles.statValue} ${styles.incoming}`}>
+                            {formatCurrency(stats.balance)}
                         </h2>
                     </div>
                 </div>

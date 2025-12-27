@@ -163,7 +163,7 @@ const CreateSkill = () => {
                                     <option value="">Select a category</option>
                                     {categories.map(category => (
                                         <option key={category.categoryId} value={category.categoryId}>
-                                            {category.categoryName}
+                                            {category.name}
                                         </option>
                                     ))}
                                 </select>

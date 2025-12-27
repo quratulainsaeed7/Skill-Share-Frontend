@@ -78,9 +78,19 @@ export const skillService = {
         }
     },
 
-    enrollInSkill: async (skillId: string, userId: string): Promise<any> => {
+    getMentorId: async (skillId: string): Promise<string | null> => {
         try {
-            return await SkillApi.enrollInSkill(skillId, userId);
+            return await SkillApi.getMentorId(skillId);
+        } catch (error) {
+            console.error(`Failed to fetch mentor ID for skill ${skillId}:`, error);
+            throw error;
+        }
+    },
+
+    enrollInSkill: async (skillId: string, userId: string): Promise<any> => {
+        const mentorId = await skillService.getMentorId(skillId);
+        try {
+            return await SkillApi.enrollInSkill(skillId, userId, mentorId!);
         } catch (error) {
             console.error(`Failed to enroll user ${userId} in skill ${skillId}:`, error);
             throw error;
@@ -88,8 +98,9 @@ export const skillService = {
     },
 
     unenrollFromSkill: async (skillId: string, userId: string): Promise<any> => {
+        const mentorId = await skillService.getMentorId(skillId);
         try {
-            return await SkillApi.unenrollFromSkill(skillId, userId);
+            return await SkillApi.unenrollFromSkill(skillId, userId, mentorId);
         } catch (error) {
             console.error(`Failed to unenroll user ${userId} from skill ${skillId}:`, error);
             throw error;

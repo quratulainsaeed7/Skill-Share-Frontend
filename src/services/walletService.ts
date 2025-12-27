@@ -28,6 +28,9 @@ interface TransactionStats {
 }
 
 export const walletService = {
+
+    staticInteger: 0,
+
     getBalance: async (userId: string): Promise<number> => {
         try {
             const data = await WalletApi.getBalance(userId);

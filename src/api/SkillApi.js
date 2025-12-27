@@ -177,10 +177,10 @@ export const SkillApi = {
      * @param {string} userId - Learner's user ID
      * @returns {Promise<Object>} Enrollment result
      */
-    enrollInSkill: async (skillId, userId) => {
+    enrollInSkill: async (skillId, userId, mentorId) => {
         return request(`${SKILLS_ENDPOINT}/${skillId}/enroll`, {
             method: 'POST',
-            body: JSON.stringify({ userId }),
+            body: JSON.stringify({ userId, mentorId }),
         });
     },
 
@@ -190,10 +190,10 @@ export const SkillApi = {
      * @param {string} userId - Learner's user ID
      * @returns {Promise<Object>} Unenrollment result with refund info
      */
-    unenrollFromSkill: async (skillId, userId) => {
+    unenrollFromSkill: async (skillId, userId, mentorId) => {
         return request(`${SKILLS_ENDPOINT}/${skillId}/unenroll`, {
             method: 'POST',
-            body: JSON.stringify({ userId }),
+            body: JSON.stringify({ userId, mentorId }),
         });
     },
 
@@ -207,6 +207,10 @@ export const SkillApi = {
             method: 'POST',
             body: JSON.stringify(skillData),
         });
+    },
+
+    getMentorId: async (userId) => {
+        return request(`${SKILLS_ENDPOINT}/mentor/${userId}/id`);
     },
 };
 
