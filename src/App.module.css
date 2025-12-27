@@ -1,0 +1,6 @@
+/* src/App.module.css */
+.app {
+    min-height: 100vh;
+    background-color: var(--color-bg-body);
+    color: var(--color-text-primary);
+}
