@@ -1,6 +1,6 @@
 import request from './apiClient';
 
-const API_BASE_URL = import.meta.env.VITE_PAYMENT_SERVICE_URL || 'http://localhost:4004';
+const API_BASE_URL = import.meta.env.VITE_PAYMENT_SERVICE_URL || 'http://localhost:4002';
 const PAYMENTS_ENDPOINT = `${API_BASE_URL}/payments`;
 
 export const PaymentApi = {

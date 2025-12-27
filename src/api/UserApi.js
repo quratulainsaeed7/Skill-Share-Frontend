@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_USER_SERVICE_URL || 'http://localhost:4001';
+const API_BASE_URL = import.meta.env.VITE_USER_SERVICE_URL || 'http://localhost:4000';
 const USERS_ENDPOINT = `${API_BASE_URL}/users`;
 import axios from "axios";
 

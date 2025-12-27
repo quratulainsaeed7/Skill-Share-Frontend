@@ -12,7 +12,7 @@
  */
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_SKILL_SERVICE_URL || 'http://localhost:4002';
+const API_BASE_URL = import.meta.env.VITE_SKILL_SERVICE_URL || 'http://localhost:4006';
 const SKILLS_ENDPOINT = `${API_BASE_URL}/skills`;
 const CATEGORIES_ENDPOINT = `${API_BASE_URL}/categories`;
 

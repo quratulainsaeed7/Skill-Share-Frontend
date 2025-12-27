@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_ADMIN_SERVICE_URL || 'http://localhost:3004/admin';
+const API_BASE_URL = import.meta.env.VITE_ADMIN_SERVICE_URL || 'http://localhost:4008/admin';
 
 import axios from "axios";
 
