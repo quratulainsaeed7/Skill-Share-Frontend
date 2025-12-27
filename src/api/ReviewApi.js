@@ -1,6 +1,6 @@
 import request from './apiClient';
 
-const API_BASE_URL = import.meta.env.VITE_REVIEW_SERVICE_URL || 'http://localhost:4001';
+const API_BASE_URL = import.meta.env.VITE_REVIEW_SERVICE_URL || 'http://localhost:4006';
 const REVIEWS_ENDPOINT = `${API_BASE_URL}/reviews`;
 
 export const ReviewApi = {
