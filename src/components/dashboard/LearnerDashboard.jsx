@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import SkillCard from '../skills/SkillCard/SkillCard';
 import { skillService } from '../../services/skillService';
-import UserService from '../../services/UserService';
+import UserService from '../../services/userService';
 import Button from '../common/Button/Button';
 
 const LearnerDashboard = () => {

@@ -7,7 +7,7 @@ import PaymentMethodCard from '../../components/payment/PaymentMethod/PaymentMet
 import AddPaymentMethod from '../../components/payment/PaymentMethod/AddPaymentMethod';
 import TransactionList from '../../components/payment/CreditWallet/TransactionList';
 import Button from '../../components/common/Button/Button';
-import UserService from '../../services/UserService';
+import UserService from '../../services/userService';
 
 const Wallet = () => {
     // Use centralized UserService instead of useAuth

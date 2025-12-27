@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Button from '../../components/common/Button/Button';
 import Card from '../../components/common/Card/Card';
 import { SkillApi } from '../../api/SkillApi';
-import UserService from '../../services/UserService';
+import UserService from '../../services/userService';
 import styles from './CreateSkill.module.css';
 
 const CreateSkill = () => {

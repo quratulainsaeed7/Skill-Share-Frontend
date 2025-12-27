@@ -6,7 +6,7 @@ import Input from '../../common/Input/Input';
 import Card from '../../common/Card/Card';
 import styles from './ProfileSetup.module.css';
 import clsx from 'clsx';
-import ProfileService from '../../../services/ProfileService';
+import ProfileService from '../../../services/profileService';
 
 const INTERESTS_LIST = [
     'Web Development', 'Mobile Development', 'Data Science', 'Graphic Design',

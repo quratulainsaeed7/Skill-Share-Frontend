@@ -24,7 +24,7 @@ const SkillList = ({ skills, viewMode, loading, onClearFilters }) => {
     return (
         <div className={viewMode === 'grid' ? styles.grid : styles.list}>
             {skills.map(skill => (
-                <SkillCard key={skill.id} skill={skill} viewMode={viewMode} />
+                <SkillCard key={skill.skillId} skill={skill} viewMode={viewMode} />
             ))}
         </div>
     );
