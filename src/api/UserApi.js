@@ -124,6 +124,23 @@ export const UserApi = {
             body: JSON.stringify({ isVerified }),
         });
     },
+
+    // Verify email with token
+    verifyEmailWithToken: async (token) => {
+        return request(`${USERS_ENDPOINT}/verify-email`, {
+            method: 'POST',
+            body: JSON.stringify({ token }),
+        });
+    },
+
+    // Resend verification email
+    resendVerificationEmail: async (email) => {
+        return request(`${USERS_ENDPOINT}/resend-verification`, {
+            method: 'POST',
+            body: JSON.stringify({ email }),
+        });
+    },
+
     loginUser: async (credentials) => {
         return request(`${USERS_ENDPOINT}/login`, {
             method: 'POST',

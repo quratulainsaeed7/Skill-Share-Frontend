@@ -110,6 +110,30 @@ class UserService {
     }
 
     /**
+     * Verifies email with token from URL
+     */
+    static async verifyEmailWithToken(token: string) {
+        try {
+            const response = await UserApi.verifyEmailWithToken(token);
+            return response;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || 'Email verification failed');
+        }
+    }
+
+    /**
+     * Resends verification email
+     */
+    static async resendVerificationEmail(email: string) {
+        try {
+            const response = await UserApi.resendVerificationEmail(email);
+            return response;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || 'Failed to resend verification email');
+        }
+    }
+
+    /**
      * Logs in a user and stores them in sessionStorage.
      */
     static async loginUser(credentials) {
