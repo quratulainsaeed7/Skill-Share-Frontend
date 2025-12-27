@@ -19,7 +19,7 @@ import Meetings from './pages/Meetings/Meetings';
 import CreateSkill from './pages/CreateSkill/CreateSkill';
 import UserService from './services/userService';
 import styles from './App.module.css';
-
+//admin routes ko main layout se bahir krna hai
 // Admin Imports
 import AdminLayout from './layouts/AdminLayout/AdminLayout';
 import AdminDashboard from './pages/Admin/Dashboard/AdminDashboard';
