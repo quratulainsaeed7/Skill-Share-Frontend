@@ -7,9 +7,12 @@ import {
     MdAttachMoney,
     MdAnalytics,
     MdSettings,
-    MdLogout
+    MdLogout,
+    MdPerson
 } from 'react-icons/md';
+import ThemeToggle from '../../components/common/ThemeToggle/ThemeToggle';
 import styles from './AdminLayout.module.css';
+import navbarStyles from '../../components/common/Navbar/Navbar.module.css'; // Importing navbar styles for consistency
 
 const AdminLayout = () => {
     const navigate = useNavigate();
@@ -30,44 +33,55 @@ const AdminLayout = () => {
     ];
 
     return (
-        <div className={styles.adminContainer}>
-            <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.open : styles.closed}`}>
-                <div className={styles.logoArea}>
-                    <h2>SkillShare Admin</h2>
+        <div className={styles.layoutContainer}>
+            {/* Top Navigation Bar mimicking public Navbar */}
+            <nav className={styles.topNavbar}>
+                <div className={styles.logoSection}>
+                    <span className={navbarStyles.logo}>SkillShare.pk</span>
                 </div>
 
-                <nav className={styles.nav}>
-                    {navItems.map((item) => (
-                        <NavLink
-                            key={item.path}
-                            to={item.path}
-                            className={({ isActive }) => `${styles.navItem} ${isActive ? styles.active : ''}`}
-                        >
-                            <span className={styles.icon}>{item.icon}</span>
-                            <span className={styles.label}>{item.label}</span>
-                        </NavLink>
-                    ))}
-                </nav>
-
-                <div className={styles.footer}>
-                    <button onClick={handleLogout} className={styles.logoutBtn}>
-                        <MdLogout /> <span>Logout</span>
-                    </button>
-                </div>
-            </aside>
-
-            <main className={styles.mainContent}>
-                <header className={styles.header}>
+                <div className={styles.centerTitle}>
                     <h3>Admin Portal</h3>
-                    <div className={styles.profile}>
-                        <span>Admin User</span>
+                </div>
+
+                <div className={styles.rightActions}>
+                    <ThemeToggle />
+                    <div className={styles.adminProfile}>
+                        {/*<span className={styles.adminName}>Admin User</span>*/}
                         <div className={styles.avatar}>A</div>
                     </div>
-                </header>
-                <div className={styles.contentScroll}>
-                    <Outlet />
                 </div>
-            </main>
+            </nav>
+
+            {/* Main Body: Sidebar + Content */}
+            <div className={styles.bodyContainer}>
+                <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.open : styles.closed}`}>
+                    <nav className={styles.nav}>
+                        {navItems.map((item) => (
+                            <NavLink
+                                key={item.path}
+                                to={item.path}
+                                className={({ isActive }) => `${styles.navItem} ${isActive ? styles.active : ''}`}
+                            >
+                                <span className={styles.icon}>{item.icon}</span>
+                                <span className={styles.label}>{item.label}</span>
+                            </NavLink>
+                        ))}
+                    </nav>
+
+                    <div className={styles.sidebarFooter}>
+                        <button onClick={handleLogout} className={styles.logoutBtn}>
+                            <MdLogout /> <span>Logout</span>
+                        </button>
+                    </div>
+                </aside>
+
+                <main className={styles.mainContent}>
+                    <div className={styles.contentScroll}>
+                        <Outlet />
+                    </div>
+                </main>
+            </div>
         </div>
     );
 };
