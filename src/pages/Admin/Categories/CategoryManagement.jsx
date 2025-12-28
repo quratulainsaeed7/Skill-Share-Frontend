@@ -5,6 +5,7 @@ const CategoryManagement = () => {
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [newCategory, setNewCategory] = useState({ name: '', description: '', tags: '' });
+    const [editingCategoryId, setEditingCategoryId] = useState(null);
 
     useEffect(() => {
         fetchCategories();
@@ -21,20 +22,40 @@ const CategoryManagement = () => {
         }
     };
 
-    const handleCreate = async (e) => {
+    const handleSave = async (e) => {
         e.preventDefault();
         const tagsArray = newCategory.tags.split(',').map(t => t.trim());
         try {
-            await fetch('http://localhost:3004/admin/categories', {
-                method: 'POST',
+            const url = editingCategoryId
+                ? `http://localhost:3004/admin/categories/${editingCategoryId}`
+                : 'http://localhost:3004/admin/categories';
+            const method = editingCategoryId ? 'PATCH' : 'POST';
+
+            await fetch(url, {
+                method: method,
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ...newCategory, tags: tagsArray })
             });
             setNewCategory({ name: '', description: '', tags: '' });
+            setEditingCategoryId(null);
             fetchCategories();
         } catch (error) {
             console.error(error);
         }
+    };
+
+    const handleEdit = (category) => {
+        setNewCategory({
+            name: category.name,
+            description: category.description,
+            tags: category.tags ? category.tags.join(', ') : ''
+        });
+        setEditingCategoryId(category.category_id);
+    };
+
+    const handleCancelEdit = () => {
+        setNewCategory({ name: '', description: '', tags: '' });
+        setEditingCategoryId(null);
     };
 
     const handleDelete = async (id) => {
@@ -54,8 +75,8 @@ const CategoryManagement = () => {
             <h2>Category Management</h2>
 
             <div className={styles.createForm}>
-                <h3>Add New Category</h3>
-                <form onSubmit={handleCreate}>
+                <h3>{editingCategoryId ? 'Edit Category' : 'Add New Category'}</h3>
+                <form onSubmit={handleSave}>
                     <input
                         type="text"
                         placeholder="Category Name"
@@ -75,7 +96,12 @@ const CategoryManagement = () => {
                         value={newCategory.tags}
                         onChange={e => setNewCategory({ ...newCategory, tags: e.target.value })}
                     />
-                    <button type="submit">Create Category</button>
+                    <button type="submit">{editingCategoryId ? 'Update Category' : 'Create Category'}</button>
+                    {editingCategoryId && (
+                        <button type="button" onClick={handleCancelEdit} style={{ background: '#666', marginLeft: '10px' }}>
+                            Cancel
+                        </button>
+                    )}
                 </form>
             </div>
 
@@ -96,6 +122,7 @@ const CategoryManagement = () => {
                                 <td>{cat.description}</td>
                                 <td>{cat.tags?.join(', ')}</td>
                                 <td>
+                                    <button onClick={() => handleEdit(cat)} className={styles.editBtn}>Edit</button>
                                     <button onClick={() => handleDelete(cat.category_id)} className={styles.deleteBtn}>Delete</button>
                                 </td>
                             </tr>
