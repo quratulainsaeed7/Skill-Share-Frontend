@@ -1,14 +1,15 @@
 .container {
     padding: 20px;
-    color: var(--text-primary);
+    color: var(--color-text-primary);
 }
 
 .createForm {
-    background: var(--bg-card);
+    background: var(--color-bg-card);
     padding: 20px;
-    border-radius: var(--radius-md);
+    border-radius: 8px;
     margin-bottom: 20px;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--color-border);
 }
 
 .createForm form {
@@ -20,10 +21,12 @@
 
 .createForm input {
     padding: 10px;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
     flex: 1;
     min-width: 200px;
+    background: var(--color-bg-input);
+    color: var(--color-text-primary);
 }
 
 .createForm button {
@@ -36,10 +39,11 @@
 }
 
 .tableContainer {
-    background: var(--bg-card);
-    border-radius: var(--radius-md);
+    background: var(--color-bg-card);
+    border-radius: 8px;
     overflow: hidden;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--color-border);
 }
 
 .table {
@@ -51,12 +55,14 @@
 .table td {
     padding: 15px;
     text-align: left;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--color-divider);
+    color: var(--color-text-primary);
 }
 
 .table th {
-    background: var(--bg-secondary);
+    background: var(--color-bg-body);
     font-weight: 600;
+    color: var(--color-text-secondary);
 }
 
 .deleteBtn {
@@ -66,4 +72,18 @@
     padding: 5px 10px;
     border-radius: 4px;
     cursor: pointer;
+}
+
+.editBtn {
+    background: #2196F3;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 8px;
+}
+
+.editBtn:hover {
+    background: #1976D2;
 }
