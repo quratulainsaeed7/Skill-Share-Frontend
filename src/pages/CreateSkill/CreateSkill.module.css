@@ -2,7 +2,7 @@
 .createSkillContainer {
     min-height: calc(100vh - 80px);
     padding: 2rem 1rem;
-    background: var(--bg-secondary, #f8f9fa);
+    background: var(--color-background);
 }
 
 .content {
@@ -13,38 +13,45 @@
 .title {
     font-size: 2rem;
     font-weight: 700;
-    color: var(--text-primary, #1a1a1a);
+    color: var(--color-text);
     margin-bottom: 0.5rem;
     text-align: center;
 }
 
 .subtitle {
     font-size: 1rem;
-    color: var(--text-secondary, #6c757d);
+    color: var(--color-text-secondary);
     text-align: center;
     margin-bottom: 2rem;
 }
 
 .formCard {
     padding: 2rem;
+    background: var(--color-card-bg);
+}
+
+/* Dark mode styling */
+body.dark .formCard,
+[data-theme="dark"] .formCard {
+    background: #1a2332;
 }
 
 .errorMessage {
     padding: 1rem;
-    background: #fee;
-    border: 1px solid #fcc;
+    background: var(--color-error-light, #fee);
+    border: 1px solid var(--color-error, #fcc);
     border-radius: 8px;
-    color: #c33;
+    color: var(--color-error-dark, #c33);
     margin-bottom: 1.5rem;
     font-size: 0.9rem;
 }
 
 .successMessage {
     padding: 1rem;
-    background: #efe;
-    border: 1px solid #cfc;
+    background: var(--color-success-light, #efe);
+    border: 1px solid var(--color-success, #cfc);
     border-radius: 8px;
-    color: #3c3;
+    color: var(--color-success-dark, #3c3);
     margin-bottom: 1.5rem;
     font-size: 0.9rem;
     text-align: center;
@@ -71,7 +78,13 @@
 .label {
     font-size: 0.95rem;
     font-weight: 600;
-    color: var(--text-primary, #1a1a1a);
+    color: var(--color-text);
+}
+
+/* Dark mode styling for labels */
+body.dark .label,
+[data-theme="dark"] .label {
+    color: #ffffff;
 }
 
 .required {
@@ -83,18 +96,44 @@
 .textarea {
     padding: 0.75rem;
     font-size: 1rem;
-    border: 1px solid var(--border-color, #dee2e6);
+    border: 1px solid var(--color-border);
     border-radius: 8px;
-    background: var(--bg-primary, #ffffff);
-    color: var(--text-primary, #1a1a1a);
+    background: var(--color-background);
+    color: var(--color-text);
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Dark mode styling for inputs */
+body.dark .input,
+body.dark .select,
+body.dark .textarea,
+[data-theme="dark"] .input,
+[data-theme="dark"] .select,
+[data-theme="dark"] .textarea {
+    border-color: #2d3e52;
+    background: #0f1419;
+    color: #ffffff;
+}
+
+body.dark .input::placeholder,
+body.dark .textarea::placeholder,
+[data-theme="dark"] .input::placeholder,
+[data-theme="dark"] .textarea::placeholder {
+    color: #6b7c93;
+}
+
+.input::placeholder,
+.select::placeholder,
+.textarea::placeholder {
+    color: var(--color-text-secondary);
+    opacity: 0.6;
 }
 
 .input:focus,
 .select:focus,
 .textarea:focus {
     outline: none;
-    border-color: var(--primary-color, #2563eb);
+    border-color: var(--color-primary);
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
@@ -108,13 +147,20 @@
     cursor: pointer;
 }
 
+.fieldHint {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+}
+
 .formActions {
     display: flex;
     justify-content: flex-end;
     gap: 1rem;
     margin-top: 1rem;
     padding-top: 1.5rem;
-    border-top: 1px solid var(--border-color, #dee2e6);
+    border-top: 1px solid var(--color-border);
 }
 
 @media (max-width: 768px) {

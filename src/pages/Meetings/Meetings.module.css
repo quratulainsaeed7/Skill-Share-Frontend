@@ -6,6 +6,15 @@
 
 .header {
     margin-bottom: 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.header > div:first-child {
+    flex: 1;
 }
 
 .header h1 {
@@ -129,6 +138,36 @@
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
+}
+
+/* Progress Bar Styles */
+.progressContainer {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    background: var(--color-background);
+    border-radius: 8px;
+}
+
+.progressBar {
+    width: 100%;
+    height: 8px;
+    background: var(--color-border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.progressFill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light));
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
+
+.progressText {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-primary);
 }
 
 .emptyState {
@@ -432,4 +471,287 @@
         padding: 0.75rem 1rem;
         font-size: 0.9rem;
     }
+}
+
+/* Schedule Meeting Modal Styles */
+.scheduleButton {
+    white-space: nowrap;
+}
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 1rem;
+}
+
+.modal {
+    background: #ffffff;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 520px;
+    max-height: 90vh;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 10000;
+}
+
+/* Dark mode styling */
+body.dark .modal,
+[data-theme="dark"] .modal {
+    background: #1a2332;
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+    flex-shrink: 0;
+}
+
+.modalHeader h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text);
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    font-size: 1.75rem;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    transition: all 0.2s;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.closeButton:hover {
+    background: var(--color-background);
+    color: var(--color-text);
+}
+
+.modalBody {
+    padding: 1.5rem;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.formGroup {
+    margin-bottom: 1.5rem;
+}
+
+.formGroup:last-child {
+    margin-bottom: 0;
+}
+
+.formGroup label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--color-text);
+    font-size: 0.95rem;
+}
+
+/* Dark mode styling for labels */
+body.dark .formGroup label,
+[data-theme="dark"] .formGroup label {
+    color: #ffffff;
+}
+
+.formInput {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: var(--color-background);
+    color: var(--color-text);
+    font-size: 1rem;
+    font-family: inherit;
+    transition: all 0.2s;
+    box-sizing: border-box;
+}
+
+/* Dark mode styling for inputs */
+body.dark .formInput,
+[data-theme="dark"] .formInput {
+    border-color: #2d3e52;
+    background: #0f1419;
+    color: #ffffff;
+}
+
+body.dark .formInput::placeholder,
+[data-theme="dark"] .formInput::placeholder {
+    color: #6b7c93;
+}
+
+.formInput::placeholder {
+    color: var(--color-text-secondary);
+    opacity: 0.6;
+}
+
+.formInput:hover {
+    border-color: var(--color-primary);
+}
+
+.formInput:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.formHint {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: #9ca3af;
+    line-height: 1.4;
+}
+
+.formRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.formRow .formGroup {
+    margin-bottom: 0;
+}
+
+.modalFooter {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-top: 1px solid var(--color-border);
+    background: #ffffff;
+    flex-shrink: 0;
+}
+
+/* Dark mode styling */
+body.dark .modalFooter,
+[data-theme="dark"] .modalFooter {
+    border-top: 1px solid #2d3e52;
+    background: #1a2332;
+}
+
+@media (max-width: 768px) {
+    .modal {
+        max-width: 100%;
+        margin: 1rem;
+    }
+
+    .formRow {
+        grid-template-columns: 1fr;
+    }
+
+    .modalFooter {
+        flex-direction: column;
+    }
+
+    .modalFooter button {
+        width: 100%;
+    }
+}
+
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    gap: 1rem;
+}
+
+.loader {
+    border: 3px solid var(--color-border);
+    border-top: 3px solid var(--color-primary);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loadingContainer p {
+    color: var(--color-text-secondary);
+    margin: 0;
+}
+
+.errorContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    gap: 1rem;
+}
+
+.errorIcon {
+    font-size: 3rem;
+}
+
+.errorContainer p {
+    color: var(--color-text-secondary);
+    margin: 0;
+    text-align: center;
+}
+
+.emptyContacts {
+    padding: 2rem;
+    text-align: center;
+    color: var(--color-text-secondary);
+}
+
+.loadingState {
+    padding: 2rem;
+    text-align: center;
+    color: var(--color-text-secondary);
+}
+
+.emptyMessages {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--color-text-secondary);
+}
+
+.emptyMessages p {
+    margin: 0;
+}
+
+.messageError {
+    padding: 0.75rem 1.5rem;
+    background: var(--color-error-light, #fee);
+    color: var(--color-error, #d32f2f);
+    border-top: 1px solid var(--color-border);
+    font-size: 0.9rem;
+}
+
+.messageError span {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }

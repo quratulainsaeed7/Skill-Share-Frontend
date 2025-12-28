@@ -4,19 +4,46 @@
 
 .header {
     margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.searchBox {
+    position: relative;
+    width: 300px;
+}
+
+.searchIcon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-text-secondary);
+    font-size: 1.2rem;
+}
+
+.searchBox input {
+    width: 100%;
+    padding: 10px 10px 10px 36px;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background: var(--color-bg-input);
+    color: var(--color-text-primary);
+    font-size: 0.95rem;
+}
+
+.searchBox input:focus {
+    outline: none;
+    border-color: var(--color-primary);
 }
 
 .tableCard {
-    background: white;
+    background: var(--color-bg-card);
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: var(--shadow-sm);
-}
-
-@media (prefers-color-scheme: dark) {
-    .tableCard {
-        background: #1e1e2d;
-    }
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--color-border);
 }
 
 .table {
@@ -28,28 +55,31 @@
 .table td {
     padding: 16px 24px;
     text-align: left;
-    border-bottom: 1px solid #eee;
-}
-
-@media (prefers-color-scheme: dark) {
-
-    .table th,
-    .table td {
-        border-color: #2b2b40;
-    }
+    border-bottom: 1px solid var(--color-divider);
+    color: var(--color-text-primary);
+    vertical-align: middle;
 }
 
 .table th {
-    background-color: #f9f9f9;
+    background-color: var(--color-bg-body);
     font-weight: 600;
-    color: #666;
+    color: var(--color-text-secondary);
 }
 
-@media (prefers-color-scheme: dark) {
-    .table th {
-        background-color: #151521;
-        color: #a2a3b7;
-    }
+.sortableHeader {
+    cursor: pointer;
+    user-select: none;
+}
+
+.sortableHeader:hover {
+    color: var(--color-text-primary);
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.headerContent {
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
 .badge {
@@ -100,7 +130,10 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.75);
+    /* Darker overlay for better focus */
+    backdrop-filter: blur(4px);
+    /* Blur effect for modern look */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -108,17 +141,35 @@
 }
 
 .modal {
-    background: var(--bg-card);
-    padding: 25px;
-    border-radius: var(--radius-md);
-    width: 400px;
-    box-shadow: var(--shadow-lg);
-    border: 1px solid var(--border-color);
+    background: var(--color-bg-card);
+    padding: 32px;
+    border-radius: 12px;
+    width: 450px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--color-border);
+    animation: slideIn 0.2s ease-out;
+    color: var(--color-text-primary);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 .modal h3 {
-    margin-bottom: 20px;
-    color: var(--text-primary);
+    margin-bottom: 24px;
+    color: var(--color-text-primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+    border-bottom: 1px solid var(--color-divider);
+    padding-bottom: 16px;
 }
 
 .formGroup {
@@ -130,11 +181,21 @@
 .formGroup input,
 .formGroup select,
 .modal select {
-    padding: 10px;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-sm);
+    padding: 12px;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
     width: 100%;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    background-color: var(--color-bg-input);
+    color: var(--color-text-primary);
+    font-size: 0.95rem;
+    transition: border-color 0.2s;
+}
+
+.formGroup input:focus,
+.modal select:focus {
+    outline: none;
+    border-color: var(--color-primary);
 }
 
 .modalActions {
@@ -145,19 +206,32 @@
 }
 
 .saveBtn {
-    padding: 8px 16px;
-    background: var(--primary-color);
+    padding: 10px 20px;
+    background: var(--color-primary);
     color: white;
     border: none;
-    border-radius: var(--radius-sm);
+    border-radius: 6px;
     cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.saveBtn:hover {
+    background-color: var(--color-primary-hover);
 }
 
 .cancelBtn {
-    padding: 8px 16px;
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-sm);
+    padding: 10px 20px;
+    background: transparent;
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
     cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.cancelBtn:hover {
+    background-color: var(--color-bg-body);
+    color: var(--color-text-primary);
 }

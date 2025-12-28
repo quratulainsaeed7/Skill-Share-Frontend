@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { MdDelete, MdCheckCircle, MdCancel, MdEditSquare, MdAttachMoney, MdGavel } from 'react-icons/md';
+import { MdDelete, MdCheckCircle, MdCancel, MdEditSquare, MdAttachMoney, MdGavel, MdSearch, MdArrowDropUp, MdArrowDropDown } from 'react-icons/md';
 import styles from './UserManagement.module.css';
 import AdminApi from '../../../api/AdminApi';
 
@@ -8,6 +8,9 @@ const UserManagement = () => {
     const [loading, setLoading] = useState(true);
     const [selectedUser, setSelectedUser] = useState(null);
     const [modalMode, setModalMode] = useState(''); // 'ROLE', 'WALLET', 'SANCTION'
+
+    const [searchTerm, setSearchTerm] = useState('');
+    const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
     // Form States
     const [newRole, setNewRole] = useState('LEARNER');
@@ -100,23 +103,65 @@ const UserManagement = () => {
         }
     };
 
+    const handleSort = (key) => {
+        let direction = 'asc';
+        if (sortConfig.key === key && sortConfig.direction === 'asc') {
+            direction = 'desc';
+        }
+        setSortConfig({ key, direction });
+    };
+
+    const getSortIcon = (key) => {
+        if (sortConfig.key !== key) return <MdArrowDropDown style={{ opacity: 0.3 }} />;
+        return sortConfig.direction === 'asc' ? <MdArrowDropUp /> : <MdArrowDropDown />;
+    };
+
+    const filteredUsers = users.filter(user =>
+    (user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email?.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
+
+    const sortedUsers = [...filteredUsers].sort((a, b) => {
+        if (!sortConfig.key) return 0;
+        const aVal = a[sortConfig.key]?.toString().toLowerCase() || '';
+        const bVal = b[sortConfig.key]?.toString().toLowerCase() || '';
+        if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
+        if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
+        return 0;
+    });
+
     return (
         <div className={styles.container}>
-            <div className={styles.header}><h1>User Management</h1></div>
+            <div className={styles.header}>
+                <h1>User Management</h1>
+                <div className={styles.searchBox}>
+                    <MdSearch className={styles.searchIcon} />
+                    <input
+                        type="text"
+                        placeholder="Search by name or email..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
+            </div>
             <div className={styles.tableCard}>
                 {loading ? <p>Loading...</p> : (
                     <table className={styles.table}>
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Email</th>
+                                <th onClick={() => handleSort('name')} className={styles.sortableHeader}>
+                                    <div className={styles.headerContent}>Name {getSortIcon('name')}</div>
+                                </th>
+                                <th onClick={() => handleSort('email')} className={styles.sortableHeader}>
+                                    <div className={styles.headerContent}>Email {getSortIcon('email')}</div>
+                                </th>
                                 <th>Role</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {users.map(user => (
+                            {sortedUsers.map(user => (
                                 <tr key={user.userId}>
                                     <td>{user.name}</td>
                                     <td>{user.email}</td>
