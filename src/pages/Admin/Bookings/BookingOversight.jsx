@@ -11,7 +11,7 @@ const BookingOversight = () => {
 
     const fetchBookings = async () => {
         try {
-            const res = await fetch('http://localhost:3004/admin/bookings');
+            const res = await fetch(`${import.meta.env.VITE_ADMIN_SERVICE_URL || 'http://localhost:4008'}/admin/bookings`);
             const data = await res.json();
             setBookings(data);
             setLoading(false);
@@ -25,7 +25,7 @@ const BookingOversight = () => {
         if (!decision) return;
 
         try {
-            await fetch(`http://localhost:3004/admin/bookings/${id}/dispute`, {
+            await fetch(`${import.meta.env.VITE_ADMIN_SERVICE_URL || 'http://localhost:4008'}/admin/bookings/${id}/dispute`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ decision })

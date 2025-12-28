@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_USER_SERVICE_URL || 'http://localhost:4001';
+const API_BASE_URL = import.meta.env.VITE_USER_SERVICE_URL || 'http://localhost:4000';
 const PROFILE_ENDPOINT = `${API_BASE_URL}/profile`;
 
 const request = async (url, options = {}) => {

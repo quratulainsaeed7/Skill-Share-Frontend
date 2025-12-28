@@ -6,7 +6,7 @@ const ReportsAnalytics = () => {
     const [data, setData] = useState(null);
 
     useEffect(() => {
-        fetch('http://localhost:3004/admin/reports')
+        fetch(`${import.meta.env.VITE_ADMIN_SERVICE_URL || 'http://localhost:4008'}/admin/reports`)
             .then(res => res.json())
             .then(setData)
             .catch(console.error);

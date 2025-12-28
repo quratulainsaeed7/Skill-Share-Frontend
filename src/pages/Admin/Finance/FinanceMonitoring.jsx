@@ -8,7 +8,7 @@ const FinanceMonitoring = () => {
     useEffect(() => {
         const fetchFinance = async () => {
             try {
-                const res = await fetch('http://localhost:3004/admin/finance');
+                const res = await fetch(`${import.meta.env.VITE_ADMIN_SERVICE_URL || 'http://localhost:4008'}/admin/finance`);
                 const data = await res.json();
                 setPayments(data);
                 setLoading(false);

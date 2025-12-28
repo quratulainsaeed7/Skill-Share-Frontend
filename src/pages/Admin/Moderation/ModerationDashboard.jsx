@@ -11,7 +11,7 @@ const ModerationDashboard = () => {
 
     const fetchData = async () => {
         try {
-            const res = await fetch('http://localhost:3004/admin/moderation');
+            const res = await fetch(`${import.meta.env.VITE_ADMIN_SERVICE_URL || 'http://localhost:4008'}/admin/moderation`);
             const data = await res.json();
             setStats(data);
             setLoading(false);
@@ -22,7 +22,7 @@ const ModerationDashboard = () => {
 
     const handleAction = async (type, id, action) => {
         try {
-            await fetch(`http://localhost:3004/admin/moderation/${id}/resolve`, {
+            await fetch(`${import.meta.env.VITE_ADMIN_SERVICE_URL || 'http://localhost:4008'}/admin/moderation/${id}/resolve`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ type: type === 'skill' ? 'SKILL' : 'REVIEW', action })
