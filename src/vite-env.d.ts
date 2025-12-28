@@ -1,6 +1,7 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
+<<<<<<< HEAD
     readonly VITE_MESSAGING_API_URL: string
     readonly VITE_SKILL_SERVICE_URL: string
     readonly VITE_BOOKING_SERVICE_URL: string
@@ -15,3 +16,12 @@ interface ImportMetaEnv {
 interface ImportMeta {
     readonly env: ImportMetaEnv
 }
+=======
+  readonly VITE_MESSAGING_API_URL: string
+  // Add other environment variables as needed
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv
+}
+>>>>>>> 42c7500f8dc00d3a20f408745624d7729ff34212

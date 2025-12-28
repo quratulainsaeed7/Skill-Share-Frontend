@@ -1,0 +1,269 @@
+/* src/pages/Auth/Auth.module.css */
+.container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: background-color 0.6s ease;
+}
+
+.containerLogin {
+    background: #3b82f6;
+}
+
+.containerSignup {
+    background: #10b981;
+}
+
+/* Animated Background */
+.background {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.backgroundShape1,
+.backgroundShape2,
+.backgroundShape3 {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.1;
+    animation: float 20s infinite ease-in-out;
+}
+
+.backgroundShape1 {
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, #fff 0%, transparent 70%);
+    top: -200px;
+    right: -200px;
+    animation-delay: 0s;
+}
+
+.backgroundShape2 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, #fff 0%, transparent 70%);
+    bottom: -100px;
+    left: -100px;
+    animation-delay: 7s;
+}
+
+.backgroundShape3 {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, #fff 0%, transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation-delay: 14s;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translate(0, 0) scale(1);
+    }
+    33% {
+        transform: translate(30px, -30px) scale(1.1);
+    }
+    66% {
+        transform: translate(-30px, 30px) scale(0.9);
+    }
+}
+
+/* Branding */
+.branding {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    z-index: 10;
+    color: white;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.logoIcon {
+    font-size: 2rem;
+}
+
+.logoText {
+    font-size: 1.75rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.tagline {
+    font-size: 0.875rem;
+    opacity: 0.9;
+    margin: 0;
+    margin-left: 2.75rem;
+}
+
+/* Card Deck */
+.cardDeck {
+    position: relative;
+    width: 100%;
+    max-width: 450px;
+    min-height: 880px;
+}
+
+.card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: white;
+    border-radius: 24px;
+    padding: 2.5rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    transform-origin: center center;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Card States */
+.cardActive {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+    z-index: 10;
+}
+
+.cardBehind {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.9);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.loginCard {
+    border-top: 4px solid #3b82f6;
+}
+
+.signupCard {
+    border-top: 4px solid #10b981;
+}
+
+/* Card Content */
+.cardHeader {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.cardTitle {
+    font-size: 1.875rem;
+    font-weight: 800;
+    color: #111827;
+    margin: 0 0 0.5rem 0;
+    letter-spacing: -0.02em;
+}
+
+.cardSubtitle {
+    font-size: 0.9375rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+.cardFooter {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e5e7eb;
+    text-align: center;
+    font-size: 0.9375rem;
+    color: #6b7280;
+}
+
+.switchButton {
+    background: none;
+    border: none;
+    color: #3b82f6;
+    font-weight: 700;
+    font-size: 0.9375rem;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 0.5rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.switchButton::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: #3b82f6;
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.switchButton:hover {
+    color: #2563eb;
+}
+
+.switchButton:hover::after {
+    transform: scaleX(1);
+}
+
+.signupCard .switchButton {
+    color: #10b981;
+}
+
+.signupCard .switchButton::after {
+    background: #10b981;
+}
+
+.signupCard .switchButton:hover {
+    color: #059669;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .branding {
+        top: 1rem;
+        left: 1rem;
+    }
+
+    .logoText {
+        font-size: 1.5rem;
+    }
+
+    .cardDeck {
+        max-width: 100%;
+        min-height: 820px;
+    }
+
+    .card {
+        padding: 2rem 1.5rem;
+    }
+
+    .cardTitle {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .tagline {
+        display: none;
+    }
+    
+    .cardDeck {
+        min-height: 780px;
+    }
+}

@@ -2,32 +2,68 @@
 .form {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-4);
+    gap: 0;
     width: 100%;
-    max-width: 400px;
-    margin: 0 auto;
 }
 
-.options {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: var(--font-size-sm);
+.inputGroup {
+    margin-bottom: 1.25rem;
 }
 
-.forgotPassword {
-    color: var(--color-primary);
-    text-decoration: none;
-}
-
-.forgotPassword:hover {
-    text-decoration: underline;
-}
-
-.checkboxLabel {
+.errorAlert {
     display: flex;
     align-items: center;
-    gap: var(--spacing-2);
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    background: #fef2f2;
+    border-left: 3px solid #ef4444;
+    border-radius: 6px;
+    color: #dc2626;
+    font-size: 0.875rem;
+    margin-bottom: 1.25rem;
+}
+
+.submitButton {
+    margin-top: 0.5rem;
+    padding: 0.875rem;
+    font-size: 1rem;
+    font-weight: 600;
+    background: #3b82f6;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    transition: all 0.2s ease;
     cursor: pointer;
-    color: var(--color-text-secondary);
+}
+
+.submitButton:hover:not(:disabled) {
+    background: #2563eb;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.submitButton:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.submitButton:disabled {
+    background: #d1d5db;
+    cursor: not-allowed;
+}
+
+.forgotPasswordLink {
+    text-align: right;
+    margin-top: 0.75rem;
+}
+
+.forgotPasswordLink a {
+    color: #6b7280;
+    font-weight: 500;
+    text-decoration: none;
+    font-size: 0.8125rem;
+    transition: color 0.2s ease;
+}
+
+.forgotPasswordLink a:hover {
+    color: #3b82f6;
 }

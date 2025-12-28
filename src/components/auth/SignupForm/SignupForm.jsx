@@ -19,11 +19,9 @@ const SignupForm = () => {
     const [formData, setFormData] = useState({
         fullName: '',
         email: '',
-
         password: '',
         confirmPassword: '',
-
-        role: '',
+        role: 'learner',
         termsAccepted: false
     });
 
@@ -75,7 +73,6 @@ const SignupForm = () => {
         if (!formData.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/))
             newErrors.email = "Invalid email address";
 
-
         if (formData.password.length < 8)
             newErrors.password = "Password must be at least 8 characters";
 
@@ -105,70 +102,41 @@ const SignupForm = () => {
         }
     };
 
-    const RoleCard = ({ value, label, icon: Icon, desc }) => (
-        <div
-            className={clsx(styles.roleCard, { [styles.selected]: formData.role === value })}
-            onClick={() => setFormData(prev => ({ ...prev, role: value }))}
-        >
-            <Icon className={styles.roleIcon} />
-            <span className={styles.roleTitle}>{label}</span>
-            <span className={styles.roleDesc}>{desc}</span>
-            <input
-                type="radio"
-                name="role"
-                value={value}
-                checked={formData.role === value}
-                onChange={() => { }}
-                style={{ display: 'none' }}
-            />
-        </div>
-    );
-
     return (
         <form onSubmit={handleSubmit} className={styles.form}>
-            <div className={styles.roles}>
-                <RoleCard
-                    value="learner"
-                    label="Learner"
-                    icon={FaUserGraduate}
-                    desc="Find mentors"
-                />
-                <RoleCard
-                    value="mentor"
-                    label="Mentor"
-                    icon={FaChalkboardTeacher}
-                    desc="Share skills"
-                />
-                <RoleCard
-                    value="both"
-                    label="Both"
-                    icon={FaUsers}
-                    desc="Learn & Teach"
+            {errors.form && (
+                <div className={styles.errorAlert}>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm1 13H7V7h2v6zm0-8H7V3h2v2z"/>
+                    </svg>
+                    {errors.form}
+                </div>
+            )}
+
+            <div className={styles.inputGroup}>
+                <Input
+                    label="Full Name"
+                    name="fullName"
+                    value={formData.fullName}
+                    onChange={handleChange}
+                    error={errors.fullName}
+                    placeholder="Enter your full name"
                 />
             </div>
-            {errors.role && <span style={{ color: 'var(--color-error)' }}>{errors.role}</span>}
 
-            <Input
-                label="Full Name"
-                name="fullName"
-                value={formData.fullName}
-                onChange={handleChange}
-                error={errors.fullName}
-                placeholder="Enter your full name"
-            />
+            <div className={styles.inputGroup}>
+                <Input
+                    label="Email"
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    error={errors.email}
+                    placeholder="Enter your email"
+                />
+            </div>
 
-            <Input
-                label="Email"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                error={errors.email}
-                placeholder="your.email@example.com"
-            />
-
-
-            <div>
+            <div className={styles.inputGroup}>
                 <Input
                     label="Password"
                     name="password"
@@ -176,47 +144,67 @@ const SignupForm = () => {
                     value={formData.password}
                     onChange={handleChange}
                     error={errors.password}
-                    placeholder="Create a strong password"
+                    placeholder="Create a password"
                 />
-                <div className={styles.passwordStrength}>
-                    {[1, 2, 3, 4].map(s => (
-                        <div
-                            key={s}
-                            className={clsx(styles.strengthBar, {
-                                [styles.active]: passwordStrength >= 1,
-                                [styles.medium]: passwordStrength >= 3,
-                                [styles.strong]: passwordStrength >= 4
-                            })}
-                            style={{ opacity: passwordStrength >= s ? 1 : 0.3 }}
-                        />
-                    ))}
+            </div>
+
+            <div className={styles.inputGroup}>
+                <Input
+                    label="Confirm Password"
+                    name="confirmPassword"
+                    type="password"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    error={errors.confirmPassword}
+                    placeholder="Re-enter your password"
+                />
+            </div>
+
+            <div className={styles.roleSelect}>
+                <label className={styles.roleLabel}>I am a:</label>
+                <div className={styles.roleButtons}>
+                    <button
+                        type="button"
+                        className={clsx(styles.roleButton, { [styles.roleActive]: formData.role === 'learner' })}
+                        onClick={() => setFormData(prev => ({ ...prev, role: 'learner' }))}
+                    >
+                        <FaUserGraduate className={styles.roleIcon} />
+                        Learner
+                    </button>
+                    <button
+                        type="button"
+                        className={clsx(styles.roleButton, { [styles.roleActive]: formData.role === 'mentor' })}
+                        onClick={() => setFormData(prev => ({ ...prev, role: 'mentor' }))}
+                    >
+                        <FaChalkboardTeacher className={styles.roleIcon} />
+                        Mentor
+                    </button>
+                    <button
+                        type="button"
+                        className={clsx(styles.roleButton, { [styles.roleActive]: formData.role === 'both' })}
+                        onClick={() => setFormData(prev => ({ ...prev, role: 'both' }))}
+                    >
+                        <FaUsers className={styles.roleIcon} />
+                        Both
+                    </button>
                 </div>
             </div>
 
-            <Input
-                label="Confirm Password"
-                name="confirmPassword"
-                type="password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                error={errors.confirmPassword}
-                placeholder="Re-enter your password"
-            />
-
-            <label className={styles.terms}>
+            <label className={styles.checkbox}>
                 <input
                     type="checkbox"
                     name="termsAccepted"
                     checked={formData.termsAccepted}
                     onChange={handleChange}
                 />
-                I agree to the Terms of Service and Privacy Policy
+                <span>
+                    I agree to the SkillShare <a href="/terms" className={styles.checkboxLink}>Terms of Use</a> and <a href="/privacy" className={styles.checkboxLink}>Privacy Policy</a>
+                </span>
             </label>
-            {errors.termsAccepted && <span style={{ color: 'var(--color-error)', fontSize: '0.8rem' }}>{errors.termsAccepted}</span>}
-            {errors.form && <div style={{ color: 'var(--color-error)', textAlign: 'center' }}>{errors.form}</div>}
+            {errors.termsAccepted && <span className={styles.errorText}>{errors.termsAccepted}</span>}
 
-            <Button type="submit" fullWidth disabled={loading}>
-                {loading ? 'Creating Account...' : 'Create Account'}
+            <Button type="submit" fullWidth disabled={loading} className={styles.submitButton}>
+                {loading ? 'Creating Account...' : 'Sign up'}
             </Button>
         </form>
     );

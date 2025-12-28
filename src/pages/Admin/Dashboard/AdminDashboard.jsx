@@ -38,7 +38,7 @@ const AdminDashboard = () => {
     const downloadFullReport = async () => {
         try {
             // Fetch Finance Data (since it's not in state)
-            const financeRes = await fetch('http://localhost:3004/admin/finance');
+            const financeRes = await fetch(`${import.meta.env.VITE_ADMIN_SERVICE_URL || 'http://localhost:4008'}/admin/finance`);
             const financeData = await financeRes.json();
 
             const totalRev = financeData.reduce((acc, curr) => acc + parseFloat(curr.amount), 0);
@@ -79,21 +79,23 @@ const AdminDashboard = () => {
         const fetchStats = async () => {
             try {
                 // Fetch basic dashboard stats
-                const statsRes = await fetch('http://localhost:3004/admin/dashboard');
+                const statsRes = await fetch(`${import.meta.env.VITE_ADMIN_SERVICE_URL || 'http://localhost:4008'}/admin/dashboard`);
                 if (statsRes.ok) {
                     const data = await statsRes.json();
                     setStats(data);
                 }
 
                 // Fetch detailed reports for charts
-                const repRes = await fetch('http://localhost:3004/admin/reports');
+                // Fetch detailed reports for charts
+                const repRes = await fetch(`${import.meta.env.VITE_ADMIN_SERVICE_URL || 'http://localhost:4008'}/admin/reports`);
                 if (repRes.ok) {
                     const data = await repRes.json();
                     setReports(data);
                 }
 
                 // Fetch recent activity
-                const actRes = await fetch('http://localhost:3004/admin/activity');
+                // Fetch recent activity
+                const actRes = await fetch(`${import.meta.env.VITE_ADMIN_SERVICE_URL || 'http://localhost:4008'}/admin/activity`);
                 if (actRes.ok) {
                     const data = await actRes.json();
                     setActivity(data);

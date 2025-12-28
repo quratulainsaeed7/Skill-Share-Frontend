@@ -144,13 +144,13 @@ const CategoryManagement = () => {
                     </thead>
                     <tbody>
                         {sortedCategories.map(cat => (
-                            <tr key={cat.category_id}>
+                            <tr key={cat.categoryId}>
                                 <td>{cat.name}</td>
                                 <td>{cat.description}</td>
                                 <td>{cat.tags?.join(', ')}</td>
                                 <td>
                                     <button onClick={() => handleEdit(cat)} className={styles.editBtn}>Edit</button>
-                                    <button onClick={() => handleDelete(cat.category_id)} className={styles.deleteBtn}>Delete</button>
+                                    <button onClick={() => handleDelete(cat.categoryId)} className={styles.deleteBtn}>Delete</button>
                                 </td>
                             </tr>
                         ))}

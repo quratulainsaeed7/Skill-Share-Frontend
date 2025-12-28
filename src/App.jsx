@@ -4,8 +4,7 @@ import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom
 import { ThemeProvider } from './context/ThemeContext';
 import MainLayout from './layouts/MainLayout/MainLayout';
 import Home from './pages/Home/Home';
-import Login from './pages/Login/Login';
-import Signup from './pages/Signup/Signup';
+import Auth from './pages/Auth/Auth';
 import Skills from './pages/Skills/Skills';
 import SkillDetails from './pages/SkillDetails/SkillDetails';
 import MentorProfile from './pages/MentorProfile/MentorProfile';
@@ -53,10 +52,12 @@ function App() {
               <Route path="finance" element={<FinanceMonitoring />} />
             </Route>
 
+            {/* Auth Routes - No Layout */}
+            <Route path="/login" element={<Auth />} />
+            <Route path="/signup" element={<Auth />} />
+
             <Route element={<MainLayout />}>
               <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
               <Route path="/verify-email" element={<VerifyEmail />} />
               <Route path="/skills" element={<Skills />} />
               <Route path="/skills/:skillId" element={<SkillDetails />} />
