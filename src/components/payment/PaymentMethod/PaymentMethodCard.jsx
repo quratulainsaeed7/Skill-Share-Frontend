@@ -61,14 +61,14 @@ const PaymentMethodCard = ({ method, onDelete, onSetDefault }) => {
                 {!method.isDefault && (
                     <button
                         className={styles.setDefaultBtn}
-                        onClick={() => onSetDefault(method.id)}
+                        onClick={() => onSetDefault(method.methodId)}
                     >
                         Set as Default
                     </button>
                 )}
                 <button
                     className={styles.deleteBtn}
-                    onClick={() => onDelete(method.id)}
+                    onClick={() => onDelete(method.methodId)}
                 >
                     Delete
                 </button>

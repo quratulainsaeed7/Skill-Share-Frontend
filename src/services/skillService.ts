@@ -87,10 +87,16 @@ export const skillService = {
         }
     },
 
-    enrollInSkill: async (skillId: string, userId: string): Promise<any> => {
+    enrollInSkill: async (skillId: string, userId: string, options: any = {}): Promise<any> => {
         const mentorId = await skillService.getMentorId(skillId);
+        const { paymentPlan } = options;
+
         try {
-            return await SkillApi.enrollInSkill(skillId, userId, mentorId!);
+            // Pass payment method to backend
+            // Backend handles both credits (via wallet-service) and cash (via payment-service)
+            const paymentMethod = paymentPlan === 'cash' ? 'cash' : 'credits';
+
+            return await SkillApi.enrollInSkill(skillId, userId, mentorId!, { paymentMethod });
         } catch (error) {
             console.error(`Failed to enroll user ${userId} in skill ${skillId}:`, error);
             throw error;

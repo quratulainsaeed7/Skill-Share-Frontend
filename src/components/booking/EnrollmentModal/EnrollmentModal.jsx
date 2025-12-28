@@ -1,38 +1,46 @@
 import React, { useState } from 'react';
 import styles from './EnrollmentModal.module.css';
 import Button from '../../common/Button/Button';
+import { skillService } from '../../../services/skillService';
 
-const EnrollmentModal = ({ skill, onClose, onEnroll }) => {
-    const [selectedPlan, setSelectedPlan] = useState('cash');
+const EnrollmentModal = ({ skill, onClose, onEnroll, skillId, userId }) => {
+    const [selectedPlan, setSelectedPlan] = useState('credits');
     const [isProcessing, setIsProcessing] = useState(false);
+    const [error, setError] = useState(null);
 
     const paymentPlans = [
         {
+            id: 'credits',
+            name: 'Credit Payment',
+            price: skill.priceCredits || skill.priceCash,
+            currency: 'Credits',
+            description: 'Use your wallet credits',
+            icon: '🪙'
+        },
+        ...(skill.priceType === 'both' ? [{
             id: 'cash',
             name: 'Cash Payment',
             price: skill.priceCash,
-            currency: 'Rs.',
-            description: 'One-time payment',
+            currency: 'PKR',
+            description: 'One-time payment via Stripe',
             icon: '💵'
-        },
-        ...(skill.priceType === 'both' ? [{
-            id: 'credits',
-            name: 'Credit Payment',
-            price: skill.priceCredits,
-            currency: 'Credits',
-            description: 'Use your credits',
-            icon: '🪙'
         }] : [])
     ];
 
     const handleEnroll = async () => {
         setIsProcessing(true);
-        
-        // Simulate payment processing
-        setTimeout(() => {
-            onEnroll(selectedPlan);
+        setError(null);
+
+        try {
+            // Make actual enrollment API call
+            await skillService.enrollInSkill(skillId, userId, { paymentPlan: selectedPlan });
+            onEnroll(selectedPlan); // Callback to parent for success handling
+        } catch (err) {
+            console.error('Enrollment failed:', err);
+            setError(err.message || 'Failed to enroll in the skill');
+        } finally {
             setIsProcessing(false);
-        }, 1500);
+        }
     };
 
     return (
@@ -75,6 +83,11 @@ const EnrollmentModal = ({ skill, onClose, onEnroll }) => {
                 </div>
 
                 <div className={styles.footer}>
+                    {error && (
+                        <div style={{ padding: '0.75rem', background: '#f8d7da', color: '#721c24', borderRadius: '8px', marginBottom: '1rem', textAlign: 'center' }}>
+                            {error}
+                        </div>
+                    )}
                     <div className={styles.total}>
                         <span>Total:</span>
                         <span className={styles.totalAmount}>
@@ -83,8 +96,8 @@ const EnrollmentModal = ({ skill, onClose, onEnroll }) => {
                     </div>
                     <div className={styles.actions}>
                         <Button variant="outline" onClick={onClose}>Cancel</Button>
-                        <Button 
-                            variant="primary" 
+                        <Button
+                            variant="primary"
                             onClick={handleEnroll}
                             disabled={isProcessing}
                         >

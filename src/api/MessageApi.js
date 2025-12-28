@@ -1,6 +1,6 @@
 import request from './apiClient';
 
-const API_URL = import.meta.env.VITE_MESSAGING_API_URL || 'http://localhost:4007';
+const API_URL = import.meta.env.VITE_MESSAGING_SERVICE_URL || 'http://localhost:4007';
 const MESSAGES_ENDPOINT = `${API_URL}/messages`;
 
 export const MessageApi = {

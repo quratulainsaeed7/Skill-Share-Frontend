@@ -175,12 +175,14 @@ export const SkillApi = {
      * Enroll a learner in a skill/course.
      * @param {string} skillId - Skill ID
      * @param {string} userId - Learner's user ID
+     * @param {string} mentorId - Mentor's user ID
+     * @param {Object} paymentData - Payment information (paymentMethod, etc.)
      * @returns {Promise<Object>} Enrollment result
      */
-    enrollInSkill: async (skillId, userId, mentorId) => {
+    enrollInSkill: async (skillId, userId, mentorId, paymentData = {}) => {
         return request(`${SKILLS_ENDPOINT}/${skillId}/enroll`, {
             method: 'POST',
-            body: JSON.stringify({ userId, mentorId }),
+            body: JSON.stringify({ userId, mentorId, paymentMethod: paymentData.paymentMethod }),
         });
     },
 

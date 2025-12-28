@@ -35,14 +35,22 @@ const Wallet = () => {
         try {
             setLoading(true);
             // Use userId variable for consistency with UserService
-            const [methods, trans, walletStats] = await Promise.all([
+            const [methods, walletTrans, paymentTrans, walletStats] = await Promise.all([
                 walletService.getPaymentMethods(userId),
                 walletService.getTransactions(userId),
+                walletService.getPaymentTransactions(userId),
                 walletService.getTransactionStats(userId),
             ]);
 
             setPaymentMethods(methods);
-            setTransactions(trans);
+
+            // Combine wallet transactions and payment transactions
+            const combinedTransactions = [
+                ...walletTrans.map(t => ({ ...t, source: 'wallet' })),
+                ...paymentTrans.map(t => ({ ...t, source: 'payment' }))
+            ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+            setTransactions(combinedTransactions);
             setStats(walletStats);
         } catch (error) {
             console.error('Error loading wallet data:', error);
@@ -75,10 +83,12 @@ const Wallet = () => {
 
     const handleSetDefaultPaymentMethod = async (methodId) => {
         try {
+            console.log('Setting default for userId:', userId, 'methodId:', methodId);
             await walletService.setDefaultPaymentMethod(userId, methodId);
             await loadWalletData();
         } catch (error) {
             console.error('Error setting default payment method:', error);
+            alert(`Failed to set default payment method: ${error.message}`);
         }
     };
 
@@ -139,7 +149,7 @@ const Wallet = () => {
                 <div className={styles.statCard}>
                     <div className={styles.statIcon}>↓</div>
                     <div className={styles.statContent}>
-                        <p className={styles.statLabel}>Total Incoming</p>
+                        <p className={styles.statLabel}>Total Balance</p>
                         <h2 className={`${styles.statValue} ${styles.incoming}`}>
                             {formatCurrency(stats.balance)}
                         </h2>

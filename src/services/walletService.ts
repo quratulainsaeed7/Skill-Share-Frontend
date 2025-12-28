@@ -1,4 +1,5 @@
 import { WalletApi } from '../api/WalletApi';
+import { PaymentApi } from '../api/PaymentApi';
 
 interface EarnCreditsData {
     amount: number;
@@ -25,6 +26,19 @@ interface TransactionStats {
     totalOutgoing: number;
     balance: number;
     transactionCount: number;
+}
+
+interface PaymentMethodData {
+    type: 'card' | 'wallet' | 'bank_account' | 'upi';
+    stripePaymentMethodId?: string;
+    cardLast4?: string;
+    cardBrand?: string;
+    cardExpMonth?: number;
+    cardExpYear?: number;
+    accountIdentifier?: string;
+    accountName?: string;
+    isDefault?: boolean;
+    metadata?: Record<string, any>;
 }
 
 export const walletService = {
@@ -115,24 +129,149 @@ export const walletService = {
     },
 
     getPaymentMethods: async (userId: string): Promise<any[]> => {
-        console.warn('Payment methods are not supported by backend wallet-service');
-        return [];
+        try {
+            const methods = await PaymentApi.getPaymentMethods(userId);
+            return methods || [];
+        } catch (error: any) {
+            console.error('Error fetching payment methods:', error);
+            // Return empty array instead of throwing error for better UX
+            if (error.response?.status === 404) {
+                return [];
+            }
+            throw new Error(error.response?.data?.message || 'Failed to fetch payment methods');
+        }
     },
 
-    addPaymentMethod: async (userId: string, methodData: any): Promise<never> => {
-        throw new Error('Payment methods are not supported. Backend uses credit-based wallet system.');
+    addPaymentMethod: async (userId: string, methodData: PaymentMethodData): Promise<any> => {
+        try {
+            // Validate required fields
+            if (!methodData.type) {
+                throw new Error('Payment method type is required');
+            }
+
+            // Prepare the data to send to the API
+            const payload = {
+                userId,
+                ...methodData,
+            };
+
+            const newMethod = await PaymentApi.addPaymentMethod(payload);
+            return newMethod;
+        } catch (error: any) {
+            console.error('Error adding payment method:', error);
+            throw new Error(error.response?.data?.message || 'Failed to add payment method');
+        }
     },
 
-    updatePaymentMethod: async (methodId: string, updates: any): Promise<never> => {
-        throw new Error('Payment methods are not supported. Backend uses credit-based wallet system.');
+    updatePaymentMethod: async (methodId: string, updates: Partial<PaymentMethodData>): Promise<any> => {
+        try {
+            if (!methodId) {
+                throw new Error('Payment method ID is required');
+            }
+
+            const updatedMethod = await PaymentApi.updatePaymentMethod(methodId, updates);
+            return updatedMethod;
+        } catch (error: any) {
+            console.error('Error updating payment method:', error);
+            throw new Error(error.response?.data?.message || 'Failed to update payment method');
+        }
     },
 
-    deletePaymentMethod: async (methodId: string): Promise<never> => {
-        throw new Error('Payment methods are not supported. Backend uses credit-based wallet system.');
+    deletePaymentMethod: async (methodId: string): Promise<{ message: string }> => {
+        try {
+            if (!methodId) {
+                throw new Error('Payment method ID is required');
+            }
+
+            const result = await PaymentApi.deletePaymentMethod(methodId);
+            return result;
+        } catch (error: any) {
+            console.error('Error deleting payment method:', error);
+            throw new Error(error.response?.data?.message || 'Failed to delete payment method');
+        }
     },
 
-    setDefaultPaymentMethod: async (userId: string, methodId: string): Promise<never> => {
-        throw new Error('Payment methods are not supported. Backend uses credit-based wallet system.');
+    setDefaultPaymentMethod: async (userId: string, methodId: string): Promise<any> => {
+        try {
+            if (!userId || !methodId) {
+                throw new Error('User ID and Payment method ID are required');
+            }
+
+            console.log('Setting default payment method:', { userId, methodId });
+            const updatedMethod = await PaymentApi.setDefaultPaymentMethod(userId, methodId);
+            return updatedMethod;
+        } catch (error: any) {
+            console.error('Error setting default payment method:', error);
+            console.error('Error details:', error.response?.data);
+            throw new Error(error.response?.data?.message || error.message || 'Failed to set default payment method');
+        }
+    },
+
+    getDefaultPaymentMethod: async (userId: string): Promise<any | null> => {
+        try {
+            const defaultMethod = await PaymentApi.getDefaultPaymentMethod(userId);
+            return defaultMethod;
+        } catch (error: any) {
+            console.error('Error fetching default payment method:', error);
+            // Return null if no default method found
+            if (error.response?.status === 404) {
+                return null;
+            }
+            throw new Error(error.response?.data?.message || 'Failed to fetch default payment method');
+        }
+    },
+
+    verifyPaymentMethod: async (methodId: string): Promise<{ valid: boolean; reason?: string }> => {
+        try {
+            if (!methodId) {
+                throw new Error('Payment method ID is required');
+            }
+
+            const result = await PaymentApi.verifyPaymentMethod(methodId);
+            return result;
+        } catch (error: any) {
+            console.error('Error verifying payment method:', error);
+            return {
+                valid: false,
+                reason: error.response?.data?.message || 'Failed to verify payment method',
+            };
+        }
+    },
+
+    createPaymentMethodFromStripe: async (
+        userId: string,
+        stripePaymentMethodId: string,
+        isDefault: boolean = false
+    ): Promise<any> => {
+        try {
+            if (!userId || !stripePaymentMethodId) {
+                throw new Error('User ID and Stripe Payment Method ID are required');
+            }
+
+            const newMethod = await PaymentApi.createPaymentMethodFromStripe(
+                userId,
+                stripePaymentMethodId,
+                isDefault
+            );
+            return newMethod;
+        } catch (error: any) {
+            console.error('Error creating payment method from Stripe:', error);
+            throw new Error(error.response?.data?.message || 'Failed to create payment method from Stripe');
+        }
+    },
+
+    getPaymentTransactions: async (userId: string): Promise<any[]> => {
+        try {
+            const transactions = await PaymentApi.getPaymentTransactionsByUser(userId);
+            return transactions || [];
+        } catch (error: any) {
+            console.error('Error fetching payment transactions:', error);
+            // Return empty array instead of throwing error
+            if (error.response?.status === 404) {
+                return [];
+            }
+            return [];
+        }
     },
 };
 

@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_ADMIN_SERVICE_URL || 'http://localhost:4008/admin';
+const API_BASE_URL = import.meta.env.VITE_ADMIN_SERVICE_URL || 'http://localhost:4008';
 
 import axios from "axios";
 
@@ -12,7 +12,7 @@ const request = async (url, options = {}) => {
 
     try {
         const response = await axios({
-            url: `${API_BASE_URL}${url}`,
+            url: `${API_BASE_URL}/admin${url}`,
             method,
             headers,
             data,

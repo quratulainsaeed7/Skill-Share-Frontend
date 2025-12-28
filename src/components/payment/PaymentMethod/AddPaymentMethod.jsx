@@ -96,21 +96,28 @@ const AddPaymentMethod = ({ onAdd, onCancel }) => {
         setIsSubmitting(true);
 
         try {
-            const paymentMethodData = {
-                cardType: methodType,
-                type: formData.type,
-                ...(methodType === 'card'
-                    ? {
-                          cardNumber: formData.cardNumber.replace(/\s/g, ''),
-                          cardHolder: formData.cardHolder,
-                          expiryDate: formData.expiryDate,
-                          isDefault: false,
-                      }
-                    : {
-                          email: formData.email,
-                          isDefault: false,
-                      }),
-            };
+            let paymentMethodData;
+
+            if (methodType === 'card') {
+                const cardNumber = formData.cardNumber.replace(/\s/g, '');
+                const [expMonth, expYear] = formData.expiryDate.split('/');
+
+                paymentMethodData = {
+                    type: 'card',
+                    cardLast4: cardNumber.slice(-4),
+                    cardBrand: formData.type.toLowerCase(), // Visa, Mastercard, etc.
+                    cardExpMonth: parseInt(expMonth, 10),
+                    cardExpYear: parseInt(`20${expYear}`, 10), // Convert YY to YYYY
+                    isDefault: false,
+                };
+            } else {
+                paymentMethodData = {
+                    type: 'wallet',
+                    accountIdentifier: formData.email,
+                    accountName: formData.type, // PayPal, Venmo, etc.
+                    isDefault: false,
+                };
+            }
 
             await onAdd(paymentMethodData);
         } catch (error) {

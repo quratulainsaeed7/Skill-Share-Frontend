@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { skillService } from '../../services/skillService';
 import UserService from '../../services/userService';
 import Button from '../../components/common/Button/Button';
+import EnrollmentModal from '../../components/booking/EnrollmentModal/EnrollmentModal';
 import styles from './SkillDetails.module.css';
 
 const SkillDetails = () => {
@@ -17,6 +18,7 @@ const SkillDetails = () => {
     const [enrollmentSuccess, setEnrollmentSuccess] = useState(false);
     const [isEnrolled, setIsEnrolled] = useState(false);
     const [checkingEnrollment, setCheckingEnrollment] = useState(false);
+    const [showEnrollmentModal, setShowEnrollmentModal] = useState(false);
 
     useEffect(() => {
         const fetchSkill = async () => {
@@ -68,22 +70,18 @@ const SkillDetails = () => {
             return;
         }
 
-        setEnrolling(true);
-        setEnrollmentError(null);
+        // Open the enrollment modal instead of direct enrollment
+        setShowEnrollmentModal(true);
+    };
 
-        try {
-            await skillService.enrollInSkill(skillId, user.userId);
-            setEnrollmentSuccess(true);
-            setIsEnrolled(true);
-            setTimeout(() => {
-                navigate('/profile');
-            }, 1500);
-        } catch (err) {
-            console.error('Enrollment failed:', err);
-            setEnrollmentError(err.message || 'Failed to enroll in the skill');
-        } finally {
-            setEnrolling(false);
-        }
+    const handleEnrollmentConfirm = (selectedPlan) => {
+        // Enrollment successful callback from modal
+        setShowEnrollmentModal(false);
+        setEnrollmentSuccess(true);
+        setIsEnrolled(true);
+        setTimeout(() => {
+            navigate('/profile');
+        }, 1500);
     };
 
     const handleUnenroll = async () => {
@@ -124,6 +122,25 @@ const SkillDetails = () => {
 
     return (
         <div className={styles.pageContainer}>
+            {/* Enrollment Modal */}
+            {showEnrollmentModal && skill && (
+                <EnrollmentModal
+                    skill={{
+                        ...skill,
+                        title: skill.name,
+                        image: skill.imageUrl,
+                        mentorName: mentor?.name || 'Mentor',
+                        priceCash: parseFloat(skill.price),
+                        priceCredits: Math.round(parseFloat(skill.price) * 10), // Example: 10 credits per dollar
+                        priceType: 'both' // Assume both payment options available
+                    }}
+                    skillId={skillId}
+                    userId={UserService.getUser()?.userId}
+                    onClose={() => setShowEnrollmentModal(false)}
+                    onEnroll={handleEnrollmentConfirm}
+                />
+            )}
+
             {/* Main Content */}
             <div className={styles.mainContent}>
                 {/* Hero Section */}
