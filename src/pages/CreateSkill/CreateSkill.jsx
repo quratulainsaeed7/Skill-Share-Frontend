@@ -25,6 +25,7 @@ const CreateSkill = () => {
         location: '',
         price: '',
         imageUrl: '',
+        totalLessons: '',
     });
 
     useEffect(() => {
@@ -72,6 +73,7 @@ const CreateSkill = () => {
                 location: formData.mode !== 'ONLINE' ? formData.location : null,
                 price: parseFloat(formData.price),
                 imageUrl: formData.imageUrl || null,
+                totalLessons: formData.totalLessons ? parseInt(formData.totalLessons) : null,
                 isActive: true,
             };
 
@@ -163,7 +165,7 @@ const CreateSkill = () => {
                                     <option value="">Select a category</option>
                                     {categories.map(category => (
                                         <option key={category.categoryId} value={category.categoryId}>
-                                            {category.categoryName}
+                                            {category.name}
                                         </option>
                                     ))}
                                 </select>
@@ -226,19 +228,37 @@ const CreateSkill = () => {
                             </div>
 
                             <div className={styles.formGroup}>
-                                <label htmlFor="imageUrl" className={styles.label}>
-                                    Image URL
+                                <label htmlFor="totalLessons" className={styles.label}>
+                                    Total Lessons
                                 </label>
                                 <input
-                                    type="url"
-                                    id="imageUrl"
-                                    name="imageUrl"
-                                    value={formData.imageUrl}
+                                    type="number"
+                                    id="totalLessons"
+                                    name="totalLessons"
+                                    value={formData.totalLessons}
                                     onChange={handleChange}
                                     className={styles.input}
-                                    placeholder="https://example.com/image.jpg"
+                                    placeholder="e.g., 10"
+                                    min="1"
+                                    max="100"
                                 />
+                                <small className={styles.fieldHint}>Number of lessons/checkpoints in this skill</small>
                             </div>
+                        </div>
+
+                        <div className={styles.formGroup}>
+                            <label htmlFor="imageUrl" className={styles.label}>
+                                Image URL
+                            </label>
+                            <input
+                                type="url"
+                                id="imageUrl"
+                                name="imageUrl"
+                                value={formData.imageUrl}
+                                onChange={handleChange}
+                                className={styles.input}
+                                placeholder="https://example.com/image.jpg"
+                            />
                         </div>
 
                         <div className={styles.formActions}>

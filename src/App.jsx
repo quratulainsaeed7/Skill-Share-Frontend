@@ -51,8 +51,6 @@ function App() {
               <Route path="users" element={<UserManagement />} />
               <Route path="categories" element={<CategoryManagement />} />
               <Route path="finance" element={<FinanceMonitoring />} />
-              <Route path="finance" element={<FinanceMonitoring />} />
-              <Route path="skills" element={<CategoryManagement />} /> {/* Mapping skills to categories for now, or use placeholder */}
             </Route>
 
             <Route element={<MainLayout />}>

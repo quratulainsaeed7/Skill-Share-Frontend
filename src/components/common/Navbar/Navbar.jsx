@@ -62,7 +62,7 @@ const Navbar = () => {
                 {
                     <>
                         {/* Learner Links */}
-                        {(userRole === 'learner' || userRole === 'BOTH') && (
+                        {(userRole === 'LEARNER' || userRole === 'BOTH') && (
                             <>
                                 <NavLink
                                     to="/dashboard"
@@ -80,7 +80,7 @@ const Navbar = () => {
                         )}
 
                         {/* Mentor Links */}
-                        {(userRole === 'mentor' || userRole === 'BOTH') && (
+                        {(userRole === 'MENTOR' || userRole === 'BOTH') && (
                             <NavLink
                                 to="/dashboard?view=mentor" // We'll handle this query param in Dashboard
                                 className={({ isActive }) => `${styles.navLink} ${isActive ? styles.active : ''}`}
@@ -90,15 +90,6 @@ const Navbar = () => {
                         )}
                     </>
                 }
-
-                {(
-                    <NavLink
-                        to="/mentors"
-                        className={({ isActive }) => `${styles.navLink} ${isActive ? styles.active : ''}`}
-                    >
-                        Mentors
-                    </NavLink>
-                )}
             </div>
 
             <div className={styles.actions}>

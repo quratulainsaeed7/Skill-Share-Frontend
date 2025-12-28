@@ -12,7 +12,7 @@
  */
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_SKILL_SERVICE_URL || 'http://localhost:4002';
+const API_BASE_URL = import.meta.env.VITE_SKILL_SERVICE_URL || 'http://localhost:4006';
 const SKILLS_ENDPOINT = `${API_BASE_URL}/skills`;
 const CATEGORIES_ENDPOINT = `${API_BASE_URL}/categories`;
 
@@ -177,10 +177,10 @@ export const SkillApi = {
      * @param {string} userId - Learner's user ID
      * @returns {Promise<Object>} Enrollment result
      */
-    enrollInSkill: async (skillId, userId) => {
+    enrollInSkill: async (skillId, userId, mentorId) => {
         return request(`${SKILLS_ENDPOINT}/${skillId}/enroll`, {
             method: 'POST',
-            body: JSON.stringify({ userId }),
+            body: JSON.stringify({ userId, mentorId }),
         });
     },
 
@@ -190,10 +190,10 @@ export const SkillApi = {
      * @param {string} userId - Learner's user ID
      * @returns {Promise<Object>} Unenrollment result with refund info
      */
-    unenrollFromSkill: async (skillId, userId) => {
+    unenrollFromSkill: async (skillId, userId, mentorId) => {
         return request(`${SKILLS_ENDPOINT}/${skillId}/unenroll`, {
             method: 'POST',
-            body: JSON.stringify({ userId }),
+            body: JSON.stringify({ userId, mentorId }),
         });
     },
 
@@ -207,6 +207,10 @@ export const SkillApi = {
             method: 'POST',
             body: JSON.stringify(skillData),
         });
+    },
+
+    getMentorId: async (userId) => {
+        return request(`${SKILLS_ENDPOINT}/mentor/${userId}/id`);
     },
 };
 

@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_USER_SERVICE_URL || 'http://localhost:4001';
+const API_BASE_URL = import.meta.env.VITE_USER_SERVICE_URL || 'http://localhost:4000';
 const USERS_ENDPOINT = `${API_BASE_URL}/users`;
 import axios from "axios";
 
@@ -124,6 +124,23 @@ export const UserApi = {
             body: JSON.stringify({ isVerified }),
         });
     },
+
+    // Verify email with token
+    verifyEmailWithToken: async (token) => {
+        return request(`${USERS_ENDPOINT}/verify-email`, {
+            method: 'POST',
+            body: JSON.stringify({ token }),
+        });
+    },
+
+    // Resend verification email
+    resendVerificationEmail: async (email) => {
+        return request(`${USERS_ENDPOINT}/resend-verification`, {
+            method: 'POST',
+            body: JSON.stringify({ email }),
+        });
+    },
+
     loginUser: async (credentials) => {
         return request(`${USERS_ENDPOINT}/login`, {
             method: 'POST',

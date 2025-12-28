@@ -15,7 +15,7 @@ const CategoryManagement = () => {
 
     const fetchCategories = async () => {
         try {
-            const res = await fetch('http://localhost:3004/admin/categories');
+            const res = await fetch(`${import.meta.env.VITE_ADMIN_SERVICE_URL || 'http://localhost:4008'}/admin/categories`);
             const data = await res.json();
             setCategories(data);
             setLoading(false);
@@ -28,9 +28,10 @@ const CategoryManagement = () => {
         e.preventDefault();
         const tagsArray = newCategory.tags.split(',').map(t => t.trim());
         try {
+            const baseUrl = import.meta.env.VITE_ADMIN_SERVICE_URL || 'http://localhost:4008';
             const url = editingCategoryId
-                ? `http://localhost:3004/admin/categories/${editingCategoryId}`
-                : 'http://localhost:3004/admin/categories';
+                ? `${baseUrl}/admin/categories/${editingCategoryId}`
+                : `${baseUrl}/admin/categories`;
             const method = editingCategoryId ? 'PATCH' : 'POST';
 
             await fetch(url, {
@@ -63,7 +64,7 @@ const CategoryManagement = () => {
     const handleDelete = async (id) => {
         if (!window.confirm('Are you sure?')) return;
         try {
-            await fetch(`http://localhost:3004/admin/categories/${id}`, { method: 'DELETE' });
+            await fetch(`${import.meta.env.VITE_ADMIN_SERVICE_URL || 'http://localhost:4008'}/admin/categories/${id}`, { method: 'DELETE' });
             fetchCategories();
         } catch (error) {
             console.error(error);

@@ -14,6 +14,13 @@ const Meetings = () => {
     const [selectedMentor, setSelectedMentor] = useState(null);
     const [messageInput, setMessageInput] = useState('');
     const [conversations, setConversations] = useState({});
+    const [showScheduleModal, setShowScheduleModal] = useState(false);
+    const [scheduleForm, setScheduleForm] = useState({
+        skillId: '',
+        date: '',
+        startTime: '',
+        endTime: ''
+    });
 
     // Backend data states
     const [upcomingMeetings, setUpcomingMeetings] = useState([]);
@@ -129,6 +136,29 @@ const Meetings = () => {
         } finally {
             setSendingMessage(false);
         }
+    };
+
+    const handleScheduleMeeting = async () => {
+        // Empty function call - no backend integration yet
+        console.log('Schedule meeting called with:', scheduleForm);
+        // TODO: Implement API call to schedule meeting for all students enrolled in the skill
+        // await bookingService.scheduleMeeting(scheduleForm);
+        
+        // Close modal and reset form
+        setShowScheduleModal(false);
+        setScheduleForm({
+            skillId: '',
+            date: '',
+            startTime: '',
+            endTime: ''
+        });
+    };
+
+    const handleScheduleFormChange = (field, value) => {
+        setScheduleForm(prev => ({
+            ...prev,
+            [field]: value
+        }));
     };
 
     const formatDate = (dateString) => {
@@ -281,22 +311,110 @@ const Meetings = () => {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h1 className={styles.title}>My Meetings</h1>
-                <div className={styles.tabs}>
-                    <button
-                        className={`${styles.tab} ${activeTab === 'meetings' ? styles.activeTab : ''}`}
-                        onClick={() => setActiveTab('meetings')}
-                    >
-                        Meetings
-                    </button>
-                    <button
-                        className={`${styles.tab} ${activeTab === 'messages' ? styles.activeTab : ''}`}
-                        onClick={() => setActiveTab('messages')}
-                    >
-                        Messages
-                    </button>
+                <div>
+                    <h1 className={styles.title}>My Meetings</h1>
+                    <div className={styles.tabs}>
+                        <button
+                            className={`${styles.tab} ${activeTab === 'meetings' ? styles.activeTab : ''}`}
+                            onClick={() => setActiveTab('meetings')}
+                        >
+                            Meetings
+                        </button>
+                        <button
+                            className={`${styles.tab} ${activeTab === 'messages' ? styles.activeTab : ''}`}
+                            onClick={() => setActiveTab('messages')}
+                        >
+                            Messages
+                        </button>
+                    </div>
                 </div>
+                {activeTab === 'meetings' && (userRole === 'mentor' || userRole === 'both') && (
+                    <Button 
+                        variant="primary" 
+                        onClick={() => setShowScheduleModal(true)}
+                        className={styles.scheduleButton}
+                    >
+                        + Schedule Meeting
+                    </Button>
+                )}
             </div>
+
+            {/* Schedule Meeting Modal */}
+            {showScheduleModal && (
+                <div className={styles.modalOverlay} onClick={() => setShowScheduleModal(false)}>
+                    <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+                        <div className={styles.modalHeader}>
+                            <h2>Schedule New Meeting</h2>
+                            <button 
+                                className={styles.closeButton}
+                                onClick={() => setShowScheduleModal(false)}
+                            >
+                                ✕
+                            </button>
+                        </div>
+                        <div className={styles.modalBody}>
+                            <div className={styles.formGroup}>
+                                <label htmlFor="skillId">Skill ID</label>
+                                <input
+                                    id="skillId"
+                                    type="text"
+                                    placeholder="Enter skill ID"
+                                    value={scheduleForm.skillId}
+                                    onChange={(e) => handleScheduleFormChange('skillId', e.target.value)}
+                                    className={styles.formInput}
+                                />
+                                <small className={styles.formHint}>All students enrolled in this skill will receive the meeting</small>
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label htmlFor="date">Meeting Date</label>
+                                <input
+                                    id="date"
+                                    type="date"
+                                    value={scheduleForm.date}
+                                    onChange={(e) => handleScheduleFormChange('date', e.target.value)}
+                                    className={styles.formInput}
+                                />
+                            </div>
+                            <div className={styles.formRow}>
+                                <div className={styles.formGroup}>
+                                    <label htmlFor="startTime">Start Time</label>
+                                    <input
+                                        id="startTime"
+                                        type="time"
+                                        value={scheduleForm.startTime}
+                                        onChange={(e) => handleScheduleFormChange('startTime', e.target.value)}
+                                        className={styles.formInput}
+                                    />
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label htmlFor="endTime">End Time</label>
+                                    <input
+                                        id="endTime"
+                                        type="time"
+                                        value={scheduleForm.endTime}
+                                        onChange={(e) => handleScheduleFormChange('endTime', e.target.value)}
+                                        className={styles.formInput}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div className={styles.modalFooter}>
+                            <Button 
+                                variant="outline" 
+                                onClick={() => setShowScheduleModal(false)}
+                            >
+                                Cancel
+                            </Button>
+                            <Button 
+                                variant="primary" 
+                                onClick={handleScheduleMeeting}
+                            >
+                                Schedule Meeting
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Loading State */}
             {loading && (
@@ -366,7 +484,29 @@ const Meetings = () => {
                                                             <span className={styles.detailIcon}>🕐</span>
                                                             <span>{formatTime(meeting.startTime, meeting.endTime)}</span>
                                                         </div>
+                                                        {meeting.totalLessons && (
+                                                            <div className={styles.detailItem}>
+                                                                <span className={styles.detailIcon}>📊</span>
+                                                                <span>Progress: {meeting.completedLessons || 0}/{meeting.totalLessons}</span>
+                                                            </div>
+                                                        )}
                                                     </div>
+
+                                                    {meeting.totalLessons && (
+                                                        <div className={styles.progressContainer}>
+                                                            <div className={styles.progressBar}>
+                                                                <div 
+                                                                    className={styles.progressFill}
+                                                                    style={{ 
+                                                                        width: `${((meeting.completedLessons || 0) / meeting.totalLessons) * 100}%` 
+                                                                    }}
+                                                                ></div>
+                                                            </div>
+                                                            <span className={styles.progressText}>
+                                                                {Math.round(((meeting.completedLessons || 0) / meeting.totalLessons) * 100)}% Complete
+                                                            </span>
+                                                        </div>
+                                                    )}
 
                                                     <div className={styles.actions}>
                                                         <Button variant="primary" onClick={() => alert('Zoom integration coming soon!')}>
@@ -442,7 +582,29 @@ const Meetings = () => {
                                                             <span className={styles.detailIcon}>🕐</span>
                                                             <span>{formatTime(meeting.startTime, meeting.endTime)}</span>
                                                         </div>
+                                                        {meeting.totalLessons && (
+                                                            <div className={styles.detailItem}>
+                                                                <span className={styles.detailIcon}>📊</span>
+                                                                <span>Progress: {meeting.completedLessons || 0}/{meeting.totalLessons}</span>
+                                                            </div>
+                                                        )}
                                                     </div>
+
+                                                    {meeting.totalLessons && (
+                                                        <div className={styles.progressContainer}>
+                                                            <div className={styles.progressBar}>
+                                                                <div 
+                                                                    className={styles.progressFill}
+                                                                    style={{ 
+                                                                        width: `${((meeting.completedLessons || 0) / meeting.totalLessons) * 100}%` 
+                                                                    }}
+                                                                ></div>
+                                                            </div>
+                                                            <span className={styles.progressText}>
+                                                                {Math.round(((meeting.completedLessons || 0) / meeting.totalLessons) * 100)}% Complete
+                                                            </span>
+                                                        </div>
+                                                    )}
 
                                                     <div className={styles.actions}>
                                                         {meeting.status === 'completed' && (

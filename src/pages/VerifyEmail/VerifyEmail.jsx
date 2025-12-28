@@ -10,9 +10,18 @@ import ProfileService from '../../services/profileService';
 
 const VerifyEmail = () => {
     const [searchParams] = useSearchParams();
+    const token = searchParams.get('token');
     const email = searchParams.get('email');
     const navigate = useNavigate();
     const [verifying, setVerifying] = useState(false);
+    const [error, setError] = useState(null);
+
+    // Auto-verify if token is present in URL
+    useEffect(() => {
+        if (token) {
+            handleVerifyWithToken();
+        }
+    }, [token]);
 
     useEffect(() => {
         // Check verification status via UserService (centralized)
@@ -20,9 +29,9 @@ const VerifyEmail = () => {
             try {
                 const user = UserService.getUser();
                 const profileComplete = ProfileService.isUserProfileComplete(); // Placeholder for profile completeness check
-                if (user?.isVerified === true) {
+                if (user?.isVerified === true || user?.emailVerified === true) {
                     // check user profile completeness
-                    if (profileComplete) {
+                    if (profileComplete == true) {
                         navigate('/dashboard');
                     } else {
                         navigate('/complete-profile');
@@ -36,16 +45,52 @@ const VerifyEmail = () => {
     }, [navigate]);
 
 
-    const handleVerify = async () => {
+    const handleVerifyWithToken = async () => {
+        if (!token) {
+            setError('No verification token provided');
+            return;
+        }
+
         setVerifying(true);
+        setError(null);
         try {
-            await UserService.verifyEmail();
+            const response = await UserService.verifyEmailWithToken(token);
+            
+            // Update user in session storage
+            const user = UserService.getUser();
+            if (user) {
+                user.emailVerified = true;
+                user.isVerified = true;
+                UserService.setUser(user);
+            }
+
             alert('Email verified successfully!');
-            navigate('/dashboard');
+            
+            const profileComplete = await ProfileService.isUserProfileComplete();
+            if (profileComplete == true) {
+                navigate('/dashboard');
+            } else {
+                navigate('/complete-profile');
+            }
         } catch (err) {
-            alert(err.message);
+            setError(err.message || 'Verification failed');
+            alert(err.message || 'Verification failed');
         } finally {
             setVerifying(false);
+        }
+    };
+
+    const handleResendEmail = async () => {
+        if (!email) {
+            alert('Email address not found. Please register again.');
+            return;
+        }
+
+        try {
+            await UserService.resendVerificationEmail(email);
+            alert('Verification email sent! Please check your inbox.');
+        } catch (err) {
+            alert(err.message || 'Failed to resend email');
         }
     };
 
@@ -54,17 +99,23 @@ const VerifyEmail = () => {
             <Card padding="lg">
                 <MdEmail style={{ fontSize: '4rem', color: 'var(--color-primary)', marginBottom: '1rem' }} />
                 <h1>Verify Your Email</h1>
-                <p style={{ color: 'var(--color-text-secondary)', margin: '1rem 0' }}>
-                    We've sent a verification email to <strong>{email}</strong>.
-                    <br />Please click the link in that email to activate your account.
-                </p>
+                
+                {token ? (
+                    <p style={{ color: 'var(--color-text-secondary)', margin: '1rem 0' }}>
+                        {verifying ? 'Verifying your email...' : error ? error : 'Email verified!'}
+                    </p>
+                ) : (
+                    <p style={{ color: 'var(--color-text-secondary)', margin: '1rem 0' }}>
+                        We've sent a verification email to {email && <strong>{email}</strong>}.
+                        <br />Please click the link in that email to activate your account.
+                    </p>
+                )}
 
-                <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    <Button variant="secondary" onClick={handleVerify} disabled={verifying}>
-                        {verifying ? 'Verifying...' : 'Verify Now (Demo)'}
-                    </Button>
-                    <Button variant="outline">Resend Email</Button>
-                </div>
+                {!token && (
+                    <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        <Button variant="outline" onClick={handleResendEmail}>Resend Email</Button>
+                    </div>
+                )}
             </Card>
         </div>
     );

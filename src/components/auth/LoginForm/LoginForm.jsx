@@ -31,21 +31,15 @@ const LoginForm = () => {
         setError('');
 
         try {
-            const user = await UserService.loginUser(formData);
-
-            if (user.data.isVerified === false) {
-
-                navigate('/verify-email');
-                return;
+            await UserService.loginUser(formData);
+            const profileComplete = await ProfileService.isUserProfileComplete();
+            console.log(profileComplete);
+            if (profileComplete == true) {
+                navigate('/dashboard');
             }
-
-            const userProfile = await ProfileService.getUserProfile();
-            console.log('User profile:', userProfile);
-            if (!userProfile.profileId) {
+            else {
                 navigate('/complete-profile');
-                return;
             }
-            navigate('/dashboard');
         } catch (err) {
             setError(err.message);
         } finally {

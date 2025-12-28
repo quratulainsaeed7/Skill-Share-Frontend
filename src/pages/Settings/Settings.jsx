@@ -39,9 +39,10 @@ const Settings = () => {
 
     return (
         <div className={styles.container}>
-            <h1 className={styles.pageTitle}>Settings</h1>
+            <div className={styles.contentWrapper}>
+                <h1 className={styles.pageTitle}>Settings</h1>
 
-            <div className={styles.section}>
+                <div className={styles.section}>
                 <h2 className={styles.sectionTitle}>Privacy Settings</h2>
                 <Card className={styles.card}>
                     <div className={styles.settingItem}>
@@ -59,8 +60,6 @@ const Settings = () => {
                         </label>
                     </div>
 
-                    <div className={styles.divider}></div>
-
                     <div className={styles.settingItem}>
                         <div className={styles.settingInfo}>
                             <h3>Show Completed Courses</h3>
@@ -75,8 +74,6 @@ const Settings = () => {
                             <span className={styles.slider}></span>
                         </label>
                     </div>
-
-                    <div className={styles.divider}></div>
 
                     <div className={styles.settingItem}>
                         <div className={styles.settingInfo}>
@@ -103,6 +100,7 @@ const Settings = () => {
                         <Button onClick={handleLogout} variant="outline" className={styles.logoutBtn}>Log Out</Button>
                     </div>
                 </Card>
+            </div>
             </div>
         </div>
     );
