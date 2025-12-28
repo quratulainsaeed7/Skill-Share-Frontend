@@ -3,28 +3,34 @@ import React from 'react';
 import SkillCard from '../SkillCard/SkillCard';
 import styles from './SkillList.module.css';
 import { MdSearchOff } from 'react-icons/md';
-import Button from '../../common/Button/Button';
 
-const SkillList = ({ skills, viewMode, loading, onClearFilters }) => {
+const SkillList = ({ skills, loading, onClearFilters }) => {
     if (loading) {
-        return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading skills...</div>;
+        return (
+            <div className={styles.loading}>
+                <div className={styles.spinner}></div>
+                <p>Finding the best skills for you...</p>
+            </div>
+        );
     }
 
     if (skills.length === 0) {
         return (
-            <div className={styles.noResults}>
-                <MdSearchOff className={styles.icon} />
-                <h2>No skills found</h2>
-                <p>Try adjusting your search or filters to find what you're looking for.</p>
-                <Button onClick={onClearFilters}>Clear Filters</Button>
+            <div className={styles.empty}>
+                <MdSearchOff />
+                <h3>No skills found</h3>
+                <p>Try adjusting your filters or search terms</p>
+                <button onClick={onClearFilters} className={styles.clearBtn}>
+                    Clear all filters
+                </button>
             </div>
         );
     }
 
     return (
-        <div className={viewMode === 'grid' ? styles.grid : styles.list}>
+        <div className={styles.grid}>
             {skills.map(skill => (
-                <SkillCard key={skill.skillId} skill={skill} viewMode={viewMode} />
+                <SkillCard key={skill.skillId} skill={skill} />
             ))}
         </div>
     );

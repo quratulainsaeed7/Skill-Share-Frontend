@@ -1,6 +1,6 @@
 // src/components/auth/LoginForm/LoginForm.jsx
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Button from '../../common/Button/Button';
 import Input from '../../common/Input/Input';
 
@@ -10,7 +10,6 @@ import ProfileService from '../../../services/profileService';
 
 const LoginForm = () => {
     const navigate = useNavigate();
-
 
     const [formData, setFormData] = useState({
         email: '',
@@ -50,51 +49,42 @@ const LoginForm = () => {
     return (
         <form onSubmit={handleSubmit} className={styles.form}>
             {error && (
-                <div style={{
-                    padding: '1rem',
-                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                    color: 'var(--color-error)',
-                    borderRadius: 'var(--border-radius-md)',
-                    fontSize: '0.875rem'
-                }}>
+                <div className={styles.errorAlert}>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm1 13H7V7h2v6zm0-8H7V3h2v2z"/>
+                    </svg>
                     {error}
                 </div>
             )}
 
-            <Input
-                label="Email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                placeholder="Enter your email"
-                autoFocus
-            />
-
-            <Input
-                label="Password"
-                type="password"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                placeholder="Enter your password"
-            />
-
-            <div className={styles.options}>
-                <label className={styles.checkboxLabel}>
-                    <input
-                        type="checkbox"
-                        checked={formData.rememberMe}
-                        onChange={(e) => setFormData({ ...formData, rememberMe: e.target.checked })}
-                    />
-                    Remember me
-                </label>
-                <Link to="/forgot-password" className={styles.forgotPassword}>
-                    Forgot Password?
-                </Link>
+            <div className={styles.inputGroup}>
+                <Input
+                    label="Email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    placeholder="Enter your email"
+                    autoFocus
+                />
             </div>
 
-            <Button type="submit" fullWidth disabled={loading}>
-                {loading ? 'Logging in...' : 'Login'}
+            <div className={styles.inputGroup}>
+                <Input
+                    label="Password"
+                    type="password"
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    placeholder="Enter your password"
+                />
+            </div>
+
+            <Button type="submit" fullWidth disabled={loading} className={styles.submitButton}>
+                {loading ? 'Logging in...' : 'Log in'}
             </Button>
+
+            <div className={styles.forgotPasswordLink}>
+                <a href="/forgot-password">Forgot Password?</a>
+            </div>
         </form>
     );
 };

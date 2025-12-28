@@ -1,0 +1,205 @@
+/* src/pages/Login/Login.module.css */
+.container {
+    min-height: 100vh;
+    display: flex;
+    background: #ffffff;
+}
+
+/* Left Panel - Branding */
+.leftPanel {
+    flex: 1;
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #06b6d4 100%);
+    padding: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.leftPanel::before {
+    content: '';
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    top: -200px;
+    right: -200px;
+    border-radius: 50%;
+}
+
+.leftPanel::after {
+    content: '';
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+    bottom: -100px;
+    left: -100px;
+    border-radius: 50%;
+}
+
+.brandingContent {
+    max-width: 500px;
+    color: white;
+    position: relative;
+    z-index: 1;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 3rem;
+}
+
+.logoIcon {
+    font-size: 2.5rem;
+    color: white;
+}
+
+.logoText {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.welcomeTitle {
+    font-size: 3rem;
+    font-weight: 800;
+    margin: 0 0 1rem 0;
+    line-height: 1.1;
+}
+
+.welcomeSubtitle {
+    font-size: 1.125rem;
+    line-height: 1.6;
+    opacity: 0.9;
+    margin-bottom: 3rem;
+}
+
+.features {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.feature {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.25rem;
+}
+
+.featureIcon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    margin-top: 0.25rem;
+    opacity: 0.9;
+}
+
+.feature h3 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.feature p {
+    margin: 0;
+    font-size: 0.9375rem;
+    opacity: 0.8;
+    line-height: 1.5;
+}
+
+/* Right Panel - Form */
+.rightPanel {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    background: #fafafa;
+}
+
+.formWrapper {
+    width: 100%;
+    max-width: 440px;
+}
+
+.formHeader {
+    margin-bottom: 2.5rem;
+}
+
+.formTitle {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 0.5rem 0;
+    letter-spacing: -0.02em;
+}
+
+.formSubtitle {
+    font-size: 0.9375rem;
+    color: #6b7280;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.signupPrompt {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e5e7eb;
+    text-align: center;
+    font-size: 0.9375rem;
+    color: #6b7280;
+}
+
+.signupLink {
+    color: #3b82f6;
+    font-weight: 600;
+    text-decoration: none;
+    margin-left: 0.5rem;
+    transition: color 0.2s ease;
+}
+
+.signupLink:hover {
+    color: #2563eb;
+    text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .container {
+        flex-direction: column;
+    }
+    
+    .leftPanel {
+        padding: 3rem 2rem;
+        min-height: auto;
+    }
+    
+    .welcomeTitle {
+        font-size: 2rem;
+    }
+    
+    .features {
+        display: none;
+    }
+}
+
+@media (max-width: 640px) {
+    .leftPanel {
+        padding: 2rem 1.5rem;
+    }
+    
+    .rightPanel {
+        padding: 2rem 1.5rem;
+    }
+    
+    .welcomeTitle {
+        font-size: 1.75rem;
+    }
+    
+    .formTitle {
+        font-size: 1.5rem;
+    }
+}

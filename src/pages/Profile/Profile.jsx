@@ -207,17 +207,6 @@ const Profile = () => {
                                 <p>{user.learnerProfile.goals}</p>
                             </div>
                         )}
-
-                        {user.learnerProfile.interests && user.learnerProfile.interests.length > 0 && (
-                            <div className={styles.interestsSection}>
-                                <h4>Interests</h4>
-                                <div className={styles.tags}>
-                                    {user.learnerProfile.interests.map((interest, idx) => (
-                                        <span key={idx} className={styles.tag}>{interest}</span>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
                     </div>
                 )}
             </Card>
@@ -233,12 +222,6 @@ const Profile = () => {
                         <Card className={styles.statCard}>
                             <div className={styles.statValue}>{mentors.length}</div>
                             <div className={styles.statLabel}>Active Mentors</div>
-                        </Card>
-                        <Card className={styles.statCard}>
-                            <div className={styles.statValue}>
-                                {user.learnerProfile?.interests?.length || 0}
-                            </div>
-                            <div className={styles.statLabel}>Interests</div>
                         </Card>
                     </>
                 )}
@@ -260,14 +243,6 @@ const Profile = () => {
                         </Card>
                     </>
                 )}
-                <Card className={styles.statCard}>
-                    <div className={styles.statValue}>24</div>
-                    <div className={styles.statLabel}>Hours Spent</div>
-                </Card>
-                <Card className={styles.statCard}>
-                    <div className={styles.statValue}>12</div>
-                    <div className={styles.statLabel}>Completed Sessions</div>
-                </Card>
                 <Card className={styles.statCard}>
                     <div className={styles.statValue}>8</div>
                     <div className={styles.statLabel}>Certificates</div>

@@ -2,15 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import SkillFilter from '../../components/skills/SkillFilter/SkillFilter';
 import SkillList from '../../components/skills/SkillList/SkillList';
-import Input from '../../components/common/Input/Input';
 import { skillService } from '../../services/skillService';
 import styles from './Skills.module.css';
-import { MdGridView, MdViewList } from 'react-icons/md';
+import { MdSearch, MdTune, MdClose } from 'react-icons/md';
 
 const Skills = () => {
     const [skills, setSkills] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [viewMode, setViewMode] = useState('grid');
+    const [showFilters, setShowFilters] = useState(false);
     const [filters, setFilters] = useState({
         search: '',
         categories: [],
@@ -68,55 +67,84 @@ const Skills = () => {
 
     return (
         <div className={styles.container}>
-            <SkillFilter filters={filters} onFilterChange={handleFilterChange} />
-
-            <div className={styles.content}>
-                <div className={styles.toolbar}>
-                    <div className={styles.searchBar}>
-                        <Input
-                            placeholder="Search skills, mentors, or categories..."
-                            value={filters.search}
-                            onChange={(e) => handleFilterChange('search', e.target.value)}
-                            className={styles.searchInput}
-                        />
-                    </div>
-
-                    <div className={styles.controls}>
-                        <select
-                            value={filters.sortBy}
-                            onChange={(e) => handleFilterChange('sortBy', e.target.value)}
-                            style={{ padding: '8px', borderRadius: '4px', marginRight: '1rem' }}
+            {/* Compact Search Header */}
+            <div className={styles.searchHeader}>
+                <div className={styles.searchWrapper}>
+                    <MdSearch className={styles.searchIcon} />
+                    <input
+                        type="text"
+                        placeholder="Search skills, mentors, categories..."
+                        value={filters.search}
+                        onChange={(e) => handleFilterChange('search', e.target.value)}
+                        className={styles.searchInput}
+                    />
+                    <button 
+                        className={styles.filterBtn}
+                        onClick={() => setShowFilters(!showFilters)}
+                    >
+                        <MdTune />
+                        <span>Filters</span>
+                    </button>
+                </div>
+                
+                <div className={styles.searchMeta}>
+                    <span className={styles.resultsText}>
+                        {loading ? 'Searching...' : `${skills.length} results`}
+                    </span>
+                    <div className={styles.sortOptions}>
+                        <button
+                            className={`${styles.sortOption} ${filters.sortBy === 'relevance' ? styles.active : ''}`}
+                            onClick={() => handleFilterChange('sortBy', 'relevance')}
                         >
-                            <option value="relevance">Relevance</option>
-                            <option value="highest_rated">Highest Rated</option>
-                            <option value="lowest_price">Lowest Price</option>
-                            <option value="highest_price">Highest Price</option>
-                        </select>
-
-                        <div className={styles.viewToggle}>
-                            <button
-                                className={`${styles.viewBtn} ${viewMode === 'grid' ? styles.active : ''}`}
-                                onClick={() => setViewMode('grid')}
-                            >
-                                <MdGridView />
-                            </button>
-                            <button
-                                className={`${styles.viewBtn} ${viewMode === 'list' ? styles.active : ''}`}
-                                onClick={() => setViewMode('list')}
-                            >
-                                <MdViewList />
-                            </button>
-                        </div>
+                            Most Relevant
+                        </button>
+                        <button
+                            className={`${styles.sortOption} ${filters.sortBy === 'highest_rated' ? styles.active : ''}`}
+                            onClick={() => handleFilterChange('sortBy', 'highest_rated')}
+                        >
+                            Top Rated
+                        </button>
+                        <button
+                            className={`${styles.sortOption} ${filters.sortBy === 'lowest_price' ? styles.active : ''}`}
+                            onClick={() => handleFilterChange('sortBy', 'lowest_price')}
+                        >
+                            Lowest Price
+                        </button>
+                        <button
+                            className={`${styles.sortOption} ${filters.sortBy === 'highest_price' ? styles.active : ''}`}
+                            onClick={() => handleFilterChange('sortBy', 'highest_price')}
+                        >
+                            Highest Price
+                        </button>
                     </div>
                 </div>
-
-                <SkillList
-                    skills={skills}
-                    viewMode={viewMode}
-                    loading={loading}
-                    onClearFilters={() => handleFilterChange('reset')}
-                />
             </div>
+
+            {/* Main Layout */}
+            <div className={styles.mainLayout}>
+                {/* Filter Sidebar */}
+                <aside className={`${styles.filterSidebar} ${showFilters ? styles.open : ''}`}>
+                    <div className={styles.filterHeader}>
+                        <h2>Filters</h2>
+                        <button onClick={() => setShowFilters(false)} className={styles.closeBtn}>
+                            <MdClose />
+                        </button>
+                    </div>
+                    <SkillFilter filters={filters} onFilterChange={handleFilterChange} />
+                </aside>
+
+                {/* Skills Grid */}
+                <main className={styles.skillsMain}>
+                    <SkillList
+                        skills={skills}
+                        loading={loading}
+                        onClearFilters={() => handleFilterChange('reset')}
+                    />
+                </main>
+            </div>
+
+            {/* Mobile Overlay */}
+            {showFilters && <div className={styles.backdrop} onClick={() => setShowFilters(false)} />}
         </div>
     );
 };

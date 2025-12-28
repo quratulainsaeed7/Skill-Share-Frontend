@@ -1,12 +1,10 @@
 // src/components/skills/SkillCard/SkillCard.jsx
 import React from 'react';
-import { MdStar, MdLocationOn, MdComputer } from 'react-icons/md';
-import Button from '../../common/Button/Button';
+import { MdStar, MdLocationOn, MdVideocam } from 'react-icons/md';
 import styles from './SkillCard.module.css';
-import clsx from 'clsx';
 import { Link } from 'react-router-dom';
 
-const SkillCard = ({ skill, viewMode = 'grid' }) => {
+const SkillCard = ({ skill }) => {
     const {
         skillId,
         name,
@@ -23,64 +21,47 @@ const SkillCard = ({ skill, viewMode = 'grid' }) => {
     } = skill;
 
     return (
-        <div className={clsx(styles.card, { [styles.listView]: viewMode === 'list' })}>
-            <div className={styles.imageContainer}>
-                <span className={styles.categoryBadge}>{category?.name || 'Uncategorized'}</span>
+        <Link to={`/skills/${skillId}`} className={styles.card}>
+            <div className={styles.imageWrapper}>
                 <img src={imageUrl} alt={name} className={styles.image} />
-                <Link to={`/skills/${skillId}`} className={styles.overlay}>
-                    View Details
-                </Link>
+                <div className={styles.categoryTag}>{category?.name || 'Uncategorized'}</div>
             </div>
 
-            <div className={styles.content}>
-                <div>
-                    <Link to={`/skills/${skillId}`}>
-                        <h3 className={styles.title}>{name}</h3>
-                    </Link>
-                    {rating && (
-                        <div className={styles.rating}>
-                            <MdStar className={styles.star} />
-                            <span>{rating}</span>
-                            <span>({reviewsCount || 0})</span>
-                        </div>
+            <div className={styles.cardBody}>
+                <h3 className={styles.title}>{name}</h3>
+                
+                <div className={styles.mentor}>
+                    {mentorAvatar && (
+                        <img src={mentorAvatar} alt={mentorName} className={styles.mentorAvatar} />
                     )}
+                    <span className={styles.mentorName}>{mentorName}</span>
                 </div>
 
-                {viewMode === 'list' && <p className={styles.description}>{description}</p>}
-
-                {mentorName && (
-                    <div className={styles.mentorInfo}>
-                        {mentorAvatar && <img src={mentorAvatar} alt={mentorName} className={styles.avatar} />}
-                        <span>{mentorName}</span>
+                <div className={styles.cardFooter}>
+                    <div className={styles.meta}>
+                        {rating && (
+                            <div className={styles.rating}>
+                                <MdStar />
+                                <span>{rating}</span>
+                            </div>
+                        )}
+                        {mode && (
+                            <div className={styles.mode}>
+                                <MdVideocam />
+                                <span>{mode}</span>
+                            </div>
+                        )}
                     </div>
-                )}
-
-                <div className={styles.meta}>
-                    {location && (
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            <MdLocationOn /> {location}
-                        </span>
-                    )}
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <MdComputer /> {mode}
-                    </span>
-                </div>
-
-                <div className={styles.priceContainer}>
+                    
                     {price && (
                         <div className={styles.price}>
-                            ${parseFloat(price).toLocaleString()} <span className={styles.priceText}>/hr</span>
+                            ${parseFloat(price).toFixed(0)}
+                            <span>/hr</span>
                         </div>
                     )}
                 </div>
-
-                <div className={styles.viewButton}>
-                    <Link to={`/skills/${skillId}`}>
-                        <Button variant="outline" fullWidth size="sm">View Details</Button>
-                    </Link>
-                </div>
             </div>
-        </div>
+        </Link>
     );
 };
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { skillService } from '../../services/skillService';
 import UserService from '../../services/userService';
+import styles from './MentorDashboard.module.css';
 
 const MentorDashboard = () => {
     const [bookings, setBookings] = useState([]);
@@ -49,12 +50,7 @@ const MentorDashboard = () => {
                 marginBottom: '3rem'
             }}>
                 {analytics.map((stat, index) => (
-                    <div key={index} style={{
-                        padding: '1.5rem',
-                        backgroundColor: 'var(--bg-card)',
-                        border: '1px solid var(--border-color)',
-                        borderRadius: '12px'
-                    }}>
+                    <div key={index} className={styles.analyticsCard}>
                         <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
                             {stat.label}
                         </div>
@@ -74,12 +70,7 @@ const MentorDashboard = () => {
             {/* My Bookings / Students */}
             <div>
                 <h2 style={{ marginBottom: '1.5rem', fontSize: '1.5rem' }}>My Bookings</h2>
-                <div style={{
-                    backgroundColor: 'var(--bg-card)',
-                    border: '1px solid var(--border-color)',
-                    borderRadius: '12px',
-                    overflow: 'hidden'
-                }}>
+                <div className={styles.bookingsContainer}>
                     <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                         <thead style={{ backgroundColor: 'var(--bg-secondary)' }}>
                             <tr>

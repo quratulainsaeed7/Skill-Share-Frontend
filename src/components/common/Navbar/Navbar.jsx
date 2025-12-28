@@ -63,29 +63,31 @@ const Navbar = () => {
                     <>
                         {/* Learner Links */}
                         {(userRole === 'LEARNER' || userRole === 'BOTH') && (
-                            <>
-                                <NavLink
-                                    to="/dashboard"
-                                    className={({ isActive }) => `${styles.navLink} ${isActive ? styles.active : ''}`}
-                                >
-                                    My Learnings
-                                </NavLink>
-                                <NavLink
-                                    to="/meetings"
-                                    className={({ isActive }) => `${styles.navLink} ${isActive ? styles.active : ''}`}
-                                >
-                                    My Meetings
-                                </NavLink>
-                            </>
+                            <NavLink
+                                to="/dashboard"
+                                className={({ isActive }) => `${styles.navLink} ${isActive ? styles.active : ''}`}
+                            >
+                                My Learnings
+                            </NavLink>
                         )}
 
                         {/* Mentor Links */}
                         {(userRole === 'MENTOR' || userRole === 'BOTH') && (
                             <NavLink
-                                to="/dashboard?view=mentor" // We'll handle this query param in Dashboard
+                                to="/dashboard?view=mentor"
                                 className={({ isActive }) => `${styles.navLink} ${isActive ? styles.active : ''}`}
                             >
                                 My Bookings
+                            </NavLink>
+                        )}
+
+                        {/* My Meetings - Show for both Learners and Mentors, but only once */}
+                        {(userRole === 'LEARNER' || userRole === 'MENTOR' || userRole === 'BOTH') && (
+                            <NavLink
+                                to="/meetings"
+                                className={({ isActive }) => `${styles.navLink} ${isActive ? styles.active : ''}`}
+                            >
+                                My Meetings
                             </NavLink>
                         )}
                     </>

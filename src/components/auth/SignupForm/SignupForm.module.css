@@ -2,103 +2,156 @@
 .form {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-4);
+    gap: 0;
     width: 100%;
-    max-width: 480px;
-    margin: 0 auto;
 }
 
-.row {
-    display: flex;
-    gap: var(--spacing-4);
+.inputGroup {
+    margin-bottom: 1.25rem;
 }
 
-.terms {
+.errorAlert {
     display: flex;
     align-items: center;
-    gap: var(--spacing-2);
-    font-size: var(--font-size-sm);
-    color: var(--color-text-secondary);
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    background: #fef2f2;
+    border-left: 3px solid #ef4444;
+    border-radius: 6px;
+    color: #dc2626;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
 }
 
-.roles {
+.roleSelect {
+    margin-bottom: 1rem;
+}
+
+.roleLabel {
+    display: block;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #111827;
+    margin-bottom: 0.75rem;
+}
+
+.roleButtons {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: var(--spacing-3);
-    margin-bottom: var(--spacing-2);
+    gap: 0.625rem;
 }
 
-.roleCard {
-    border: 2px solid var(--color-border);
-    border-radius: var(--border-radius-lg);
-    padding: var(--spacing-3);
-    text-align: center;
-    cursor: pointer;
-    transition: all var(--transition-fast);
-    background-color: var(--color-bg-card);
+.roleButton {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--spacing-2);
+    gap: 0.375rem;
+    padding: 0.875rem 0.5rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    background: white;
+    color: #374151;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
-.roleCard:hover {
-    border-color: var(--color-primary-light);
+.roleButton:hover {
+    border-color: #10b981;
+    background: #f0fdf4;
+    transform: translateY(-2px);
 }
 
-.roleCard.selected {
-    border-color: var(--color-primary);
-    background-color: rgba(99, 102, 241, 0.05);
+.roleButton.roleActive {
+    border-color: #10b981;
+    background: #10b981;
+    color: white;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 .roleIcon {
-    font-size: var(--font-size-2xl);
-    color: var(--color-text-muted);
+    font-size: 1.25rem;
 }
 
-.roleCard.selected .roleIcon {
-    color: var(--color-primary);
-}
-
-.roleTitle {
-    font-weight: var(--font-weight-bold);
-    font-size: var(--font-size-sm);
-}
-
-.roleDesc {
-    font-size: var(--font-size-xs);
-    color: var(--color-text-muted);
-    line-height: 1.2;
-}
-
-.passwordStrength {
+.checkbox {
     display: flex;
-    gap: var(--spacing-1);
-    margin-top: var(--spacing-1);
-    height: 4px;
+    align-items: flex-start;
+    gap: 0.625rem;
+    font-size: 0.8125rem;
+    color: #374151;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    line-height: 1.5;
 }
 
-.strengthBar {
-    flex: 1;
-    background-color: var(--color-border);
-    border-radius: var(--border-radius-full);
-    transition: background-color var(--transition-fast);
+.checkbox input[type="checkbox"] {
+    margin-top: 0.25rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    accent-color: #10b981;
 }
 
-.strengthBar.active {
-    background-color: var(--color-error);
+.checkboxLink {
+    color: #10b981;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s ease;
 }
 
-.strengthBar.medium {
-    background-color: var(--color-warning);
+.checkboxLink:hover {
+    color: #059669;
 }
 
-.strengthBar.strong {
-    background-color: var(--color-success);
+.errorText {
+    display: block;
+    color: #dc2626;
+    font-size: 0.8125rem;
+    margin-top: -1rem;
+    margin-bottom: 1rem;
 }
 
-@media (max-width: 600px) {
-    .roles {
+.submitButton {
+    margin-top: 0.5rem;
+    padding: 0.875rem;
+    font-size: 1rem;
+    font-weight: 600;
+    background: #10b981;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.submitButton:hover:not(:disabled) {
+    background: #059669;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.submitButton:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.submitButton:disabled {
+    background: #d1d5db;
+    cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+    .roleButtons {
         grid-template-columns: 1fr;
     }
 }
+
+@media (max-width: 600px) {
+    .roleButtons {
+        grid-template-columns: 1fr;
+    }
+}
+    .roles {
+        grid-template-columns: 1fr;
+    }
