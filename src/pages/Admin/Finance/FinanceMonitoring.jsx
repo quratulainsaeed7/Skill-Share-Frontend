@@ -5,7 +5,7 @@ import styles from './FinanceMonitoring.module.css';
 const FinanceMonitoring = () => {
     const [payments, setPayments] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [sortConfig, setSortConfig] = useState({ key: 'created_at', direction: 'desc' });
+    const [sortConfig, setSortConfig] = useState({ key: 'createdAt', direction: 'desc' });
 
     useEffect(() => {
         const fetchFinance = async () => {
@@ -43,7 +43,7 @@ const FinanceMonitoring = () => {
         if (sortConfig.key === 'amount') {
             aVal = parseFloat(aVal);
             bVal = parseFloat(bVal);
-        } else if (sortConfig.key === 'created_at') {
+        } else if (sortConfig.key === 'createdAt') {
             aVal = new Date(aVal);
             bVal = new Date(bVal);
         } else {
@@ -63,7 +63,7 @@ const FinanceMonitoring = () => {
             p.paymentId,
             p.amount,
             p.status,
-            new Date(p.created_at).toLocaleDateString()
+            new Date(p.createdAt).toLocaleDateString()
         ]);
 
         const csvContent = [
@@ -117,8 +117,8 @@ const FinanceMonitoring = () => {
                             <th onClick={() => handleSort('status')} style={{ cursor: 'pointer' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>Status {getSortIcon('status')}</div>
                             </th>
-                            <th onClick={() => handleSort('created_at')} style={{ cursor: 'pointer' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>Date {getSortIcon('created_at')}</div>
+                            <th onClick={() => handleSort('createdAt')} style={{ cursor: 'pointer' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>Date {getSortIcon('createdAt')}</div>
                             </th>
                         </tr>
                     </thead>
@@ -128,7 +128,7 @@ const FinanceMonitoring = () => {
                                 <td>{p.paymentId}</td>
                                 <td>${p.amount}</td>
                                 <td>{p.status}</td>
-                                <td>{new Date(p.created_at).toLocaleDateString()}</td>
+                                <td>{new Date(p.createdAt).toLocaleDateString()}</td>
                             </tr>
                         ))}
                     </tbody>
