@@ -28,8 +28,6 @@ const AdminLayout = () => {
         { path: '/admin/users', label: 'User Management', icon: <MdPeople /> },
         { path: '/admin/skills', label: 'Skills & Courses', icon: <MdClass /> },
         { path: '/admin/finance', label: 'Finance', icon: <MdAttachMoney /> },
-        { path: '/admin/reports', label: 'Reports', icon: <MdAnalytics /> },
-        { path: '/admin/settings', label: 'Settings', icon: <MdSettings /> },
     ];
 
     return (

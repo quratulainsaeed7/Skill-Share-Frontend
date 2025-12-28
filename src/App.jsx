@@ -25,10 +25,7 @@ import AdminLayout from './layouts/AdminLayout/AdminLayout';
 import AdminDashboard from './pages/Admin/Dashboard/AdminDashboard';
 import UserManagement from './pages/Admin/Users/UserManagement';
 import CategoryManagement from './pages/Admin/Categories/CategoryManagement';
-import ModerationDashboard from './pages/Admin/Moderation/ModerationDashboard';
 import FinanceMonitoring from './pages/Admin/Finance/FinanceMonitoring';
-import ReportsAnalytics from './pages/Admin/Reports/ReportsAnalytics';
-import BookingOversight from './pages/Admin/Bookings/BookingOversight';
 
 // Protected Route Wrapper - uses UserService for auth check
 const ProtectedRoute = () => {
@@ -53,12 +50,9 @@ function App() {
               <Route path="dashboard" element={<AdminDashboard />} />
               <Route path="users" element={<UserManagement />} />
               <Route path="categories" element={<CategoryManagement />} />
-              <Route path="moderation" element={<ModerationDashboard />} />
               <Route path="finance" element={<FinanceMonitoring />} />
-              <Route path="reports" element={<ReportsAnalytics />} />
-              <Route path="bookings" element={<BookingOversight />} />
+              <Route path="finance" element={<FinanceMonitoring />} />
               <Route path="skills" element={<CategoryManagement />} /> {/* Mapping skills to categories for now, or use placeholder */}
-              <Route path="settings" element={<Settings />} /> {/* Reusing Settings or need AdminSettings */}
             </Route>
 
             <Route element={<MainLayout />}>

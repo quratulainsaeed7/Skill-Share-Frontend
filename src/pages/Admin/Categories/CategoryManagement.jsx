@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { MdArrowDropUp, MdArrowDropDown } from 'react-icons/md';
 import styles from './CategoryManagement.module.css';
 
 const CategoryManagement = () => {
@@ -6,6 +7,7 @@ const CategoryManagement = () => {
     const [loading, setLoading] = useState(true);
     const [newCategory, setNewCategory] = useState({ name: '', description: '', tags: '' });
     const [editingCategoryId, setEditingCategoryId] = useState(null);
+    const [sortConfig, setSortConfig] = useState({ key: 'name', direction: 'asc' });
 
     useEffect(() => {
         fetchCategories();
@@ -68,6 +70,28 @@ const CategoryManagement = () => {
         }
     };
 
+    const handleSort = (key) => {
+        let direction = 'asc';
+        if (sortConfig.key === key && sortConfig.direction === 'asc') {
+            direction = 'desc';
+        }
+        setSortConfig({ key, direction });
+    };
+
+    const getSortIcon = (key) => {
+        if (sortConfig.key !== key) return <MdArrowDropDown style={{ opacity: 0.3 }} />;
+        return sortConfig.direction === 'asc' ? <MdArrowDropUp /> : <MdArrowDropDown />;
+    };
+
+    const sortedCategories = [...categories].sort((a, b) => {
+        if (!sortConfig.key) return 0;
+        const aVal = a[sortConfig.key]?.toString().toLowerCase() || '';
+        const bVal = b[sortConfig.key]?.toString().toLowerCase() || '';
+        if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
+        if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
+        return 0;
+    });
+
     if (loading) return <div>Loading...</div>;
 
     return (
@@ -109,14 +133,16 @@ const CategoryManagement = () => {
                 <table className={styles.table}>
                     <thead>
                         <tr>
-                            <th>Name</th>
+                            <th onClick={() => handleSort('name')} style={{ cursor: 'pointer' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>Name {getSortIcon('name')}</div>
+                            </th>
                             <th>Description</th>
                             <th>Tags</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {categories.map(cat => (
+                        {sortedCategories.map(cat => (
                             <tr key={cat.category_id}>
                                 <td>{cat.name}</td>
                                 <td>{cat.description}</td>
