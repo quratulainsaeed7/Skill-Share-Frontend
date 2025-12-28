@@ -7,16 +7,11 @@
 }
 
 .tableCard {
-    background: white;
+    background: var(--color-bg-card);
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: var(--shadow-sm);
-}
-
-@media (prefers-color-scheme: dark) {
-    .tableCard {
-        background: #1e1e2d;
-    }
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--color-border);
 }
 
 .table {
@@ -28,28 +23,14 @@
 .table td {
     padding: 16px 24px;
     text-align: left;
-    border-bottom: 1px solid #eee;
-}
-
-@media (prefers-color-scheme: dark) {
-
-    .table th,
-    .table td {
-        border-color: #2b2b40;
-    }
+    border-bottom: 1px solid var(--color-divider);
+    color: var(--color-text-primary);
 }
 
 .table th {
-    background-color: #f9f9f9;
+    background-color: var(--color-bg-body);
     font-weight: 600;
-    color: #666;
-}
-
-@media (prefers-color-scheme: dark) {
-    .table th {
-        background-color: #151521;
-        color: #a2a3b7;
-    }
+    color: var(--color-text-secondary);
 }
 
 .badge {

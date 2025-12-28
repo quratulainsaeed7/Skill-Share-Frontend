@@ -47,6 +47,20 @@ function App() {
       <BrowserRouter>
         <div className={styles.app}>
           <Routes>
+            {/* Admin Routes */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="users" element={<UserManagement />} />
+              <Route path="categories" element={<CategoryManagement />} />
+              <Route path="moderation" element={<ModerationDashboard />} />
+              <Route path="finance" element={<FinanceMonitoring />} />
+              <Route path="reports" element={<ReportsAnalytics />} />
+              <Route path="bookings" element={<BookingOversight />} />
+              <Route path="skills" element={<CategoryManagement />} /> {/* Mapping skills to categories for now, or use placeholder */}
+              <Route path="settings" element={<Settings />} /> {/* Reusing Settings or need AdminSettings */}
+            </Route>
+
             <Route element={<MainLayout />}>
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
@@ -56,19 +70,7 @@ function App() {
               <Route path="/skills/:skillId" element={<SkillDetails />} />
               <Route path="/mentors/:mentorId" element={<MentorProfile />} />
 
-              {/* Admin Routes */}
-              <Route path="/admin" element={<AdminLayout />}>
-                <Route index element={<Navigate to="dashboard" replace />} />
-                <Route path="dashboard" element={<AdminDashboard />} />
-                <Route path="users" element={<UserManagement />} />
-                <Route path="categories" element={<CategoryManagement />} />
-                <Route path="moderation" element={<ModerationDashboard />} />
-                <Route path="finance" element={<FinanceMonitoring />} />
-                <Route path="reports" element={<ReportsAnalytics />} />
-                <Route path="bookings" element={<BookingOversight />} />
-                <Route path="skills" element={<CategoryManagement />} /> {/* Mapping skills to categories for now, or use placeholder */}
-                <Route path="settings" element={<Settings />} /> {/* Reusing Settings or need AdminSettings */}
-              </Route>
+
 
               {/* Protected Routes */}
               <Route element={<ProtectedRoute />}>
