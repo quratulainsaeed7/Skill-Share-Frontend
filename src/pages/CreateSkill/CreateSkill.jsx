@@ -76,7 +76,6 @@ const CreateSkill = () => {
                 totalLessons: formData.totalLessons ? parseInt(formData.totalLessons) : null,
                 isActive: true,
             };
-
             // Call API to create skill
             const result = await SkillApi.createSkill(skillData);
 

@@ -46,7 +46,7 @@ class MessageService {
    */
   connectSocket(userId: string): void {
     const SOCKET_URL = import.meta.env.VITE_MESSAGING_API_URL || 'http://localhost:4007';
-    
+
     if (this.socket?.connected) {
       return;
     }

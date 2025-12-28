@@ -2,11 +2,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import Button from '../Button/Button';
 import ThemeToggle from '../ThemeToggle/ThemeToggle';
-
 import styles from './Navbar.module.css';
 import dropdownStyles from './NavbarDropdown.module.css';
 import { MdPerson, MdWallet, MdSettings, MdLogout, MdDashboard, MdBook } from 'react-icons/md';
-import UserService from '../../../services/userService';
+import UserService from '../../../services/UserService';
 
 const Navbar = () => {
     // Use centralized UserService instead of direct localStorage access
@@ -81,12 +80,20 @@ const Navbar = () => {
 
                         {/* Mentor Links */}
                         {(userRole === 'MENTOR' || userRole === 'BOTH') && (
-                            <NavLink
-                                to="/dashboard?view=mentor" // We'll handle this query param in Dashboard
-                                className={({ isActive }) => `${styles.navLink} ${isActive ? styles.active : ''}`}
-                            >
-                                My Bookings
-                            </NavLink>
+                            <>
+                                <NavLink
+                                    to="/dashboard?view=mentor" // We'll handle this query param in Dashboard
+                                    className={({ isActive }) => `${styles.navLink} ${isActive ? styles.active : ''}`}
+                                >
+                                    My Bookings
+                                </NavLink>
+                                <NavLink
+                                    to="/meetings"
+                                    className={({ isActive }) => `${styles.navLink} ${isActive ? styles.active : ''}`}
+                                >
+                                    My Meetings
+                                </NavLink>
+                            </>
                         )}
                     </>
                 }

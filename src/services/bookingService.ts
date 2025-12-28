@@ -8,11 +8,11 @@ export interface Booking {
     bookingDate: string;
     startTime: string;
     endTime: string;
-    paymentMethod: string;
-    status: 'pending' | 'confirmed' | 'rejected' | 'cancelled' | 'completed';
+    status: 'pending' | 'accepted' | 'rejected' | 'cancelled' | 'completed';
     createdAt: string;
     updatedAt: string;
     // Extended fields from joins
+    skillId?: string;        // Derived from lesson, not stored
     skillTitle?: string;
     mentorName?: string;
     mentorAvatar?: string;
@@ -27,36 +27,21 @@ export interface CreateBookingData {
     bookingDate: string;
     startTime: string;
     endTime: string;
-    paymentMethod: 'wallet' | 'credit_card' | 'debit_card' | 'paypal';
+}
+
+export interface BulkBookingData {
+    mentorId: string;
+    lessonId: string;
+    bookingDate: string;
+    startTime: string;
+    endTime: string;
 }
 
 class BookingService {
     /**
-     * Create a new booking with wallet/credits
-     */
-    async createBookingWithCredits(bookingData: CreateBookingData): Promise<Booking> {
-        try {
-            return await BookingApi.createBookingWithCredits(bookingData);
-        } catch (error: any) {
-            console.error('Failed to create booking with credits:', error);
-            throw new Error(error.message || 'Failed to create booking');
-        }
-    }
-
-    /**
-     * Create a new booking with cash payment
-     */
-    async createBookingWithCash(bookingData: CreateBookingData): Promise<Booking> {
-        try {
-            return await BookingApi.createBookingWithCash(bookingData);
-        } catch (error: any) {
-            console.error('Failed to create booking with cash:', error);
-            throw new Error(error.message || 'Failed to create booking');
-        }
-    }
-
-    /**
-     * Create a new booking (generic)
+     * Create a new booking
+     * Note: Payment is handled during skill enrollment
+     * This just schedules a lesson session with the mentor
      */
     async createBooking(bookingData: CreateBookingData): Promise<Booking> {
         try {
@@ -64,6 +49,19 @@ class BookingService {
         } catch (error: any) {
             console.error('Failed to create booking:', error);
             throw new Error(error.message || 'Failed to create booking');
+        }
+    }
+
+    /**
+     * Schedule bulk meeting for all enrolled students
+     * Mentor schedules a lesson, system creates bookings for all enrolled students
+     */
+    async scheduleBulkMeeting(bulkBookingData: BulkBookingData): Promise<Booking[]> {
+        try {
+            return await BookingApi.scheduleBulkMeeting(bulkBookingData);
+        } catch (error: any) {
+            console.error('Failed to schedule bulk meeting:', error);
+            throw new Error(error.message || 'Failed to schedule meeting for students');
         }
     }
 
@@ -195,8 +193,7 @@ class BookingService {
             const now = new Date();
             return bookings.filter(booking => {
                 const bookingDate = new Date(booking.bookingDate);
-                return bookingDate >= now &&
-                    (booking.status === 'confirmed' || booking.status === 'pending');
+                return (booking.status === 'accepted' || booking.status === 'pending');
             });
         } catch (error: any) {
             console.error('Failed to fetch upcoming bookings:', error);

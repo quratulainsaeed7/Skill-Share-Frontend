@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { skillService } from '../../services/skillService';
-import UserService from '../../services/userService';
+import lessonService from '../../services/lessonService';
+import UserService from '../../services/UserService';
 import Button from '../../components/common/Button/Button';
 import EnrollmentModal from '../../components/booking/EnrollmentModal/EnrollmentModal';
 import styles from './SkillDetails.module.css';
@@ -19,6 +20,17 @@ const SkillDetails = () => {
     const [isEnrolled, setIsEnrolled] = useState(false);
     const [checkingEnrollment, setCheckingEnrollment] = useState(false);
     const [showEnrollmentModal, setShowEnrollmentModal] = useState(false);
+    const [isMentor, setIsMentor] = useState(false);
+    const [lessons, setLessons] = useState([]);
+    const [loadingLessons, setLoadingLessons] = useState(false);
+    const [showCreateLessonModal, setShowCreateLessonModal] = useState(false);
+    const [lessonForm, setLessonForm] = useState({
+        description: '',
+        duration: '',
+        meetingLink: ''
+    });
+    const [creatingLesson, setCreatingLesson] = useState(false);
+    const [lessonError, setLessonError] = useState(null);
 
     useEffect(() => {
         const fetchSkill = async () => {
@@ -41,15 +53,32 @@ const SkillDetails = () => {
                 // Check enrollment status
                 const user = UserService.getUser();
                 if (user?.userId) {
-                    setCheckingEnrollment(true);
-                    try {
-                        const enrolledCourses = await skillService.getEnrolledCourses(user.userId);
-                        const enrolled = enrolledCourses.some(course => course.skillId === skillId);
-                        setIsEnrolled(enrolled);
-                    } catch (err) {
-                        console.warn('Could not check enrollment status:', err);
-                    } finally {
-                        setCheckingEnrollment(false);
+                    // Check if current user is the mentor
+                    setIsMentor(foundSkill.mentorId === user.userId);
+
+                    // If mentor, fetch lessons
+                    if (foundSkill.mentorId === user.userId) {
+                        setLoadingLessons(true);
+                        try {
+                            const skillLessons = await lessonService.getLessonsBySkill(skillId);
+                            setLessons(skillLessons);
+                        } catch (err) {
+                            console.warn('Could not fetch lessons:', err);
+                        } finally {
+                            setLoadingLessons(false);
+                        }
+                    } else {
+                        // If not mentor, check enrollment
+                        setCheckingEnrollment(true);
+                        try {
+                            const enrolledCourses = await skillService.getEnrolledCourses(user.userId);
+                            const enrolled = enrolledCourses.some(course => course.skillId === skillId);
+                            setIsEnrolled(enrolled);
+                        } catch (err) {
+                            console.warn('Could not check enrollment status:', err);
+                        } finally {
+                            setCheckingEnrollment(false);
+                        }
                     }
                 }
             } catch (err) {
@@ -116,12 +145,159 @@ const SkillDetails = () => {
         }
     };
 
+    const handleCreateLesson = async () => {
+        if (!lessonForm.description || !lessonForm.duration) {
+            setLessonError('Please fill in description and duration');
+            return;
+        }
+
+        setCreatingLesson(true);
+        setLessonError(null);
+
+        try {
+            const newLesson = await lessonService.createLesson({
+                skillId,
+                description: lessonForm.description,
+                duration: parseInt(lessonForm.duration),
+                meetingLink: lessonForm.meetingLink || undefined
+            });
+
+            // Add to lessons list
+            setLessons([...lessons, newLesson]);
+
+            // Close modal and reset
+            setShowCreateLessonModal(false);
+            setLessonForm({ description: '', duration: '', meetingLink: '' });
+        } catch (err) {
+            console.error('Failed to create lesson:', err);
+            setLessonError(err.message || 'Failed to create lesson');
+        } finally {
+            setCreatingLesson(false);
+        }
+    };
+
+    const handleDeleteLesson = async (lessonId) => {
+        if (!window.confirm('Are you sure you want to delete this lesson?')) {
+            return;
+        }
+
+        try {
+            await lessonService.deleteLesson(lessonId);
+            setLessons(lessons.filter(l => l.lessonId !== lessonId));
+        } catch (err) {
+            alert(err.message || 'Failed to delete lesson');
+        }
+    };
+
+    const handleUpdateLessonStatus = async (lessonId, newStatus) => {
+        try {
+            const updatedLesson = await lessonService.updateLessonStatus(lessonId, newStatus);
+            setLessons(lessons.map(l => l.lessonId === lessonId ? updatedLesson : l));
+        } catch (err) {
+            alert(err.message || 'Failed to update lesson status');
+        }
+    };
+
+    const handleGenerateLink = () => {
+        const generatedLink = lessonService.generateMeetingLink(skillId);
+        setLessonForm({ ...lessonForm, meetingLink: generatedLink });
+    };
+
     if (loading) return <div className="loading">Loading...</div>;
     if (error) return <div className="error">{error}</div>;
     if (!skill) return <div className="error">Skill not found</div>;
 
     return (
         <div className={styles.pageContainer}>
+            {/* Create Lesson Modal */}
+            {showCreateLessonModal && (
+                <div className={styles.modalOverlay} onClick={() => setShowCreateLessonModal(false)}>
+                    <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+                        <div className={styles.modalHeader}>
+                            <h2>Create New Lesson</h2>
+                            <button
+                                className={styles.closeButton}
+                                onClick={() => setShowCreateLessonModal(false)}
+                            >
+                                ✕
+                            </button>
+                        </div>
+                        <div className={styles.modalBody}>
+                            {lessonError && (
+                                <div className={styles.modalError}>
+                                    <span>⚠️ {lessonError}</span>
+                                </div>
+                            )}
+                            <div className={styles.formGroup}>
+                                <label htmlFor="description">Description</label>
+                                <textarea
+                                    id="description"
+                                    placeholder="Enter lesson description"
+                                    value={lessonForm.description}
+                                    onChange={(e) => setLessonForm({ ...lessonForm, description: e.target.value })}
+                                    className={styles.formTextarea}
+                                    rows="4"
+                                    disabled={creatingLesson}
+                                />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label htmlFor="duration">Duration (minutes)</label>
+                                <input
+                                    id="duration"
+                                    type="number"
+                                    placeholder="e.g., 60"
+                                    value={lessonForm.duration}
+                                    onChange={(e) => setLessonForm({ ...lessonForm, duration: e.target.value })}
+                                    className={styles.formInput}
+                                    disabled={creatingLesson}
+                                />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label htmlFor="meetingLink">Meeting Link</label>
+                                <div className={styles.formRow}>
+                                    <input
+                                        id="meetingLink"
+                                        type="text"
+                                        placeholder="Enter meeting link"
+                                        value={lessonForm.meetingLink}
+                                        onChange={(e) => setLessonForm({ ...lessonForm, meetingLink: e.target.value })}
+                                        className={styles.formInput}
+                                        disabled={creatingLesson}
+                                    />
+                                    <Button
+                                        variant="outline"
+                                        onClick={handleGenerateLink}
+                                        disabled={creatingLesson}
+                                        style={{ marginLeft: '0.5rem' }}
+                                    >
+                                        Generate
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                        <div className={styles.modalFooter}>
+                            <Button
+                                variant="outline"
+                                onClick={() => {
+                                    setShowCreateLessonModal(false);
+                                    setLessonError(null);
+                                }}
+                                disabled={creatingLesson}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                variant="primary"
+                                onClick={handleCreateLesson}
+                                disabled={creatingLesson}
+                            >
+                                {creatingLesson ? 'Creating...' : 'Create Lesson'}
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Enrollment Modal */}
             {showEnrollmentModal && skill && (
                 <EnrollmentModal
@@ -207,6 +383,74 @@ const SkillDetails = () => {
                     </div>
                 )}
 
+                {/* Lessons List (Mentor Only) */}
+                {isMentor && (
+                    <div className={styles.section}>
+                        <div className={styles.sectionHeader}>
+                            <h2 className={styles.sectionTitle}>Manage Lessons</h2>
+                            <Button
+                                variant="primary"
+                                onClick={() => setShowCreateLessonModal(true)}
+                            >
+                                + Create New Lesson
+                            </Button>
+                        </div>
+                        {loadingLessons ? (
+                            <div className={styles.loadingState}>Loading lessons...</div>
+                        ) : lessons.length === 0 ? (
+                            <div className={styles.emptyState}>
+                                <p>No lessons created yet. Create your first lesson to get started!</p>
+                            </div>
+                        ) : (
+                            <div className={styles.lessonsList}>
+                                {lessons.map((lesson) => (
+                                    <div key={lesson.lessonId} className={styles.lessonCard}>
+                                        <div className={styles.lessonHeader}>
+                                            <div className={styles.lessonInfo}>
+                                                <h3 className={styles.lessonDescription}>{lesson.description}</h3>
+                                                <div className={styles.lessonMeta}>
+                                                    <span>⏱️ {lesson.duration} minutes</span>
+                                                    <span className={`${styles.statusBadge} ${styles[lesson.status.toLowerCase()]}`}>
+                                                        {lesson.status}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {lesson.meetingLink && (
+                                            <div className={styles.lessonLink}>
+                                                <strong>Meeting Link:</strong>
+                                                <a href={lesson.meetingLink} target="_blank" rel="noopener noreferrer">
+                                                    {lesson.meetingLink}
+                                                </a>
+                                            </div>
+                                        )}
+                                        <div className={styles.lessonActions}>
+                                            <select
+                                                value={lesson.status}
+                                                onChange={(e) => handleUpdateLessonStatus(lesson.lessonId, e.target.value)}
+                                                className={styles.statusSelect}
+                                            >
+                                                <option value="UPCOMING">Upcoming</option>
+                                                <option value="ONGOING">Ongoing</option>
+                                                <option value="COMPLETED">Completed</option>
+                                                <option value="CANCELLED">Cancelled</option>
+                                            </select>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => handleDeleteLesson(lesson.lessonId)}
+                                                className={styles.deleteButton}
+                                            >
+                                                🗑️ Delete
+                                            </Button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
+
                 {/* Requirements/Description body if any extra */}
                 {/* Reviews */}
                 <div className={styles.section}>
@@ -259,20 +503,32 @@ const SkillDetails = () => {
                         </div>
                     )}
 
-                    <Button
-                        variant="primary"
-                        size="lg"
-                        className={styles.enrollButton}
-                        onClick={isEnrolled ? handleUnenroll : handleEnroll}
-                        disabled={enrolling || enrollmentSuccess || checkingEnrollment}
-                    >
-                        {checkingEnrollment ? 'Checking...' :
-                            enrolling ? (isEnrolled ? 'Unenrolling...' : 'Enrolling...') :
-                                enrollmentSuccess ? 'Enrolled!' :
-                                    isEnrolled ? 'Unenroll' : 'Enroll Now'}
-                    </Button>
+                    {!isMentor && (
+                        <>
+                            <Button
+                                variant="primary"
+                                size="lg"
+                                className={styles.enrollButton}
+                                onClick={isEnrolled ? handleUnenroll : handleEnroll}
+                                disabled={enrolling || enrollmentSuccess || checkingEnrollment}
+                            >
+                                {checkingEnrollment ? 'Checking...' :
+                                    enrolling ? (isEnrolled ? 'Unenrolling...' : 'Enrolling...') :
+                                        enrollmentSuccess ? 'Enrolled!' :
+                                            isEnrolled ? 'Unenroll' : 'Enroll Now'}
+                            </Button>
 
-                    <p className={styles.guarantee}>30-Day Money-Back Guarantee</p>
+                            <p className={styles.guarantee}>30-Day Money-Back Guarantee</p>
+                        </>
+                    )}
+
+                    {isMentor && (
+                        <div className={styles.mentorBadge}>
+                            <p style={{ textAlign: 'center', color: 'var(--primary)', fontWeight: 'bold' }}>
+                                👨‍🏫 You are the mentor of this skill
+                            </p>
+                        </div>
+                    )}
                 </div>
 
                 {/* Mentor Card */}

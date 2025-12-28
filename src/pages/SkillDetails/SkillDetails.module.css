@@ -291,3 +291,261 @@
     line-height: 1.5;
     font-size: 0.95rem;
 }
+
+/* Lesson Management Styles */
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.lessonsList {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.lessonCard {
+    background: var(--color-background-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.lessonCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.lessonHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.lessonInfo {
+    flex: 1;
+}
+
+.lessonDescription {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.lessonMeta {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+}
+
+.statusBadge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.statusBadge.upcoming {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.statusBadge.ongoing {
+    background: #fff3e0;
+    color: #f57c00;
+}
+
+.statusBadge.completed {
+    background: #e8f5e9;
+    color: #388e3c;
+}
+
+.statusBadge.cancelled {
+    background: #ffebee;
+    color: #d32f2f;
+}
+
+.lessonLink {
+    background: #f5f5f5;
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.lessonLink a {
+    color: var(--color-primary);
+    text-decoration: none;
+    word-break: break-all;
+}
+
+.lessonLink a:hover {
+    text-decoration: underline;
+}
+
+.lessonActions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.statusSelect {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: white;
+    font-size: 0.9rem;
+    cursor: pointer;
+    flex: 1;
+}
+
+.statusSelect:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+.deleteButton {
+    white-space: nowrap;
+}
+
+/* Modal Styles */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal {
+    background: white;
+    border-radius: 16px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modalHeader {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modalHeader h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+
+.closeButton:hover {
+    background: var(--color-background-hover);
+}
+
+.modalBody {
+    padding: 1.5rem;
+}
+
+.modalError {
+    background: #ffebee;
+    color: #c62828;
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.formGroup {
+    margin-bottom: 1.25rem;
+}
+
+.formGroup label {
+    display: block;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.formInput,
+.formTextarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    transition: border-color 0.2s;
+}
+
+.formInput:focus,
+.formTextarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+.formTextarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.formRow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.modalFooter {
+    padding: 1.5rem;
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.emptyState,
+.loadingState {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--color-text-secondary);
+}
+
+.mentorBadge {
+    padding: 1rem;
+    background: #f0f7ff;
+    border: 2px solid var(--color-primary);
+    border-radius: 12px;
+}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './Meetings.module.css';
 import Button from '../../components/common/Button/Button';
-import UserService from '../../services/userService';
+import UserService from '../../services/UserService';
 import bookingService from '../../services/bookingService';
 import messageService from '../../services/messageService';
 
@@ -16,11 +16,13 @@ const Meetings = () => {
     const [conversations, setConversations] = useState({});
     const [showScheduleModal, setShowScheduleModal] = useState(false);
     const [scheduleForm, setScheduleForm] = useState({
-        skillId: '',
+        lessonId: '',
         date: '',
         startTime: '',
         endTime: ''
     });
+    const [schedulingMeeting, setSchedulingMeeting] = useState(false);
+    const [scheduleError, setScheduleError] = useState(null);
 
     // Backend data states
     const [upcomingMeetings, setUpcomingMeetings] = useState([]);
@@ -139,19 +141,44 @@ const Meetings = () => {
     };
 
     const handleScheduleMeeting = async () => {
-        // Empty function call - no backend integration yet
-        console.log('Schedule meeting called with:', scheduleForm);
-        // TODO: Implement API call to schedule meeting for all students enrolled in the skill
-        // await bookingService.scheduleMeeting(scheduleForm);
-        
-        // Close modal and reset form
-        setShowScheduleModal(false);
-        setScheduleForm({
-            skillId: '',
-            date: '',
-            startTime: '',
-            endTime: ''
-        });
+        if (!scheduleForm.lessonId || !scheduleForm.date || !scheduleForm.startTime || !scheduleForm.endTime) {
+            setScheduleError('Please fill in all fields');
+            return;
+        }
+
+        setSchedulingMeeting(true);
+        setScheduleError(null);
+
+        try {
+            // Schedule bulk meeting for all enrolled students
+            const createdBookings = await bookingService.scheduleBulkMeeting({
+                mentorId: userId,
+                lessonId: scheduleForm.lessonId,
+                bookingDate: scheduleForm.date,
+                startTime: scheduleForm.startTime,
+                endTime: scheduleForm.endTime
+            });
+
+            console.log(`Successfully scheduled meeting for ${createdBookings.length} students`);
+
+            // Close modal and reset form
+            setShowScheduleModal(false);
+            setScheduleForm({
+                lessonId: '',
+                date: '',
+                startTime: '',
+                endTime: ''
+            });
+            setScheduleError(null);
+
+            // Refresh bookings
+            window.location.reload();
+        } catch (err) {
+            console.error('Failed to schedule meeting:', err);
+            setScheduleError(err.message || 'Failed to schedule meeting. Please try again.');
+        } finally {
+            setSchedulingMeeting(false);
+        }
     };
 
     const handleScheduleFormChange = (field, value) => {
@@ -329,8 +356,8 @@ const Meetings = () => {
                     </div>
                 </div>
                 {activeTab === 'meetings' && (userRole === 'mentor' || userRole === 'both') && (
-                    <Button 
-                        variant="primary" 
+                    <Button
+                        variant="primary"
                         onClick={() => setShowScheduleModal(true)}
                         className={styles.scheduleButton}
                     >
@@ -345,7 +372,7 @@ const Meetings = () => {
                     <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
                         <div className={styles.modalHeader}>
                             <h2>Schedule New Meeting</h2>
-                            <button 
+                            <button
                                 className={styles.closeButton}
                                 onClick={() => setShowScheduleModal(false)}
                             >
@@ -353,17 +380,23 @@ const Meetings = () => {
                             </button>
                         </div>
                         <div className={styles.modalBody}>
+                            {scheduleError && (
+                                <div className={styles.modalError}>
+                                    <span>⚠️ {scheduleError}</span>
+                                </div>
+                            )}
                             <div className={styles.formGroup}>
-                                <label htmlFor="skillId">Skill ID</label>
+                                <label htmlFor="lessonId">Lesson ID</label>
                                 <input
-                                    id="skillId"
+                                    id="lessonId"
                                     type="text"
-                                    placeholder="Enter skill ID"
-                                    value={scheduleForm.skillId}
-                                    onChange={(e) => handleScheduleFormChange('skillId', e.target.value)}
+                                    placeholder="Enter lesson ID"
+                                    value={scheduleForm.lessonId}
+                                    onChange={(e) => handleScheduleFormChange('lessonId', e.target.value)}
                                     className={styles.formInput}
+                                    disabled={schedulingMeeting}
                                 />
-                                <small className={styles.formHint}>All students enrolled in this skill will receive the meeting</small>
+                                <small className={styles.formHint}>Schedule a session for this specific lesson</small>
                             </div>
                             <div className={styles.formGroup}>
                                 <label htmlFor="date">Meeting Date</label>
@@ -373,6 +406,7 @@ const Meetings = () => {
                                     value={scheduleForm.date}
                                     onChange={(e) => handleScheduleFormChange('date', e.target.value)}
                                     className={styles.formInput}
+                                    disabled={schedulingMeeting}
                                 />
                             </div>
                             <div className={styles.formRow}>
@@ -384,6 +418,7 @@ const Meetings = () => {
                                         value={scheduleForm.startTime}
                                         onChange={(e) => handleScheduleFormChange('startTime', e.target.value)}
                                         className={styles.formInput}
+                                        disabled={schedulingMeeting}
                                     />
                                 </div>
                                 <div className={styles.formGroup}>
@@ -394,22 +429,28 @@ const Meetings = () => {
                                         value={scheduleForm.endTime}
                                         onChange={(e) => handleScheduleFormChange('endTime', e.target.value)}
                                         className={styles.formInput}
+                                        disabled={schedulingMeeting}
                                     />
                                 </div>
                             </div>
                         </div>
                         <div className={styles.modalFooter}>
-                            <Button 
-                                variant="outline" 
-                                onClick={() => setShowScheduleModal(false)}
+                            <Button
+                                variant="outline"
+                                onClick={() => {
+                                    setShowScheduleModal(false);
+                                    setScheduleError(null);
+                                }}
+                                disabled={schedulingMeeting}
                             >
                                 Cancel
                             </Button>
-                            <Button 
-                                variant="primary" 
+                            <Button
+                                variant="primary"
                                 onClick={handleScheduleMeeting}
+                                disabled={schedulingMeeting}
                             >
-                                Schedule Meeting
+                                {schedulingMeeting ? 'Scheduling...' : 'Schedule Meeting'}
                             </Button>
                         </div>
                     </div>
@@ -492,13 +533,27 @@ const Meetings = () => {
                                                         )}
                                                     </div>
 
+                                                    {meeting.meetingLink && (
+                                                        <div className={styles.meetingLinkContainer}>
+                                                            <span className={styles.detailIcon}>🔗</span>
+                                                            <a
+                                                                href={meeting.meetingLink}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className={styles.meetingLink}
+                                                            >
+                                                                {meeting.meetingLink}
+                                                            </a>
+                                                        </div>
+                                                    )}
+
                                                     {meeting.totalLessons && (
                                                         <div className={styles.progressContainer}>
                                                             <div className={styles.progressBar}>
-                                                                <div 
+                                                                <div
                                                                     className={styles.progressFill}
-                                                                    style={{ 
-                                                                        width: `${((meeting.completedLessons || 0) / meeting.totalLessons) * 100}%` 
+                                                                    style={{
+                                                                        width: `${((meeting.completedLessons || 0) / meeting.totalLessons) * 100}%`
                                                                     }}
                                                                 ></div>
                                                             </div>
@@ -509,9 +564,18 @@ const Meetings = () => {
                                                     )}
 
                                                     <div className={styles.actions}>
-                                                        <Button variant="primary" onClick={() => alert('Zoom integration coming soon!')}>
-                                                            Join Meeting
-                                                        </Button>
+                                                        {meeting.meetingLink ? (
+                                                            <Button
+                                                                variant="primary"
+                                                                onClick={() => window.open(meeting.meetingLink, '_blank')}
+                                                            >
+                                                                Join Meeting
+                                                            </Button>
+                                                        ) : (
+                                                            <Button variant="primary" disabled>
+                                                                No Meeting Link
+                                                            </Button>
+                                                        )}
                                                         {meeting.status === 'pending' && userRole === 'mentor' && (
                                                             <Button
                                                                 variant="outline"
@@ -593,10 +657,10 @@ const Meetings = () => {
                                                     {meeting.totalLessons && (
                                                         <div className={styles.progressContainer}>
                                                             <div className={styles.progressBar}>
-                                                                <div 
+                                                                <div
                                                                     className={styles.progressFill}
-                                                                    style={{ 
-                                                                        width: `${((meeting.completedLessons || 0) / meeting.totalLessons) * 100}%` 
+                                                                    style={{
+                                                                        width: `${((meeting.completedLessons || 0) / meeting.totalLessons) * 100}%`
                                                                     }}
                                                                 ></div>
                                                             </div>

@@ -13,7 +13,7 @@
     gap: 1rem;
 }
 
-.header > div:first-child {
+.header>div:first-child {
     flex: 1;
 }
 
@@ -132,6 +132,29 @@
 
 .detailIcon {
     font-size: 1.25rem;
+}
+
+.meetingLinkContainer {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: #f0f7ff;
+    border: 1px solid #b3d9ff;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.meetingLink {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 500;
+    word-break: break-all;
+    flex: 1;
+}
+
+.meetingLink:hover {
+    text-decoration: underline;
 }
 
 .actions {
@@ -690,8 +713,13 @@ body.dark .modalFooter,
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 .loadingContainer p {
