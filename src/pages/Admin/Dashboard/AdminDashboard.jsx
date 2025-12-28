@@ -10,8 +10,6 @@ const AdminDashboard = () => {
     });
 
     useEffect(() => {
-        // Fetch stats from backend
-        // For now mocking or fetching from presumed endpoint
         const fetchStats = async () => {
             try {
                 const response = await fetch('http://localhost:3004/admin/dashboard');
