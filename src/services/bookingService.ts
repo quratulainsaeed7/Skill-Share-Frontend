@@ -8,7 +8,7 @@ export interface Booking {
     bookingDate: string;
     startTime: string;
     endTime: string;
-    status: 'pending' | 'accepted' | 'rejected' | 'cancelled' | 'completed';
+    status: 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'CANCELLED' | 'COMPLETED';
     createdAt: string;
     updatedAt: string;
     // Extended fields from joins
@@ -182,7 +182,7 @@ class BookingService {
     }
 
     /**
-     * Get upcoming bookings (status: confirmed, date in future)
+     * Get upcoming bookings (status: ACCEPTED or PENDING, excluding REJECTED/CANCELLED/COMPLETED)
      */
     async getUpcomingBookings(userId: string, userRole: 'learner' | 'mentor'): Promise<Booking[]> {
         try {
@@ -190,10 +190,8 @@ class BookingService {
                 ? await this.getBookingsByLearner(userId)
                 : await this.getBookingsByMentor(userId);
 
-            const now = new Date();
             return bookings.filter(booking => {
-                const bookingDate = new Date(booking.bookingDate);
-                return (booking.status === 'accepted' || booking.status === 'pending');
+                return (booking.status === 'ACCEPTED' || booking.status === 'PENDING');
             });
         } catch (error: any) {
             console.error('Failed to fetch upcoming bookings:', error);
@@ -202,7 +200,7 @@ class BookingService {
     }
 
     /**
-     * Get past bookings (status: completed or date in past)
+     * Get past bookings (status: COMPLETED, REJECTED, or CANCELLED)
      */
     async getPastBookings(userId: string, userRole: 'learner' | 'mentor'): Promise<Booking[]> {
         try {
@@ -210,10 +208,10 @@ class BookingService {
                 ? await this.getBookingsByLearner(userId)
                 : await this.getBookingsByMentor(userId);
 
-            const now = new Date();
             return bookings.filter(booking => {
-                const bookingDate = new Date(booking.bookingDate);
-                return bookingDate < now || booking.status === 'completed';
+                return (booking.status === 'COMPLETED' ||
+                    booking.status === 'REJECTED' ||
+                    booking.status === 'CANCELLED');
             });
         } catch (error: any) {
             console.error('Failed to fetch past bookings:', error);

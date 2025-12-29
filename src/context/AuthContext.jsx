@@ -55,7 +55,9 @@ export const AuthProvider = ({ children }) => {
 
     const completeProfile = async (profileData) => {
         if (!user) throw new Error("No user logged in");
-        const updatedUser = await authService.updateProfile(user.id, profileData);
+        // Use userId (correct field name) instead of id
+        const userId = user.userId || user.id;
+        const updatedUser = await authService.updateProfile(userId, profileData);
         setUser(updatedUser);
         return updatedUser;
     };

@@ -55,7 +55,7 @@ const VerifyEmail = () => {
         setError(null);
         try {
             const response = await UserService.verifyEmailWithToken(token);
-            
+
             // Update user in session storage
             const user = UserService.getUser();
             if (user) {
@@ -65,7 +65,7 @@ const VerifyEmail = () => {
             }
 
             alert('Email verified successfully!');
-            
+
             const profileComplete = await ProfileService.isUserProfileComplete();
             if (profileComplete == true) {
                 navigate('/skills');
@@ -99,7 +99,7 @@ const VerifyEmail = () => {
             <Card padding="lg">
                 <MdEmail style={{ fontSize: '4rem', color: 'var(--color-primary)', marginBottom: '1rem' }} />
                 <h1>Verify Your Email</h1>
-                
+
                 {token ? (
                     <p style={{ color: 'var(--color-text-secondary)', margin: '1rem 0' }}>
                         {verifying ? 'Verifying your email...' : error ? error : 'Email verified!'}

@@ -1,5 +1,6 @@
 import ProfileApi from "../api/ProfileApi";
-import UserService from "./userService";
+import UserApi from "../api/UserApi";
+import UserService from "./UserService";
 
 /**
  * ProfileService - Handles user profile operations.
@@ -34,10 +35,19 @@ class ProfileService {
                 throw new Error('No authenticated user found');
             }
 
+            console.log('📝 Completing profile for user:', { userId: user.userId, role: user.role });
+
             const profile = await ProfileApi.createProfile(user.userId, profileData);
 
-            // Update the stored user with profile completion status
-            UserService.updateStoredUser({ profileCompleted: true });
+            // Fetch the latest user data from backend to ensure we have correct role
+            const latestUser = await UserApi.getUserById(user.userId);
+            console.log('🔄 Fetched latest user from backend:', { userId: latestUser.userId, role: latestUser.role });
+
+            // Update the stored user with profile completion status AND latest backend data
+            UserService.setUser({
+                ...latestUser,
+                profileCompleted: true
+            });
 
             return profile;
         } catch (error) {

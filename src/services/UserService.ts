@@ -19,7 +19,16 @@ class UserService {
     static getUser() {
         try {
             const userJson = sessionStorage.getItem(USER_STORAGE_KEY);
-            return userJson ? JSON.parse(userJson) : null;
+            const user = userJson ? JSON.parse(userJson) : null;
+            if (user) {
+                console.log('📖 Retrieved user from sessionStorage:', {
+                    userId: user.userId,
+                    name: user.name,
+                    role: user.role,
+                    profileCompleted: user.profileCompleted
+                });
+            }
+            return user;
         } catch (error) {
             console.error('Failed to parse user from sessionStorage:', error);
             return null;
@@ -35,6 +44,12 @@ class UserService {
             console.warn('Attempted to set null/undefined user');
             return;
         }
+        console.log('💾 Storing user in sessionStorage:', {
+            userId: user.userId,
+            name: user.name,
+            role: user.role,
+            profileCompleted: user.profileCompleted
+        });
         sessionStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
     }
 
