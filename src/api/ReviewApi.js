@@ -19,10 +19,6 @@ export const ReviewApi = {
         return request(`${REVIEWS_ENDPOINT}/${reviewId}`);
     },
 
-    getReviewByBooking: async (bookingId) => {
-        return request(`${REVIEWS_ENDPOINT}/booking/${bookingId}`);
-    },
-
     getReviewsByMentor: async (mentorId) => {
         return request(`${REVIEWS_ENDPOINT}/mentor/${mentorId}`);
     },
