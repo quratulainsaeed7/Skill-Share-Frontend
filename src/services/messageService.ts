@@ -20,20 +20,20 @@ export interface Message {
 }
 
 export interface SendMessageParams {
-  senderId: number;
-  receiverId: number;
+  senderId: string;
+  receiverId: string;
   content: string;
-  bookingId?: number;
+  bookingId?: string;
 }
 
 export interface ConversationParams {
-  senderId: number;
-  receiverId: number;
-  bookingId?: number;
+  senderId: string;
+  receiverId: string;
+  bookingId?: string;
 }
 
 export interface MarkReadParams {
-  readerId: number;
+  readerId: string;
 }
 
 class MessageService {
@@ -154,7 +154,7 @@ class MessageService {
   /**
    * Mark multiple messages as read
    */
-  async markMultipleAsRead(messageIds: string[], readerId: number): Promise<void> {
+  async markMultipleAsRead(messageIds: string[], readerId: string): Promise<void> {
     try {
       await Promise.all(
         messageIds.map(id => this.markAsRead(id, { readerId }))

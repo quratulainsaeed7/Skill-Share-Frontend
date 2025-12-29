@@ -32,6 +32,11 @@ const Meetings = () => {
     const [sendingMessage, setSendingMessage] = useState(false);
     const [messageError, setMessageError] = useState(null);
 
+    // Messaging contacts state
+    const [contacts, setContacts] = useState([]);
+    const [loadingContacts, setLoadingContacts] = useState(false);
+    const [contactsError, setContactsError] = useState(null);
+
     // Fetch bookings on mount
     useEffect(() => {
         const fetchBookings = async () => {
@@ -66,23 +71,108 @@ const Meetings = () => {
         fetchBookings();
     }, [userId, userRole]);
 
-    // Load conversation when mentor is selected
+    // Fetch contacts for messaging based on role
+    useEffect(() => {
+        const fetchContacts = async () => {
+            if (!userId || !userRole) return;
+
+            try {
+                setLoadingContacts(true);
+                setContactsError(null);
+
+                let contactList = [];
+
+                if (userRole === 'mentor' || userRole === 'both') {
+                    // Mentor: Get all enrolled students
+                    const { skillService } = await import('../../services/skillService');
+                    const UserApi = (await import('../../api/UserApi')).default;
+
+                    const enrollments = await skillService.getEnrolledStudents(userId);
+
+                    // Get unique student IDs
+                    const studentIds = [...new Set(enrollments.map(e => e.userId))];
+
+                    // Fetch student details
+                    const studentsData = await Promise.all(
+                        studentIds.map(async (studentId) => {
+                            try {
+                                const student = await UserApi.getUserById(studentId);
+                                const enrollment = enrollments.find(e => e.userId === studentId);
+                                return {
+                                    userId: studentId,
+                                    name: student.name,
+                                    email: student.email,
+                                    avatar: student.avatar,
+                                    skillId: enrollment?.skillId,
+                                    enrolledAt: enrollment?.enrolledAt
+                                };
+                            } catch (err) {
+                                console.error(`Failed to fetch student ${studentId}:`, err);
+                                return null;
+                            }
+                        })
+                    );
+
+                    contactList = studentsData.filter(s => s !== null);
+                } else {
+                    // Learner: Get all mentors from enrolled courses
+                    const { skillService } = await import('../../services/skillService');
+                    const UserApi = (await import('../../api/UserApi')).default;
+
+                    const enrolledCourses = await skillService.getEnrolledCourses(userId);
+
+                    // Get unique mentor IDs
+                    const mentorIds = [...new Set(enrolledCourses.map(course => course.mentorId))];
+
+                    // Fetch mentor details
+                    const mentorsData = await Promise.all(
+                        mentorIds.map(async (mentorId) => {
+                            try {
+                                const mentor = await UserApi.getUserById(mentorId);
+                                const courses = enrolledCourses.filter(c => c.mentorId === mentorId);
+                                return {
+                                    userId: mentorId,
+                                    name: mentor.name,
+                                    email: mentor.email,
+                                    avatar: mentor.avatar,
+                                    skills: courses.map(c => ({ id: c.skillId, name: c.name }))
+                                };
+                            } catch (err) {
+                                console.error(`Failed to fetch mentor ${mentorId}:`, err);
+                                return null;
+                            }
+                        })
+                    );
+
+                    contactList = mentorsData.filter(m => m !== null);
+                }
+
+                setContacts(contactList);
+            } catch (err) {
+                console.error('Failed to fetch contacts:', err);
+                setContactsError(err.message || 'Failed to load contacts');
+            } finally {
+                setLoadingContacts(false);
+            }
+        };
+
+        fetchContacts();
+    }, [userId, userRole]);
+
+    // Load conversation when contact is selected
     useEffect(() => {
         const loadConversation = async () => {
             if (!selectedMentor || !userId) return;
 
-            const otherUserId = userRole === 'learner'
-                ? selectedMentor.mentorId
-                : selectedMentor.learnerId;
+            const otherUserId = selectedMentor.userId;
 
             // Check if conversation already loaded
             if (conversations[otherUserId]) return;
 
             try {
                 const messages = await messageService.getConversation({
-                    senderId: parseInt(userId),
-                    receiverId: parseInt(otherUserId),
-                    bookingId: selectedMentor.bookingId ? parseInt(selectedMentor.bookingId) : undefined
+                    senderId: userId,
+                    receiverId: otherUserId
                 });
 
                 setConversations(prev => ({
@@ -99,31 +189,27 @@ const Meetings = () => {
         };
 
         loadConversation();
-    }, [selectedMentor, userId, userRole]);
+    }, [selectedMentor, userId]);
 
     const handleSendMessage = async () => {
         if (!messageInput.trim() || !selectedMentor || !userId) return;
 
-        const otherUserId = userRole === 'learner'
-            ? selectedMentor.mentorId
-            : selectedMentor.learnerId;
+        const otherUserId = selectedMentor.userId;
 
         setSendingMessage(true);
         setMessageError(null);
 
         try {
             await messageService.sendMessage({
-                senderId: parseInt(userId),
-                receiverId: parseInt(otherUserId),
-                content: messageInput.trim(),
-                bookingId: selectedMentor.bookingId ? parseInt(selectedMentor.bookingId) : undefined
+                senderId: userId,
+                receiverId: otherUserId,
+                content: messageInput.trim()
             });
 
             // Reload conversation
             const messages = await messageService.getConversation({
-                senderId: parseInt(userId),
-                receiverId: parseInt(otherUserId),
-                bookingId: selectedMentor.bookingId ? parseInt(selectedMentor.bookingId) : undefined
+                senderId: userId,
+                receiverId: otherUserId
             });
 
             setConversations(prev => ({
@@ -224,42 +310,45 @@ const Meetings = () => {
     };
 
     const renderMessagesTab = () => {
-        const allContacts = [...upcomingMeetings, ...pastMeetings];
-
         return (
             <div className={styles.messagesContainer}>
                 {/* Contact List */}
                 <div className={styles.mentorList}>
                     <h3 className={styles.mentorListTitle}>
-                        {userRole === 'learner' ? 'Your Mentors' : 'Your Learners'}
+                        {userRole === 'learner' ? 'Your Mentors' : 'Your Students'}
                     </h3>
-                    {loading ? (
+                    {loadingContacts ? (
                         <div className={styles.loadingState}>Loading contacts...</div>
-                    ) : allContacts.length === 0 ? (
+                    ) : contactsError ? (
                         <div className={styles.emptyContacts}>
-                            <p>No active bookings to chat about</p>
+                            <p>{contactsError}</p>
+                        </div>
+                    ) : contacts.length === 0 ? (
+                        <div className={styles.emptyContacts}>
+                            <p>{userRole === 'learner' ? 'Enroll in courses to chat with mentors' : 'No students enrolled in your courses yet'}</p>
                         </div>
                     ) : (
-                        allContacts.map((contact) => {
-                            const otherUserId = userRole === 'learner' ? contact.mentorId : contact.learnerId;
-                            const otherUserName = userRole === 'learner' ? contact.mentorName : contact.learnerName;
-                            const otherUserAvatar = userRole === 'learner' ? contact.mentorAvatar : contact.learnerAvatar;
-                            const messageCount = conversations[otherUserId]?.length || 0;
+                        contacts.map((contact) => {
+                            const messageCount = conversations[contact.userId]?.length || 0;
 
                             return (
                                 <div
-                                    key={contact.bookingId}
-                                    className={`${styles.mentorListItem} ${selectedMentor?.bookingId === contact.bookingId ? styles.activeMentor : ''}`}
+                                    key={contact.userId}
+                                    className={`${styles.mentorListItem} ${selectedMentor?.userId === contact.userId ? styles.activeMentor : ''}`}
                                     onClick={() => setSelectedMentor(contact)}
                                 >
                                     <img
-                                        src={otherUserAvatar || 'https://i.pravatar.cc/150'}
-                                        alt={otherUserName || 'User'}
+                                        src={contact.avatar || 'https://i.pravatar.cc/150'}
+                                        alt={contact.name || 'User'}
                                         className={styles.mentorListAvatar}
                                     />
                                     <div className={styles.mentorListInfo}>
-                                        <h4>{otherUserName || 'Unknown User'}</h4>
-                                        <p className={styles.mentorSkill}>{contact.skillTitle || 'No title'}</p>
+                                        <h4>{contact.name || 'Unknown User'}</h4>
+                                        <p className={styles.mentorSkill}>
+                                            {userRole === 'learner'
+                                                ? (contact.skills?.[0]?.name || 'Course')
+                                                : (contact.email || 'Student')}
+                                        </p>
                                     </div>
                                     {messageCount > 0 && (
                                         <span className={styles.messageCount}>{messageCount}</span>
@@ -276,20 +365,23 @@ const Meetings = () => {
                         <>
                             <div className={styles.chatHeader}>
                                 <img
-                                    src={(userRole === 'learner' ? selectedMentor.mentorAvatar : selectedMentor.learnerAvatar) || 'https://i.pravatar.cc/150'}
-                                    alt={(userRole === 'learner' ? selectedMentor.mentorName : selectedMentor.learnerName) || 'User'}
+                                    src={selectedMentor.avatar || 'https://i.pravatar.cc/150'}
+                                    alt={selectedMentor.name || 'User'}
                                     className={styles.chatAvatar}
                                 />
                                 <div>
-                                    <h3>{(userRole === 'learner' ? selectedMentor.mentorName : selectedMentor.learnerName) || 'Unknown User'}</h3>
-                                    <p className={styles.chatSubtitle}>{selectedMentor.skillTitle || 'No title'}</p>
+                                    <h3>{selectedMentor.name || 'Unknown User'}</h3>
+                                    <p className={styles.chatSubtitle}>
+                                        {userRole === 'learner'
+                                            ? (selectedMentor.skills?.[0]?.name || 'Mentor')
+                                            : (selectedMentor.email || 'Student')}
+                                    </p>
                                 </div>
                             </div>
 
                             <div className={styles.chatMessages}>
                                 {(() => {
-                                    const otherUserId = userRole === 'learner' ? selectedMentor.mentorId : selectedMentor.learnerId;
-                                    const msgs = conversations[otherUserId] || [];
+                                    const msgs = conversations[selectedMentor.userId] || [];
 
                                     if (msgs.length === 0) {
                                         return (
@@ -303,7 +395,7 @@ const Meetings = () => {
                                         const isSent = msg.sender?.userId === userId;
                                         return (
                                             <div
-                                                key={msg.id}
+                                                key={msg.messageId || msg.id}
                                                 className={`${styles.message} ${isSent ? styles.messageSent : styles.messageReceived}`}
                                             >
                                                 <div className={styles.messageBubble}>
@@ -611,6 +703,23 @@ const Meetings = () => {
                                                                 }}
                                                             >
                                                                 Accept
+                                                            </Button>
+                                                        )}
+                                                        {meeting.status === 'ACCEPTED' && userRole === 'mentor' && (
+                                                            <Button
+                                                                variant="outline"
+                                                                onClick={async () => {
+                                                                    if (window.confirm('Mark this booking as completed?')) {
+                                                                        try {
+                                                                            await bookingService.completeBooking(meeting.bookingId);
+                                                                            window.location.reload();
+                                                                        } catch (err) {
+                                                                            alert(err.message);
+                                                                        }
+                                                                    }
+                                                                }}
+                                                            >
+                                                                Mark Complete
                                                             </Button>
                                                         )}
                                                     </div>
