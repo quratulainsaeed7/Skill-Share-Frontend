@@ -5,7 +5,8 @@ import Button from '../../common/Button/Button';
 
 const PaymentMethodCard = ({ method, onDelete, onSetDefault }) => {
     const getCardIcon = (type) => {
-        switch (type.toLowerCase()) {
+        const typeStr = (type || '').toLowerCase();
+        switch (typeStr) {
             case 'visa':
                 return '💳';
             case 'mastercard':
@@ -20,36 +21,46 @@ const PaymentMethodCard = ({ method, onDelete, onSetDefault }) => {
                 return 'V';
             case 'cashapp':
                 return '$';
+            case 'card':
+                return '💳';
+            case 'wallet':
+                return '💰';
             default:
                 return '💰';
         }
     };
 
-    const formatCardNumber = (number) => {
-        if (!number) return '';
-        return `•••• •••• •••• ${number.slice(-4)}`;
+    const formatCardNumber = (last4) => {
+        if (!last4) return '';
+        return `•••• •••• •••• ${last4}`;
     };
 
-    const formatExpiryDate = (expiry) => {
-        if (!expiry) return '';
-        return expiry;
+    const formatExpiryDate = (month, year) => {
+        if (!month || !year) return '';
+        return `${String(month).padStart(2, '0')}/${year}`;
     };
 
     return (
         <div className={`${styles.card} ${method.isDefault ? styles.default : ''}`}>
             <div className={styles.header}>
                 <div className={styles.iconWrapper}>
-                    <span className={styles.icon}>{getCardIcon(method.type)}</span>
+                    <span className={styles.icon}>{getCardIcon(method.cardBrand || method.type)}</span>
                     <div className={styles.info}>
-                        <h3 className={styles.type}>{method.type}</h3>
-                        {method.cardType === 'card' ? (
+                        <h3 className={styles.type}>
+                            {method.cardBrand || method.type || 'Payment Method'}
+                        </h3>
+                        {method.cardLast4 ? (
                             <>
-                                <p className={styles.number}>{formatCardNumber(method.cardNumber)}</p>
-                                <p className={styles.expiry}>Exp: {formatExpiryDate(method.expiryDate)}</p>
+                                <p className={styles.number}>{formatCardNumber(method.cardLast4)}</p>
+                                {(method.cardExpMonth && method.cardExpYear) && (
+                                    <p className={styles.expiry}>
+                                        Exp: {formatExpiryDate(method.cardExpMonth, method.cardExpYear)}
+                                    </p>
+                                )}
                             </>
-                        ) : (
-                            <p className={styles.email}>{method.email}</p>
-                        )}
+                        ) : method.accountIdentifier ? (
+                            <p className={styles.email}>{method.accountIdentifier}</p>
+                        ) : null}
                     </div>
                 </div>
                 {method.isDefault && (

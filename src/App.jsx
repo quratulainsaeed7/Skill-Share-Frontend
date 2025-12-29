@@ -16,7 +16,8 @@ import Profile from './pages/Profile/Profile';
 import Wallet from './pages/Wallet/Wallet';
 import Meetings from './pages/Meetings/Meetings';
 import CreateSkill from './pages/CreateSkill/CreateSkill';
-import ProtectedRoute from './components/common/ProtectedRoute';
+import UserService from './services/UserService';
+import AIChatBot from './components/common/AIChatBot/AIChatBot';
 import styles from './App.module.css';
 
 // Admin Imports
@@ -67,35 +68,22 @@ function App() {
                 <Route path="/skills" element={<Skills />} />
                 <Route path="/mentors/:mentorId" element={<MentorProfile />} />
 
-                {/* Dynamic route - must be after specific routes */}
-                <Route path="/skills/:skillId" element={<SkillDetails />} />
-                <Route path="/profile" element={
-                  <ProtectedRoute>
-                    <Profile />
-                  </ProtectedRoute>
-                } />
-                <Route path="/create-skill" element={
-                  <ProtectedRoute>
-                    <CreateSkill />
-                  </ProtectedRoute>
-                } />
-                <Route path="/wallet" element={
-                  <ProtectedRoute>
-                    <Wallet />
-                  </ProtectedRoute>
-                } />
-                <Route path="/meetings" element={
-                  <ProtectedRoute>
-                    <Meetings />
-                  </ProtectedRoute>
-                } />
-                <Route path="/settings" element={
-                  <ProtectedRoute>
-                    <Settings />
-                  </ProtectedRoute>
-                } />
+
+
+                {/* Protected Routes */}
+                <Route element={<ProtectedRoute />}>
+                  <Route path="/complete-profile" element={<CompleteProfile />} />
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/create-skill" element={<CreateSkill />} />
+                  <Route path="/wallet" element={<Wallet />} />
+                  <Route path="/meetings" element={<Meetings />} />
+                  <Route path="/settings" element={<Settings />} />
+                </Route>
               </Route>
             </Routes>
+
+            {/* AI Chatbot - Visible on all pages */}
+            <AIChatBot />
           </div>
         </BrowserRouter>
       </AuthProvider>

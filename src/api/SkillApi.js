@@ -161,6 +161,16 @@ export const SkillApi = {
     getMentorId: async (userId) => {
         return request(`${SKILLS_ENDPOINT}/mentor/${userId}/id`);
     },
+
+    /**
+     * Get progress for a specific skill enrollment.
+     * @param {string} skillId - Skill ID
+     * @param {string} userId - User ID
+     * @returns {Promise<Object>} Progress object with completedLessons, totalLessons, and progress percentage
+     */
+    getProgress: async (skillId, userId) => {
+        return request(`${SKILLS_ENDPOINT}/${skillId}/progress/${userId}`);
+    },
 };
 
 export default SkillApi;

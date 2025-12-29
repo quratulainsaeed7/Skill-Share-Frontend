@@ -96,11 +96,11 @@ class LessonService {
     }
 
     /**
-     * Generate a meeting link (placeholder - you'll provide format later)
+     * Generate a Jitsi meeting link with a unique hash
      */
     generateMeetingLink(lessonId: string): string {
-        // TODO: Replace with actual meeting link generation logic
-        return `https://meet.skillshare.com/lesson/${lessonId}`;
+        const hash = Math.random().toString(36).substring(2, 10);
+        return `https://meet.jit.si/skillshare-${lessonId}-${hash}`;
     }
 }
 
