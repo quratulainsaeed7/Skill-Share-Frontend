@@ -191,9 +191,21 @@ const SkillDetails = () => {
     };
 
     const handleUpdateLessonStatus = async (lessonId, newStatus) => {
+        // Prevent changing status if already completed
+        const lesson = lessons.find(l => l.lessonId === lessonId);
+        if (lesson?.status === 'COMPLETED') {
+            alert('Cannot change status of a completed lesson');
+            return;
+        }
+
         try {
             const updatedLesson = await lessonService.updateLessonStatus(lessonId, newStatus);
             setLessons(lessons.map(l => l.lessonId === lessonId ? updatedLesson : l));
+
+            // If marking as completed, show confirmation
+            if (newStatus === 'COMPLETED') {
+                alert('Lesson marked as completed! All associated bookings have been updated.');
+            }
         } catch (err) {
             alert(err.message || 'Failed to update lesson status');
         }
@@ -430,6 +442,8 @@ const SkillDetails = () => {
                                                 value={lesson.status}
                                                 onChange={(e) => handleUpdateLessonStatus(lesson.lessonId, e.target.value)}
                                                 className={styles.statusSelect}
+                                                disabled={lesson.status === 'COMPLETED'}
+                                                title={lesson.status === 'COMPLETED' ? 'Completed lessons cannot be changed' : ''}
                                             >
                                                 <option value="UPCOMING">Upcoming</option>
                                                 <option value="ONGOING">Ongoing</option>
@@ -441,6 +455,8 @@ const SkillDetails = () => {
                                                 size="sm"
                                                 onClick={() => handleDeleteLesson(lesson.lessonId)}
                                                 className={styles.deleteButton}
+                                                disabled={lesson.status === 'COMPLETED'}
+                                                title={lesson.status === 'COMPLETED' ? 'Completed lessons cannot be deleted' : ''}
                                             >
                                                 🗑️ Delete
                                             </Button>
