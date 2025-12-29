@@ -7,7 +7,7 @@ import styles from './MainLayout.module.css';
 
 const MainLayout = () => {
     const location = useLocation();
-    const hideNavbarRoutes = [];
+    const hideNavbarRoutes = ['/'];
     const shouldHideNavbar = hideNavbarRoutes.includes(location.pathname);
 
     return (

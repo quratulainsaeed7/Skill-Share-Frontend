@@ -24,7 +24,7 @@ const AdminLayout = () => {
 
     const navItems = [
         { path: '/admin/users', label: 'User Management', icon: <MdPeople /> },
-        { path: '/admin/skills', label: 'Skills & Courses', icon: <MdClass /> },
+        { path: '/admin/categories', label: 'Categories', icon: <MdClass /> },
         { path: '/admin/finance', label: 'Finance', icon: <MdAttachMoney /> },
     ];
 

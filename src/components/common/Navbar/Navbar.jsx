@@ -16,6 +16,8 @@ const Navbar = () => {
     const userName = user?.name || null;
     const userID = user?.userId || null;
 
+    console.log('Navbar - User Role:', userRole); // Debug log
+
     const navigate = useNavigate();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -78,12 +80,21 @@ const Navbar = () => {
             </Link>
 
             <div className={styles.navLinks}>
-                <NavLink
-                    to="/skills"
-                    className={({ isActive }) => `${styles.navLink} ${isActive ? styles.active : ''}`}
-                >
-                    Browse Skills
-                </NavLink>
+                {userRole === 'ADMIN' ? (
+                    <NavLink
+                        to="/admin/categories"
+                        className={({ isActive }) => `${styles.navLink} ${isActive ? styles.active : ''}`}
+                    >
+                        Categories
+                    </NavLink>
+                ) : (
+                    <NavLink
+                        to="/skills"
+                        className={({ isActive }) => `${styles.navLink} ${isActive ? styles.active : ''}`}
+                    >
+                        Browse Skills
+                    </NavLink>
+                )}
 
                 {
                     <>
