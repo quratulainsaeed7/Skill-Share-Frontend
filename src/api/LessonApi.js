@@ -1,7 +1,7 @@
 import request from './apiClient';
 
-const API_BASE_URL = import.meta.env.VITE_SKILL_SERVICE_URL || 'http://localhost:4006';
-const LESSONS_ENDPOINT = `${API_BASE_URL}/lessons`;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+const LESSONS_ENDPOINT = `${API_BASE_URL}/api/skills/lessons`;
 
 export const LessonApi = {
     /**

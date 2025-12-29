@@ -1,43 +1,7 @@
-import axios from 'axios';
+import request from './apiClient';
 
-const API_BASE_URL = import.meta.env.VITE_NOTIFICATION_SERVICE_URL || 'http://localhost:4008';
-const NOTIFICATIONS_ENDPOINT = `${API_BASE_URL}/notifications`;
-
-const request = async (url, options = {}) => {
-    const method = options.method || 'GET';
-    const headers = {
-        'Content-Type': 'application/json',
-        ...(options.headers || {}),
-    };
-    const data = options.body;
-
-    try {
-        const response = await axios({
-            url,
-            method,
-            headers,
-            data,
-            validateStatus: () => true,
-        });
-
-        const resData = response.data ?? null;
-
-        if (response.status < 200 || response.status >= 300) {
-            const errorMessage = resData?.message || resData?.error || `HTTP ${response.status}: ${response.statusText || ''}`.trim();
-            throw new Error(Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage);
-        }
-
-        return resData;
-    } catch (error) {
-        if (!error.response) {
-            throw new Error('Network error: Unable to reach the notification server.');
-        }
-
-        const { status, statusText, data: errData } = error.response;
-        const errorMessage = errData?.message || errData?.error || `HTTP ${status}: ${statusText || ''}`.trim();
-        throw new Error(Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage);
-    }
-};
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+const NOTIFICATIONS_ENDPOINT = `${API_BASE_URL}/api/notifications`;
 
 export const NotificationApi = {
     /**

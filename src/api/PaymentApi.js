@@ -1,7 +1,7 @@
 import request from './apiClient';
 
-const API_BASE_URL = import.meta.env.VITE_PAYMENT_SERVICE_URL || 'http://localhost:4002';
-const PAYMENTS_ENDPOINT = `${API_BASE_URL}/payments`;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+const PAYMENTS_ENDPOINT = `${API_BASE_URL}/api/payment`;
 const PAYMENT_METHODS_ENDPOINT = `${PAYMENTS_ENDPOINT}/methods`;
 
 export const PaymentApi = {
@@ -79,13 +79,14 @@ export const PaymentApi = {
     /**
      * Create payment method from Stripe payment method ID
      */
-    createPaymentMethodFromStripe: async (userId, stripePaymentMethodId, isDefault = false) => {
+    createPaymentMethodFromStripe: async (userId, stripePaymentMethodId, isDefault = false, email = null) => {
         return request(`${PAYMENT_METHODS_ENDPOINT}/stripe`, {
             method: 'POST',
             body: JSON.stringify({
                 userId,
                 stripePaymentMethodId,
                 isDefault,
+                email,
             }),
         });
     },

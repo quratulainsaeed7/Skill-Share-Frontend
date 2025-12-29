@@ -5,16 +5,14 @@ import { FaUserGraduate, FaChalkboardTeacher, FaUsers } from 'react-icons/fa';
 import Button from '../../common/Button/Button';
 import Input from '../../common/Input/Input';
 import Card from '../../common/Card/Card';
+import { useAuth } from '../../../context/AuthContext';
 import styles from './SignupForm.module.css';
 import clsx from 'clsx';
-import UserService from '../../../services/UserService';
-
-
-
 
 const SignupForm = () => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
+    const { signup } = useAuth();
 
     const [formData, setFormData] = useState({
         fullName: '',
@@ -92,10 +90,26 @@ const SignupForm = () => {
 
         setLoading(true);
         try {
-            await UserService.registerUser(formData);
-            console.log('Registration successful');
+            // Map role to uppercase for backend
+            const roleMap = {
+                'learner': 'LEARNER',
+                'mentor': 'MENTOR',
+                'both': 'BOTH'
+            };
+
+            await signup({
+                name: formData.fullName,
+                email: formData.email,
+                password: formData.password,
+                role: roleMap[formData.role] || 'LEARNER'
+            });
+
+            console.log('✅ Registration successful');
+
+            // Workflow will automatically redirect to /verify-email via ProtectedRoute
             navigate('/verify-email');
         } catch (err) {
+            console.error('❌ Registration failed:', err.message);
             setErrors(prev => ({ ...prev, form: err.message }));
         } finally {
             setLoading(false);

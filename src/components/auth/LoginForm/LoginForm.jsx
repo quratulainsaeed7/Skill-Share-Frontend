@@ -3,13 +3,13 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '../../common/Button/Button';
 import Input from '../../common/Input/Input';
+import { useAuth } from '../../../context/AuthContext';
 
 import styles from './LoginForm.module.css';
-import UserService from '../../../services/UserService';
-import ProfileService from '../../../services/profileService';
 
 const LoginForm = () => {
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const [formData, setFormData] = useState({
         email: '',
@@ -30,17 +30,13 @@ const LoginForm = () => {
         setError('');
 
         try {
-            await UserService.loginUser(formData);
-            const profileComplete = await ProfileService.isUserProfileComplete();
-            console.log(profileComplete);
-            if (profileComplete == true) {
-                navigate('/skills');
-            }
-            else {
-                navigate('/complete-profile');
-            }
+            const user = await login(formData.email, formData.password);
+
+            // Workflow-based navigation (JWT claims drive redirects)
+            // ProtectedRoute will handle automatic redirects based on emailVerified and profileCompleted
+            navigate('/skills');
         } catch (err) {
-            setError(err.message);
+            setError(err.message || 'Login failed');
         } finally {
             setLoading(false);
         }

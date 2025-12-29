@@ -6,7 +6,7 @@ import Input from '../../common/Input/Input';
 import Card from '../../common/Card/Card';
 import styles from './ProfileSetup.module.css';
 import clsx from 'clsx';
-import ProfileService from '../../../services/profileService';
+import { useAuth } from '../../../context/AuthContext';
 
 const INTERESTS_LIST = [
     'Web Development', 'Mobile Development', 'Data Science', 'Graphic Design',
@@ -19,6 +19,7 @@ const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 const ProfileSetup = () => {
     const navigate = useNavigate();
+    const { completeProfile } = useAuth();
     const [loading, setLoading] = useState(false);
 
     // Single profile for any role: bio, skills, location, city
@@ -42,10 +43,12 @@ const ProfileSetup = () => {
     const handleSubmit = async () => {
         setLoading(true);
         try {
-            await ProfileService.completeUserProfile(profile);
-            navigate('/dashboard');
+            // Use AuthContext's completeProfile to update user and refresh JWT
+            await completeProfile(profile);
+            navigate('/');
         } catch (error) {
-            alert(error.message);
+            console.error('❌ Profile completion failed:', error);
+            alert(error.message || 'Failed to complete profile');
         } finally {
             setLoading(false);
         }

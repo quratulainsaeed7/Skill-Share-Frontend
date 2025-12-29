@@ -1,0 +1,177 @@
+.error-boundary-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+}
+
+.error-boundary-content {
+    background: white;
+    border-radius: 16px;
+    padding: 40px;
+    max-width: 600px;
+    width: 100%;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.error-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(-10deg);
+    }
+
+    75% {
+        transform: rotate(10deg);
+    }
+}
+
+.error-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 12px;
+}
+
+.error-message {
+    font-size: 16px;
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+.error-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.error-btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.error-btn-primary {
+    background: #667eea;
+    color: white;
+}
+
+.error-btn-primary:hover {
+    background: #5568d3;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.error-btn-secondary {
+    background: #e0e7ff;
+    color: #667eea;
+}
+
+.error-btn-secondary:hover {
+    background: #c7d2fe;
+    transform: translateY(-2px);
+}
+
+.error-details {
+    text-align: left;
+    margin: 20px 0;
+    padding: 16px;
+    background: #f9fafb;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.error-details summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: #667eea;
+    user-select: none;
+}
+
+.error-stack {
+    margin-top: 12px;
+}
+
+.error-stack h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin: 12px 0 8px 0;
+}
+
+.error-stack pre {
+    background: #1f2937;
+    color: #f3f4f6;
+    padding: 12px;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-size: 12px;
+    line-height: 1.5;
+    font-family: 'Courier New', monospace;
+}
+
+.error-info {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.error-timestamp {
+    font-size: 12px;
+    color: #9ca3af;
+    margin: 4px 0;
+}
+
+.error-count {
+    font-size: 14px;
+    color: #ef4444;
+    font-weight: 600;
+    margin: 8px 0;
+}
+
+@media (max-width: 600px) {
+    .error-boundary-content {
+        padding: 30px 20px;
+    }
+
+    .error-title {
+        font-size: 24px;
+    }
+
+    .error-message {
+        font-size: 14px;
+    }
+
+    .error-icon {
+        font-size: 60px;
+    }
+
+    .error-actions {
+        flex-direction: column;
+    }
+
+    .error-btn {
+        width: 100%;
+    }
+}

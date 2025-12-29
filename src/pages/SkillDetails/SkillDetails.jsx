@@ -41,6 +41,15 @@ const SkillDetails = () => {
             try {
                 setLoading(true);
                 setError(null);
+
+                // Validate that skillId is a valid UUID format
+                const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+                if (!skillId || !uuidRegex.test(skillId)) {
+                    setError('Invalid skill ID');
+                    setLoading(false);
+                    return;
+                }
+
                 const foundSkill = await skillService.getSkillById(skillId);
                 setSkill(foundSkill);
 

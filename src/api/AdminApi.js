@@ -1,66 +1,46 @@
-const API_BASE_URL = import.meta.env.VITE_ADMIN_SERVICE_URL || 'http://localhost:4008';
+import request from './apiClient';
 
-import axios from "axios";
-
-const request = async (url, options = {}) => {
-    const method = options.method || 'GET';
-    const headers = {
-        'Content-Type': 'application/json',
-        ...(options.headers || {}),
-    };
-    const data = options.body;
-
-    try {
-        const response = await axios({
-            url: `${API_BASE_URL}/admin${url}`,
-            method,
-            headers,
-            data,
-        });
-        return response.data;
-    } catch (error) {
-        throw error;
-    }
-};
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 
 export const AdminApi = {
     getUsers: async () => {
-        return request('/users');
+        return request(`${API_BASE_URL}/api/admin/users`);
     },
 
     verifyUser: async (id, isVerified) => {
-        return request(`/users/${id}/verify`, {
+        return request(`${API_BASE_URL}/api/admin/users/${id}/verify`, {
             method: 'PATCH',
-            body: { isVerified }
+            body: JSON.stringify({ isVerified })
         });
     },
 
     deleteUser: async (id, force = false) => {
-        return request(`/users/${id}?force=${force}`, {
+        return request(`${API_BASE_URL}/api/admin/users/${id}?force=${force}`, {
             method: 'DELETE'
         });
     },
 
     changeRole: async (id, role) => {
-        return request(`/users/${id}/role`, {
+        return request(`${API_BASE_URL}/api/admin/users/${id}/role`, {
             method: 'PATCH',
-            body: { role }
+            body: JSON.stringify({ role })
         });
     },
 
     adjustWallet: async (id, amount, type, reason) => {
-        return request(`/users/${id}/wallet`, {
+        return request(`${API_BASE_URL}/api/admin/users/${id}/wallet`, {
             method: 'POST',
-            body: { amount, type, reason }
+            body: JSON.stringify({ amount, type, reason })
         });
     },
 
     sanctionUser: async (id, action) => {
-        return request(`/users/${id}/sanction`, {
+        return request(`${API_BASE_URL}/api/admin/users/${id}/sanction`, {
             method: 'POST',
-            body: { action }
+            body: JSON.stringify({ action })
         });
     }
 };
 
 export default AdminApi;
+

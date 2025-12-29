@@ -61,7 +61,12 @@ const Wallet = () => {
 
     const handleAddPaymentMethod = async (methodData) => {
         try {
-            await walletService.addPaymentMethod(userId, methodData);
+            // Include user's email for Stripe Customer creation
+            const dataWithEmail = {
+                ...methodData,
+                email: user?.email || null,
+            };
+            await walletService.addPaymentMethod(userId, dataWithEmail);
             await loadWalletData();
             setShowAddModal(false);
         } catch (error) {

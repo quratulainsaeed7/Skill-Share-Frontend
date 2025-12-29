@@ -39,6 +39,7 @@ interface PaymentMethodData {
     accountName?: string;
     isDefault?: boolean;
     metadata?: Record<string, any>;
+    email?: string; // User's email for Stripe Customer creation
 }
 
 export const walletService = {
@@ -149,7 +150,8 @@ export const walletService = {
                 return await PaymentApi.createPaymentMethodFromStripe(
                     userId,
                     methodData.stripePaymentMethodId,
-                    methodData.isDefault || false
+                    methodData.isDefault || false,
+                    methodData.email || null // Pass email for Stripe Customer creation
                 );
             }
 

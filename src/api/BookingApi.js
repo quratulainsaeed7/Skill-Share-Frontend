@@ -1,7 +1,7 @@
 import request from './apiClient';
 
-const API_BASE_URL = import.meta.env.VITE_BOOKING_SERVICE_URL || 'http://localhost:4003';
-const BOOKINGS_ENDPOINT = `${API_BASE_URL}/bookings`;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+const BOOKINGS_ENDPOINT = `${API_BASE_URL}/api/booking`;
 
 export const BookingApi = {
     /**

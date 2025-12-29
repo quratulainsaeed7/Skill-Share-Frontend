@@ -1,5 +1,5 @@
-const API_BASE_URL = import.meta.env.VITE_USER_SERVICE_URL || 'http://localhost:4000';
-const USERS_ENDPOINT = `${API_BASE_URL}/users`;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+const USERS_ENDPOINT = `${API_BASE_URL}/api/users`;
 import axios from "axios";
 
 const request = async (url, options = {}) => {
@@ -41,8 +41,12 @@ const request = async (url, options = {}) => {
 };
 
 export const UserApi = {
+    // Registration now goes through auth-service which:
+    // 1. Hashes password with bcrypt (10 rounds)
+    // 2. Creates user via user-service
+    // 3. Returns JWT token
     createUser: async (userData) => {
-        return request(USERS_ENDPOINT, {
+        return request(`${API_BASE_URL}/api/auth/register`, {
             method: 'POST',
             body: JSON.stringify({
                 email: userData.email,
@@ -142,7 +146,7 @@ export const UserApi = {
     },
 
     loginUser: async (credentials) => {
-        return request(`${USERS_ENDPOINT}/login`, {
+        return request(`${API_BASE_URL}/api/auth/login`, {
             method: 'POST',
             body: JSON.stringify({
                 email: credentials.email,

@@ -1,14 +1,8 @@
 // src/api/WalletApi.js
-import axios from 'axios';
+import request from './apiClient';
 
-const WALLET_SERVICE_URL = import.meta.env.VITE_WALLET_SERVICE_URL || 'http://localhost:4005';
-
-const walletClient = axios.create({
-    baseURL: `${WALLET_SERVICE_URL}/wallet`,
-    headers: {
-        'Content-Type': 'application/json',
-    },
-});
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+const WALLET_ENDPOINT = `${API_BASE_URL}/api/wallet`;
 
 export const WalletApi = {
     /**
@@ -17,8 +11,7 @@ export const WalletApi = {
      * @returns {Promise<{balance: number}>}
      */
     getBalance: async (userId) => {
-        const response = await walletClient.get(`/${userId}/balance`);
-        return response.data;
+        return request(`${WALLET_ENDPOINT}/${userId}/balance`);
     },
 
     /**
@@ -27,8 +20,7 @@ export const WalletApi = {
      * @returns {Promise<{walletId: string, userId: string, balance: number, totalEarned: number, totalSpent: number}>}
      */
     getWallet: async (userId) => {
-        const response = await walletClient.get(`/${userId}`);
-        return response.data;
+        return request(`${WALLET_ENDPOINT}/${userId}`);
     },
 
     /**
@@ -37,8 +29,7 @@ export const WalletApi = {
      * @returns {Promise<Array<{transactionId: string, amount: number, type: string, description: string, createdAt: string}>>}
      */
     getTransactions: async (userId) => {
-        const response = await walletClient.get(`/${userId}/transactions`);
-        return response.data;
+        return request(`${WALLET_ENDPOINT}/${userId}/transactions`);
     },
 
     /**
@@ -51,8 +42,10 @@ export const WalletApi = {
      * @returns {Promise<Object>}
      */
     earnCredits: async (userId, data) => {
-        const response = await walletClient.post(`/${userId}/earn`, data);
-        return response.data;
+        return request(`${WALLET_ENDPOINT}/${userId}/earn`, {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
     },
 
     /**
@@ -65,8 +58,10 @@ export const WalletApi = {
      * @returns {Promise<Object>}
      */
     spendCredits: async (userId, data) => {
-        const response = await walletClient.post(`/${userId}/spend`, data);
-        return response.data;
+        return request(`${WALLET_ENDPOINT}/${userId}/spend`, {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
     },
 
     /**
@@ -78,7 +73,10 @@ export const WalletApi = {
      * @returns {Promise<Object>}
      */
     adjustCredits: async (userId, data) => {
-        const response = await walletClient.patch(`/${userId}/adjust`, data);
-        return response.data;
+        return request(`${WALLET_ENDPOINT}/${userId}/adjust`, {
+            method: 'PATCH',
+            body: JSON.stringify(data),
+        });
     },
 };
+

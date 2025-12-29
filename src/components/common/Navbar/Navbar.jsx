@@ -6,12 +6,12 @@ import NotificationDropdown from '../NotificationDropdown/NotificationDropdown';
 import styles from './Navbar.module.css';
 import dropdownStyles from './NavbarDropdown.module.css';
 import { MdPerson, MdWallet, MdSettings, MdLogout, MdBook, MdNotifications } from 'react-icons/md';
-import UserService from '../../../services/UserService';
+import { useAuth } from '../../../context/AuthContext';
 import notificationService from '../../../services/notificationService.ts';
 
 const Navbar = () => {
-    // Use centralized UserService instead of direct localStorage access
-    const user = UserService.getUser();
+    // Use AuthContext for proper authentication state
+    const { user, isAuthenticated, logout } = useAuth();
     const userRole = user?.role || null;
     const userName = user?.name || null;
     const userID = user?.userId || null;
@@ -25,13 +25,13 @@ const Navbar = () => {
 
     // Fetch unread notification count
     useEffect(() => {
-        if (userID) {
+        if (isAuthenticated && userID) {
             fetchUnreadCount();
             // Poll for new notifications every 30 seconds
             const interval = setInterval(fetchUnreadCount, 30000);
             return () => clearInterval(interval);
         }
-    }, [userID]);
+    }, [isAuthenticated, userID]);
 
     const fetchUnreadCount = async () => {
         try {
@@ -43,7 +43,7 @@ const Navbar = () => {
     };
 
     const handleLogout = () => {
-        UserService.logout();
+        logout();
         navigate('/login');
         setIsDropdownOpen(false);
     };

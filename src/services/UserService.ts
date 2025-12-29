@@ -1,12 +1,13 @@
 import UserApi from '../api/UserApi';
 
-// Storage key for the single user object in sessionStorage
-const USER_STORAGE_KEY = 'user';
+// Storage keys for sessionStorage - standardized with authService
+const USER_STORAGE_KEY = 'skillshare_user';
+const TOKEN_KEY = 'skillshare_token';
 
 /**
  * UserService - Centralized service for all user-related operations.
  * All user data access must go through this service.
- * Uses sessionStorage with a single 'user' key storing the full User object.
+ * Uses sessionStorage with 'skillshare_user' key storing the full User object.
  */
 class UserService {
 
@@ -157,7 +158,8 @@ class UserService {
             console.log('User logged in:', user);
 
             // Store full user object in sessionStorage (replaces individual field storage)
-            this.setUser(user);
+            this.setUser(user.user);
+
 
             return { success: true, data: user };
         } catch (error) {
@@ -198,6 +200,20 @@ class UserService {
             throw error;
         }
     }
+
+    setToken(token: string): void {
+        if (token) {
+            sessionStorage.setItem(TOKEN_KEY, token);
+        }
+    }
+
+
+    getToken(): string | null {
+        return sessionStorage.getItem(TOKEN_KEY);
+    }
+
+
+
 }
 
 export default UserService;

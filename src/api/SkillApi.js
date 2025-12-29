@@ -1,67 +1,14 @@
 // src/api/SkillApi.js
 /**
- * SkillApi - API client for skill/course-related backend endpoints.
+ * SkillApi - API client for skill/course-related backend endpoints via API Gateway.
  * 
- * Assumes a skill-service backend with the following endpoints:
- * - GET /skills - List all skills with optional filters
- * - GET /skills/:id - Get skill by ID
- * - GET /categories - Get all categories
- * - GET /skills/enrolled/:userId - Get courses a learner is enrolled in
- * - GET /skills/taught/:userId - Get courses a mentor teaches
- * - GET /skills/:skillId/students - Get students enrolled in a skill
+ * All requests go through API Gateway at /api/skills
  */
-import axios from 'axios';
+import request from './apiClient';
 
-const API_BASE_URL = import.meta.env.VITE_SKILL_SERVICE_URL || 'http://localhost:4006';
-const SKILLS_ENDPOINT = `${API_BASE_URL}/skills`;
-const CATEGORIES_ENDPOINT = `${API_BASE_URL}/categories`;
-
-/**
- * Generic request helper with error handling.
- */
-const request = async (url, options = {}) => {
-    const method = options.method || 'GET';
-    const headers = {
-        'Content-Type': 'application/json',
-        ...(options.headers || {}),
-    };
-    const data = options.body ? JSON.parse(options.body) : undefined;
-
-    try {
-        const response = await axios({
-            url,
-            method,
-            headers,
-            data,
-            params: options.params,
-            validateStatus: () => true,
-        });
-
-        const resData = response.data ?? null;
-
-        if (response.status < 200 || response.status >= 300) {
-            const errorMessage = resData?.message || resData?.error || `HTTP ${response.status}: ${response.statusText || ''}`.trim();
-            throw new Error(Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage);
-        }
-
-        return resData;
-    } catch (error) {
-        // If it's already an Error we threw above, re-throw it
-        if (error.message && !error.response) {
-            throw error;
-        }
-
-        // Handle axios network/response errors
-        if (error.response) {
-            const { status, statusText, data: errData } = error.response;
-            const errorMessage = errData?.message || errData?.error || `HTTP ${status}: ${statusText || ''}`.trim();
-            throw new Error(Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage);
-        }
-
-        // Network error - no response received
-        throw new Error('Unable to connect to server. Please check your connection.');
-    }
-};
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+const SKILLS_ENDPOINT = `${API_BASE_URL}/api/skills`;
+const CATEGORIES_ENDPOINT = `${API_BASE_URL}/api/categories`;
 
 /**
  * Build query params object from filters.

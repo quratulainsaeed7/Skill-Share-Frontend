@@ -3,46 +3,32 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import Card from '../../components/common/Card/Card';
 import Button from '../../components/common/Button/Button';
-
 import { MdEmail } from 'react-icons/md';
-import UserService from '../../services/UserService';
-import ProfileService from '../../services/profileService';
+import { useAuth } from '../../context/AuthContext';
 
+/**
+ * Email Verification Page
+ * Step 3 of user onboarding workflow:
+ * REGISTER → LOGIN → EMAIL_VERIFIED → PROFILE_COMPLETED → FULL_APP_ACCESS
+ */
 const VerifyEmail = () => {
     const [searchParams] = useSearchParams();
     const token = searchParams.get('token');
-    const email = searchParams.get('email');
     const navigate = useNavigate();
+    const { user, verifyEmail } = useAuth();
     const [verifying, setVerifying] = useState(false);
     const [error, setError] = useState(null);
+    const [success, setSuccess] = useState(false);
 
     // Auto-verify if token is present in URL
     useEffect(() => {
         if (token) {
             handleVerifyWithToken();
+        } else if (user?.emailVerified) {
+            // Already verified, redirect to profile completion
+            navigate('/complete-profile', { replace: true });
         }
-    }, [token]);
-
-    useEffect(() => {
-        // Check verification status via UserService (centralized)
-        const checkVerificationStatus = () => {
-            try {
-                const user = UserService.getUser();
-                const profileComplete = ProfileService.isUserProfileComplete(); // Placeholder for profile completeness check
-                if (user?.isVerified === true || user?.emailVerified === true) {
-                    // check user profile completeness
-                    if (profileComplete == true) {
-                        navigate('/skills');
-                    } else {
-                        navigate('/complete-profile');
-                    }
-                }
-            } catch (err) {
-                console.error(err);
-            }
-        };
-        checkVerificationStatus();
-    }, [navigate]);
+    }, [token, user, navigate]);
 
 
     const handleVerifyWithToken = async () => {
@@ -54,43 +40,61 @@ const VerifyEmail = () => {
         setVerifying(true);
         setError(null);
         try {
-            const response = await UserService.verifyEmailWithToken(token);
+            console.log('🔐 Attempting to verify email with token');
 
-            // Update user in session storage
-            const user = UserService.getUser();
+            // If user is logged in, use the context method which refreshes the JWT
             if (user) {
-                user.emailVerified = true;
-                user.isVerified = true;
-                UserService.setUser(user);
-            }
-
-            alert('Email verified successfully!');
-
-            const profileComplete = await ProfileService.isUserProfileComplete();
-            if (profileComplete == true) {
-                navigate('/skills');
+                await verifyEmail(token);
+                setSuccess(true);
+                setTimeout(() => {
+                    navigate('/complete-profile', { replace: true });
+                }, 2000);
             } else {
-                navigate('/complete-profile');
+                // User not logged in - verify directly without JWT refresh
+                const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'}/api/users/verify-email`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token }),
+                });
+
+                const data = await response.json();
+                console.log('✅ Verification response:', data);
+
+                if (data.success) {
+                    setSuccess(true);
+                    // Redirect to login after successful verification
+                    setTimeout(() => {
+                        navigate('/login?verified=true', { replace: true });
+                    }, 2000);
+                } else {
+                    throw new Error(data.message || 'Email verification failed');
+                }
             }
         } catch (err) {
+            console.error('❌ Verification error:', err);
             setError(err.message || 'Verification failed');
-            alert(err.message || 'Verification failed');
         } finally {
             setVerifying(false);
         }
     };
 
     const handleResendEmail = async () => {
-        if (!email) {
-            alert('Email address not found. Please register again.');
+        if (!user?.email) {
+            setError('Email address not found. Please login again.');
             return;
         }
 
         try {
-            await UserService.resendVerificationEmail(email);
-            alert('Verification email sent! Please check your inbox.');
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'}/api/users/resend-verification`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: user.email }),
+            });
+
+            const data = await response.json();
+            alert(data.message || 'Verification email sent! Please check your inbox.');
         } catch (err) {
-            alert(err.message || 'Failed to resend email');
+            setError(err.message || 'Failed to resend email');
         }
     };
 
@@ -102,13 +106,18 @@ const VerifyEmail = () => {
 
                 {token ? (
                     <p style={{ color: 'var(--color-text-secondary)', margin: '1rem 0' }}>
-                        {verifying ? 'Verifying your email...' : error ? error : 'Email verified!'}
+                        {verifying ? 'Verifying your email...' :
+                            success ? '✓ Email verified successfully! Redirecting...' :
+                                error ? error : 'Processing...'}
                     </p>
                 ) : (
-                    <p style={{ color: 'var(--color-text-secondary)', margin: '1rem 0' }}>
-                        We've sent a verification email to {email && <strong>{email}</strong>}.
-                        <br />Please click the link in that email to activate your account.
-                    </p>
+                    <>
+                        <p style={{ color: 'var(--color-text-secondary)', margin: '1rem 0' }}>
+                            We've sent a verification email to {user?.email && <strong>{user.email}</strong>}.
+                            <br />Please click the link in that email to activate your account.
+                        </p>
+                        {error && <p style={{ color: 'var(--color-error)', margin: '1rem 0' }}>{error}</p>}
+                    </>
                 )}
 
                 {!token && (
