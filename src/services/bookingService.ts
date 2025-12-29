@@ -182,7 +182,7 @@ class BookingService {
     }
 
     /**
-     * Get upcoming bookings (status: ACCEPTED or PENDING, excluding REJECTED/CANCELLED/COMPLETED)
+     * Get upcoming bookings (status: CONFIRMED, excluding CANCELLED/COMPLETED)
      */
     async getUpcomingBookings(userId: string, userRole: 'learner' | 'mentor'): Promise<Booking[]> {
         try {
@@ -190,9 +190,15 @@ class BookingService {
                 ? await this.getBookingsByLearner(userId)
                 : await this.getBookingsByMentor(userId);
 
-            return bookings.filter(booking => {
-                return (booking.status === 'ACCEPTED' || booking.status === 'PENDING');
+            console.log('All bookings fetched:', bookings);
+            console.log('Booking statuses:', bookings.map(b => ({ id: b.bookingId, status: b.status })));
+
+            const upcoming = bookings.filter(booking => {
+                return booking.status === 'CONFIRMED';
             });
+
+            console.log('Filtered upcoming bookings:', upcoming);
+            return upcoming;
         } catch (error: any) {
             console.error('Failed to fetch upcoming bookings:', error);
             throw new Error(error.message || 'Failed to fetch upcoming bookings');
@@ -200,7 +206,7 @@ class BookingService {
     }
 
     /**
-     * Get past bookings (status: COMPLETED, REJECTED, or CANCELLED)
+     * Get past bookings (status: COMPLETED or CANCELLED)
      */
     async getPastBookings(userId: string, userRole: 'learner' | 'mentor'): Promise<Booking[]> {
         try {
@@ -209,9 +215,7 @@ class BookingService {
                 : await this.getBookingsByMentor(userId);
 
             return bookings.filter(booking => {
-                return (booking.status === 'COMPLETED' ||
-                    booking.status === 'REJECTED' ||
-                    booking.status === 'CANCELLED');
+                return (booking.status === 'COMPLETED' || booking.status === 'CANCELLED');
             });
         } catch (error: any) {
             console.error('Failed to fetch past bookings:', error);

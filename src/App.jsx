@@ -16,6 +16,7 @@ import Wallet from './pages/Wallet/Wallet';
 import Meetings from './pages/Meetings/Meetings';
 import CreateSkill from './pages/CreateSkill/CreateSkill';
 import UserService from './services/UserService';
+import AIChatBot from './components/common/AIChatBot/AIChatBot';
 import styles from './App.module.css';
 
 // Admin Imports
@@ -73,6 +74,9 @@ function App() {
               </Route>
             </Route>
           </Routes>
+          
+          {/* AI Chatbot - Visible on all pages */}
+          <AIChatBot />
         </div>
       </BrowserRouter>
     </ThemeProvider>

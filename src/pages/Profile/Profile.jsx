@@ -59,7 +59,46 @@ const Profile = () => {
                 if (isLearner && userID) {
                     // Fetch enrolled courses for learners
                     const enrolledCoursesData = await SkillApi.getEnrolledCourses(userID);
-                    setEnrolledCourses(enrolledCoursesData);
+                    
+                    // Fetch progress for each enrolled course
+                    console.log('📚 Fetching progress for enrolled courses:', enrolledCoursesData);
+                    const coursesWithProgress = await Promise.all(
+                        enrolledCoursesData.map(async (course) => {
+                            try {
+                                console.log(`Fetching progress for skill ${course.skillId}...`);
+                                const progressData = await SkillApi.getProgress(course.skillId, userID);
+                                console.log(`Progress data for ${course.name}:`, progressData);
+                                
+                                // User is enrolled since this is enrolled courses list
+                                const isEnrolled = true;
+                                // Use course's totalLessons field (set during creation)
+                                const totalLessons = course.totalLessons || 0;
+                                const completedLessons = progressData?.completedLessons || 0;
+                                const progress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+                                
+                                return { 
+                                    ...course, 
+                                    totalLessons,
+                                    completedLessons,
+                                    progress,
+                                    isEnrolled
+                                };
+                            } catch (error) {
+                                console.error(`Failed to fetch progress for ${course.skillId}:`, error);
+                                const totalLessons = course.totalLessons || 0;
+                                return { 
+                                    ...course, 
+                                    totalLessons,
+                                    completedLessons: 0, 
+                                    progress: 0,
+                                    isEnrolled: true
+                                };
+                            }
+                        })
+                    );
+                    
+                    console.log('✅ Courses with progress data:', coursesWithProgress);
+                    setEnrolledCourses(coursesWithProgress);
 
                     // Fetch mentors for enrolled courses
                     const uniqueMentorIds = [...new Set(enrolledCoursesData.map(course => course.mentorId))];
@@ -172,7 +211,7 @@ const Profile = () => {
                 </div>
 
                 {/* Learner Specific Info */}
-                {(user.role === 'learner' || user.role === 'both') && user.learnerProfile && (
+                {isLearner && user.learnerProfile && (
                     <div className={styles.learnerSection}>
                         {(user.degree || user.institution) && (
                             <div className={styles.academicInfo}>

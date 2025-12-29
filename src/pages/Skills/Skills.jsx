@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import SkillFilter from '../../components/skills/SkillFilter/SkillFilter';
 import SkillList from '../../components/skills/SkillList/SkillList';
 import { skillService } from '../../services/skillService';
+import { SkillApi } from '../../api/SkillApi';
+import UserService from '../../services/UserService';
 import styles from './Skills.module.css';
 import { MdSearch, MdTune, MdClose } from 'react-icons/md';
 
@@ -35,7 +37,58 @@ const Skills = () => {
         setLoading(true);
         try {
             const data = await skillService.getSkills({ ...filters, search: debouncedSearch });
-            setSkills(data);
+            
+            // Get current user to fetch progress
+            const currentUser = UserService.getUser();
+            const userId = currentUser?.userId;
+            
+            // Fetch progress for each skill if user is logged in
+            if (userId) {
+                const skillsWithProgress = await Promise.all(
+                    data.map(async (skill) => {
+                        try {
+                            const progressData = await SkillApi.getProgress(skill.skillId, userId);
+                            console.log(`Progress data for ${skill.name}:`, progressData);
+                            // Check if user is enrolled based on enrolled flag
+                            const isEnrolled = progressData?.enrolled === true;
+                            // Use skill's totalLessons field (set during creation), completed from progress API
+                            const totalLessons = skill.totalLessons || 0;
+                            const completedLessons = isEnrolled ? (progressData?.completedLessons || 0) : 0;
+                            const progress = isEnrolled ? (progressData?.progress || 0) : 0;
+                            console.log(`Skill: ${skill.name}, isEnrolled: ${isEnrolled}, progress: ${progress}`);
+                            return { 
+                                ...skill, 
+                                totalLessons,
+                                completedLessons,
+                                progress,
+                                isEnrolled
+                            };
+                        } catch (error) {
+                            // If progress fetch fails, user is not enrolled
+                            console.log(`Progress fetch failed for ${skill.name}:`, error.message);
+                            const totalLessons = skill.totalLessons || 0;
+                            return { 
+                                ...skill, 
+                                totalLessons,
+                                completedLessons: 0,
+                                progress: 0,
+                                isEnrolled: false
+                            };
+                        }
+                    })
+                );
+                setSkills(skillsWithProgress);
+            } else {
+                // Not logged in, just add lesson count
+                const skillsWithLessonCount = data.map(skill => ({
+                    ...skill,
+                    totalLessons: skill.totalLessons || 0,
+                    completedLessons: 0,
+                    progress: 0,
+                    isEnrolled: false
+                }));
+                setSkills(skillsWithLessonCount);
+            }
         } catch (error) {
             console.error("Failed to fetch skills", error);
         } finally {

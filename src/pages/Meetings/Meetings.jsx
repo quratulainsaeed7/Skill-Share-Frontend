@@ -4,6 +4,7 @@ import Button from '../../components/common/Button/Button';
 import UserService from '../../services/UserService';
 import bookingService from '../../services/bookingService';
 import messageService from '../../services/messageService';
+import lessonService from '../../services/lessonService';
 
 const Meetings = () => {
     const currentUser = UserService.getUser();
@@ -23,6 +24,8 @@ const Meetings = () => {
     });
     const [schedulingMeeting, setSchedulingMeeting] = useState(false);
     const [scheduleError, setScheduleError] = useState(null);
+    const [availableLessons, setAvailableLessons] = useState([]);
+    const [loadingLessons, setLoadingLessons] = useState(false);
 
     // Backend data states
     const [upcomingMeetings, setUpcomingMeetings] = useState([]);
@@ -50,13 +53,19 @@ const Meetings = () => {
                 setLoading(true);
                 setError(null);
 
-                const role = userRole === 'both' ? 'learner' : userRole;
+                // Determine role for fetching bookings
+                const role = (userRole === 'both' || userRole === 'mentor') ? 'mentor' : 'learner';
+                
+                console.log('Fetching bookings for userId:', userId, 'role:', role);
 
                 // Fetch upcoming and past bookings
                 const [upcoming, past] = await Promise.all([
                     bookingService.getUpcomingBookings(userId, role),
                     bookingService.getPastBookings(userId, role)
                 ]);
+
+                console.log('Upcoming bookings:', upcoming);
+                console.log('Past bookings:', past);
 
                 setUpcomingMeetings(upcoming);
                 setPastMeetings(past);
@@ -159,6 +168,43 @@ const Meetings = () => {
         fetchContacts();
     }, [userId, userRole]);
 
+    // Fetch lessons when schedule modal opens
+    useEffect(() => {
+        const fetchLessons = async () => {
+            if (!showScheduleModal || !userId) return;
+
+            try {
+                setLoadingLessons(true);
+                const { skillService } = await import('../../services/skillService');
+                
+                // Get skills taught by this mentor
+                const skills = await skillService.getTaughtCourses(userId);
+                console.log('Mentor skills:', skills);
+                
+                // Fetch lessons for all skills
+                const allLessons = [];
+                for (const skill of skills) {
+                    const lessons = await lessonService.getLessonsBySkill(skill.skillId);
+                    console.log(`Lessons for skill ${skill.name}:`, lessons);
+                    allLessons.push(...lessons.map(lesson => ({
+                        ...lesson,
+                        skillName: skill.name
+                    })));
+                }
+                
+                console.log('All available lessons:', allLessons);
+                setAvailableLessons(allLessons);
+            } catch (err) {
+                console.error('Failed to fetch lessons:', err);
+                setAvailableLessons([]);
+            } finally {
+                setLoadingLessons(false);
+            }
+        };
+
+        fetchLessons();
+    }, [showScheduleModal, userId]);
+
     // Load conversation when contact is selected
     useEffect(() => {
         const loadConversation = async () => {
@@ -258,7 +304,13 @@ const Meetings = () => {
             setScheduleError(null);
 
             // Refresh bookings
-            window.location.reload();
+            const role = (userRole === 'both' || userRole === 'mentor') ? 'mentor' : 'learner';
+            const [upcoming, past] = await Promise.all([
+                bookingService.getUpcomingBookings(userId, role),
+                bookingService.getPastBookings(userId, role)
+            ]);
+            setUpcomingMeetings(upcoming);
+            setPastMeetings(past);
         } catch (err) {
             console.error('Failed to schedule meeting:', err);
             setScheduleError(err.message || 'Failed to schedule meeting. Please try again.');
@@ -500,17 +552,32 @@ const Meetings = () => {
                                 </div>
                             )}
                             <div className={styles.formGroup}>
-                                <label htmlFor="lessonId">Lesson ID</label>
-                                <input
+                                <label htmlFor="lessonId">Lesson Description</label>
+                                <select
                                     id="lessonId"
-                                    type="text"
-                                    placeholder="Enter lesson ID"
                                     value={scheduleForm.lessonId}
                                     onChange={(e) => handleScheduleFormChange('lessonId', e.target.value)}
                                     className={styles.formInput}
-                                    disabled={schedulingMeeting}
-                                />
-                                <small className={styles.formHint}>Schedule a session for this specific lesson</small>
+                                    disabled={schedulingMeeting || loadingLessons || availableLessons.length === 0}
+                                >
+                                    <option value="">
+                                        {loadingLessons 
+                                            ? 'Loading lessons...' 
+                                            : availableLessons.length === 0 
+                                            ? 'No lessons available - Create lessons first'
+                                            : 'Select a lesson'}
+                                    </option>
+                                    {availableLessons.map((lesson) => (
+                                        <option key={lesson.lessonId} value={lesson.lessonId}>
+                                            {lesson.description} ({lesson.duration} min)
+                                        </option>
+                                    ))}
+                                </select>
+                                <small className={styles.formHint}>
+                                    {availableLessons.length === 0 
+                                        ? 'Please create lessons for your skills before scheduling meetings'
+                                        : 'Schedule a session for this specific lesson'}
+                                </small>
                             </div>
                             <div className={styles.formGroup}>
                                 <label htmlFor="date">Meeting Date</label>

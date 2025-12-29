@@ -3,6 +3,7 @@ import React from 'react';
 import { MdStar, MdLocationOn, MdVideocam } from 'react-icons/md';
 import styles from './SkillCard.module.css';
 import { Link } from 'react-router-dom';
+import UserService from '../../../services/UserService';
 
 const SkillCard = ({ skill }) => {
     const {
@@ -10,6 +11,7 @@ const SkillCard = ({ skill }) => {
         name,
         mentorName,
         mentorAvatar,
+        mentorId,
         category,
         rating,
         reviewsCount,
@@ -17,8 +19,19 @@ const SkillCard = ({ skill }) => {
         mode,
         price,
         imageUrl,
-        description
+        description,
+        progress,
+        completedLessons,
+        totalLessons,
+        isEnrolled
     } = skill;
+    
+    // Get current user
+    const currentUser = UserService.getUser();
+    const isCurrentUserMentor = currentUser?.userId === mentorId;
+    
+    // Only show progress for enrolled learners, not for mentors or non-enrolled users
+    const showProgress = isEnrolled && totalLessons > 0 && !isCurrentUserMentor;
 
     return (
         <Link to={`/skills/${skillId}`} className={styles.card}>
@@ -29,13 +42,27 @@ const SkillCard = ({ skill }) => {
 
             <div className={styles.cardBody}>
                 <h3 className={styles.title}>{name}</h3>
-                
-                <div className={styles.mentor}>
-                    {mentorAvatar && (
-                        <img src={mentorAvatar} alt={mentorName} className={styles.mentorAvatar} />
-                    )}
-                    <span className={styles.mentorName}>{mentorName}</span>
-                </div>
+                {showProgress && (
+                    <div className={styles.progressSection}>
+                        <span className={styles.progressText}>
+                            {completedLessons}/{totalLessons} lessons
+                        </span>
+                        <div className={styles.progressBar}>
+                            <div 
+                                className={styles.progressFill} 
+                                style={{ width: `${progress}%` }}
+                            ></div>
+                            {/* Lesson segment dividers */}
+                            {totalLessons > 1 && Array.from({ length: totalLessons - 1 }).map((_, index) => (
+                                <div
+                                    key={index}
+                                    className={styles.progressDivider}
+                                    style={{ left: `${((index + 1) / totalLessons) * 100}%` }}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 <div className={styles.cardFooter}>
                     <div className={styles.meta}>
