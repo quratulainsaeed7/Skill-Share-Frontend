@@ -31,6 +31,9 @@ const SkillDetails = () => {
     });
     const [creatingLesson, setCreatingLesson] = useState(false);
     const [lessonError, setLessonError] = useState(null);
+    const [showEnrolledStudentsModal, setShowEnrolledStudentsModal] = useState(false);
+    const [enrolledStudents, setEnrolledStudents] = useState([]);
+    const [loadingStudents, setLoadingStudents] = useState(false);
 
     useEffect(() => {
         const fetchSkill = async () => {
@@ -215,6 +218,44 @@ const SkillDetails = () => {
         setLessonForm({ ...lessonForm, meetingLink: generatedLink });
     };
 
+    const handleViewEnrolledStudents = async () => {
+        const user = UserService.getUser();
+        if (!user?.userId) return;
+
+        setShowEnrolledStudentsModal(true);
+        setLoadingStudents(true);
+        try {
+            // Get enrollments for this specific skill
+            const enrollments = await skillService.getEnrolledStudents(user.userId);
+            // Filter for current skill
+            const skillEnrollments = enrollments.filter(e => e.skillId === skillId);
+
+            // Fetch user details for each enrollment
+            const studentsWithDetails = await Promise.all(
+                skillEnrollments.map(async (enrollment) => {
+                    try {
+                        const studentData = await UserService.getUserById(enrollment.userId);
+                        return {
+                            ...enrollment,
+                            name: studentData.name,
+                            email: studentData.email,
+                        };
+                    } catch (err) {
+                        console.warn('Could not fetch student details:', err);
+                        return enrollment;
+                    }
+                })
+            );
+
+            setEnrolledStudents(studentsWithDetails);
+        } catch (err) {
+            console.error('Failed to fetch enrolled students:', err);
+            alert('Failed to load enrolled students');
+        } finally {
+            setLoadingStudents(false);
+        }
+    };
+
     if (loading) return <div className="loading">Loading...</div>;
     if (error) return <div className="error">{error}</div>;
     if (!skill) return <div className="error">Skill not found</div>;
@@ -310,6 +351,54 @@ const SkillDetails = () => {
                 </div>
             )}
 
+            {/* Enrolled Students Modal */}
+            {showEnrolledStudentsModal && (
+                <div className={styles.modalOverlay} onClick={() => setShowEnrolledStudentsModal(false)}>
+                    <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+                        <div className={styles.modalHeader}>
+                            <h2>Enrolled Students ({enrolledStudents.length})</h2>
+                            <button
+                                className={styles.closeButton}
+                                onClick={() => setShowEnrolledStudentsModal(false)}
+                            >
+                                ✕
+                            </button>
+                        </div>
+                        <div className={styles.modalBody}>
+                            {loadingStudents ? (
+                                <div className={styles.loadingState}>Loading students...</div>
+                            ) : enrolledStudents.length === 0 ? (
+                                <div className={styles.emptyState}>
+                                    <p>No students enrolled yet.</p>
+                                </div>
+                            ) : (
+                                <div className={styles.studentsList}>
+                                    {enrolledStudents.map((student, index) => (
+                                        <div key={student.enrollmentId || index} className={styles.studentCard}>
+                                            <div className={styles.studentAvatar}>
+                                                {student.name ? student.name.charAt(0).toUpperCase() : '?'}
+                                            </div>
+                                            <div className={styles.studentInfo}>
+                                                <h3>{student.name || 'Unknown Student'}</h3>
+                                                <p>{student.email || 'No email available'}</p>
+                                                <span className={styles.enrollmentDate}>
+                                                    Enrolled: {new Date(student.enrolledAt).toLocaleDateString()}
+                                                </span>
+                                            </div>
+                                            <div className={styles.studentStatus}>
+                                                <span className={`${styles.statusBadge} ${styles.active}`}>
+                                                    {student.status || 'ACTIVE'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Enrollment Modal */}
             {showEnrollmentModal && skill && (
                 <EnrollmentModal
@@ -400,12 +489,20 @@ const SkillDetails = () => {
                     <div className={styles.section}>
                         <div className={styles.sectionHeader}>
                             <h2 className={styles.sectionTitle}>Manage Lessons</h2>
-                            <Button
-                                variant="primary"
-                                onClick={() => setShowCreateLessonModal(true)}
-                            >
-                                + Create New Lesson
-                            </Button>
+                            <div className={styles.actionButtons}>
+                                <Button
+                                    variant="outline"
+                                    onClick={handleViewEnrolledStudents}
+                                >
+                                    👥 View Enrolled Students
+                                </Button>
+                                <Button
+                                    variant="primary"
+                                    onClick={() => setShowCreateLessonModal(true)}
+                                >
+                                    + Create New Lesson
+                                </Button>
+                            </div>
                         </div>
                         {loadingLessons ? (
                             <div className={styles.loadingState}>Loading lessons...</div>

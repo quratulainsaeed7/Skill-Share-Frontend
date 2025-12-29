@@ -144,7 +144,16 @@ export const walletService = {
 
     addPaymentMethod: async (userId: string, methodData: PaymentMethodData): Promise<any> => {
         try {
-            // Validate required fields
+            // If stripePaymentMethodId is provided, use the Stripe endpoint
+            if (methodData.stripePaymentMethodId) {
+                return await PaymentApi.createPaymentMethodFromStripe(
+                    userId,
+                    methodData.stripePaymentMethodId,
+                    methodData.isDefault || false
+                );
+            }
+
+            // Otherwise, validate required fields for manual entry
             if (!methodData.type) {
                 throw new Error('Payment method type is required');
             }

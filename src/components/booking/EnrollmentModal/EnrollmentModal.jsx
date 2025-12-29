@@ -37,7 +37,33 @@ const EnrollmentModal = ({ skill, onClose, onEnroll, skillId, userId }) => {
             onEnroll(selectedPlan); // Callback to parent for success handling
         } catch (err) {
             console.error('Enrollment failed:', err);
-            setError(err.message || 'Failed to enroll in the skill');
+            const errorMessage = err.message || 'Failed to enroll in the skill';
+
+            // Check if error is about missing payment method
+            if (errorMessage.includes('No payment method') || errorMessage.includes('add a card')) {
+                setError(
+                    <div>
+                        <p style={{ marginBottom: '0.5rem' }}>{errorMessage}</p>
+                        <a
+                            href="/wallet"
+                            style={{
+                                color: '#3b82f6',
+                                textDecoration: 'underline',
+                                fontWeight: 'bold'
+                            }}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                onClose();
+                                window.location.href = '/wallet';
+                            }}
+                        >
+                            Go to Wallet to Add a Card →
+                        </a>
+                    </div>
+                );
+            } else {
+                setError(errorMessage);
+            }
         } finally {
             setIsProcessing(false);
         }
