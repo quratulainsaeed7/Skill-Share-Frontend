@@ -5,6 +5,7 @@ import lessonService from '../../services/lessonService';
 import UserService from '../../services/UserService';
 import Button from '../../components/common/Button/Button';
 import EnrollmentModal from '../../components/booking/EnrollmentModal/EnrollmentModal';
+import ReviewSection from '../../components/reviews/ReviewSection/ReviewSection';
 import styles from './SkillDetails.module.css';
 
 const SkillDetails = () => {
@@ -566,33 +567,11 @@ const SkillDetails = () => {
 
                 {/* Requirements/Description body if any extra */}
                 {/* Reviews */}
-                <div className={styles.section}>
-                    <h2 className={styles.sectionTitle}>Reviews</h2>
-                    <div className={styles.reviewsList}>
-                        {/* Mock Reviews Data - ideally passed or fetched */}
-                        {[
-                            { id: 1, user: 'Ahmed K.', rating: 5, date: '2 days ago', text: 'This course was absolutely amazing! The instructor explains everything so clearly.' },
-                            { id: 2, user: 'Sarah L.', rating: 4, date: '1 week ago', text: 'Great content, but I wish there were more practice exercises.' },
-                            { id: 3, user: 'Bilal M.', rating: 5, date: '2 weeks ago', text: 'Best investment for my career. Highly recommended!' }
-                        ].map(review => (
-                            <div key={review.id} className={styles.reviewItem}>
-                                <div className={styles.reviewHeader}>
-                                    <div className={styles.reviewUser}>
-                                        <div className={styles.reviewAvatar}>{review.user[0]}</div>
-                                        <div>
-                                            <span className={styles.reviewName}>{review.user}</span>
-                                            <div className={styles.reviewMeta}>
-                                                <span className={styles.reviewStars}>{'⭐'.repeat(review.rating)}</span>
-                                                <span className={styles.reviewDate}>{review.date}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <p className={styles.reviewText}>{review.text}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
+                <ReviewSection
+                    skillId={skillId}
+                    mentorId={skill.mentorId}
+                    isEnrolled={isEnrolled}
+                />
             </div>
 
             {/* Sidebar */}
