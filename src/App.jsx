@@ -16,6 +16,7 @@ import Profile from './pages/Profile/Profile';
 import Wallet from './pages/Wallet/Wallet';
 import Meetings from './pages/Meetings/Meetings';
 import CreateSkill from './pages/CreateSkill/CreateSkill';
+import ProtectedRoute from './components/common/ProtectedRoute';
 import UserService from './services/UserService';
 import AIChatBot from './components/common/AIChatBot/AIChatBot';
 import styles from './App.module.css';
@@ -66,13 +67,13 @@ function App() {
 
                 {/* Public routes */}
                 <Route path="/skills" element={<Skills />} />
+                <Route path="/skills/:skillId" element={<SkillDetails />} />
                 <Route path="/mentors/:mentorId" element={<MentorProfile />} />
 
 
 
                 {/* Protected Routes */}
                 <Route element={<ProtectedRoute />}>
-                  <Route path="/complete-profile" element={<CompleteProfile />} />
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/create-skill" element={<CreateSkill />} />
                   <Route path="/wallet" element={<Wallet />} />

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, useLocation, Outlet } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 /**
@@ -80,8 +80,9 @@ const ProtectedRoute = ({ children, requiredRole = null, bypassWorkflow = false 
         }
     }
 
-    // User is authenticated and authorized, render children
-    return <>{children}</>;
+    // User is authenticated and authorized
+    // If children are provided, render them; otherwise render Outlet for nested routes
+    return children ? <>{children}</> : <Outlet />;
 };
 
 export default ProtectedRoute;

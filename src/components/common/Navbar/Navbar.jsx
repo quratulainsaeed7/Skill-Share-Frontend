@@ -169,9 +169,9 @@ const Navbar = () => {
                                     <Link to="/wallet" className={dropdownStyles.menuItem} onClick={() => setIsDropdownOpen(false)}>
                                         <MdWallet /> Wallet
                                     </Link>
-                                    <Link to="/settings" className={dropdownStyles.menuItem} onClick={() => setIsDropdownOpen(false)}>
+                                    {/* <Link to="/settings" className={dropdownStyles.menuItem} onClick={() => setIsDropdownOpen(false)}>
                                         <MdSettings /> Settings
-                                    </Link>
+                                    </Link> */}
                                     <button className={`${dropdownStyles.menuItem} ${dropdownStyles.danger}`} onClick={handleLogout}>
                                         <MdLogout /> Log Out
                                     </button>
