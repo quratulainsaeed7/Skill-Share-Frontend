@@ -201,6 +201,28 @@ const Meetings = () => {
         return `${startTime} - ${endTime}`;
     };
 
+    const getStatusDisplay = (status) => {
+        const statusMap = {
+            'PENDING': 'Pending',
+            'ACCEPTED': 'Confirmed',
+            'REJECTED': 'Rejected',
+            'CANCELLED': 'Cancelled',
+            'COMPLETED': 'Completed'
+        };
+        return statusMap[status] || status;
+    };
+
+    const getStatusClass = (status) => {
+        const classMap = {
+            'PENDING': styles.pendingBadge,
+            'ACCEPTED': styles.acceptedBadge,
+            'REJECTED': styles.rejectedBadge,
+            'CANCELLED': styles.cancelledBadge,
+            'COMPLETED': styles.completedBadge
+        };
+        return classMap[status] || '';
+    };
+
     const renderMessagesTab = () => {
         const allContacts = [...upcomingMeetings, ...pastMeetings];
 
@@ -511,8 +533,8 @@ const Meetings = () => {
                                                                 </p>
                                                             </div>
                                                         </div>
-                                                        <span className={styles.statusBadge}>
-                                                            {meeting.status === 'pending' ? 'Pending' : 'Confirmed'}
+                                                        <span className={`${styles.statusBadge} ${getStatusClass(meeting.status)}`}>
+                                                            {getStatusDisplay(meeting.status)}
                                                         </span>
                                                     </div>
 
@@ -576,7 +598,7 @@ const Meetings = () => {
                                                                 No Meeting Link
                                                             </Button>
                                                         )}
-                                                        {meeting.status === 'pending' && userRole === 'mentor' && (
+                                                        {meeting.status === 'PENDING' && userRole === 'mentor' && (
                                                             <Button
                                                                 variant="outline"
                                                                 onClick={async () => {
@@ -632,8 +654,8 @@ const Meetings = () => {
                                                                 </p>
                                                             </div>
                                                         </div>
-                                                        <span className={`${styles.statusBadge} ${styles.completedBadge}`}>
-                                                            {meeting.status === 'completed' ? 'Completed' : meeting.status}
+                                                        <span className={`${styles.statusBadge} ${getStatusClass(meeting.status)}`}>
+                                                            {getStatusDisplay(meeting.status)}
                                                         </span>
                                                     </div>
 
@@ -671,7 +693,7 @@ const Meetings = () => {
                                                     )}
 
                                                     <div className={styles.actions}>
-                                                        {meeting.status === 'completed' && (
+                                                        {meeting.status === 'COMPLETED' && (
                                                             <Button variant="outline" onClick={() => alert('Review feature coming soon!')}>
                                                                 Leave Review
                                                             </Button>

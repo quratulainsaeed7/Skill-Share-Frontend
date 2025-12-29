@@ -1,4 +1,4 @@
-import UserService from './userService';
+import UserService from './UserService';
 import UserApi from '../api/UserApi';
 
 const TOKEN_KEY = 'skillshare_auth_token';
@@ -79,15 +79,32 @@ export const authService = {
 
     updateProfile: async (userId: string, profileData: any): Promise<any> => {
         try {
+            console.log('🔄 updateProfile called with:', { userId, profileData });
             const updatedUser = await UserApi.updateUser(userId, profileData);
+            console.log('✅ Backend returned updated user:', updatedUser);
 
             const currentUser = UserService.getUser();
+            console.log('📋 Current user from storage:', {
+                userId: currentUser.userId,
+                role: currentUser.role
+            });
+
             const mergedUser = {
                 ...currentUser,
                 ...updatedUser,
                 ...profileData,
+                // Explicitly preserve critical user fields that should never be overwritten
+                userId: currentUser.userId,
+                email: updatedUser.email || currentUser.email,
+                role: updatedUser.role || currentUser.role,
                 profileCompleted: true
             };
+
+            console.log('🎯 Merged user to be stored:', {
+                userId: mergedUser.userId,
+                role: mergedUser.role,
+                profileCompleted: mergedUser.profileCompleted
+            });
 
             if (profileData.learnerProfile) {
                 mergedUser.degree = profileData.learnerProfile.degree;

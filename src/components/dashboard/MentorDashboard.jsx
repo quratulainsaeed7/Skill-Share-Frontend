@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { skillService } from '../../services/skillService';
-import UserService from '../../services/userService';
+import UserService from '../../services/UserService';
 import styles from './MentorDashboard.module.css';
 
 const MentorDashboard = () => {
