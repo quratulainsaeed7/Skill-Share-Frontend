@@ -9,7 +9,7 @@ import Card from '../../components/common/Card/Card';
 import SkillCard from '../../components/skills/SkillCard/SkillCard';
 import styles from './Profile.module.css';
 import { Link, useNavigate } from 'react-router-dom';
-import UserService from '../../services/userService';
+import UserService from '../../services/UserService';
 
 const Profile = () => {
     const navigate = useNavigate();

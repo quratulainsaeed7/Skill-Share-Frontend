@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { skillService } from '../../services/skillService';
-import UserService from '../../services/userService';
+import UserService from '../../services/UserService';
 import SkillCard from '../../components/skills/SkillCard/SkillCard';
 import styles from './MentorProfile.module.css';
 

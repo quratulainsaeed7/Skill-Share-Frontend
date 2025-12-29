@@ -7,7 +7,7 @@ import Input from '../../common/Input/Input';
 import Card from '../../common/Card/Card';
 import styles from './SignupForm.module.css';
 import clsx from 'clsx';
-import UserService from '../../../services/userService';
+import UserService from '../../../services/UserService';
 
 
 

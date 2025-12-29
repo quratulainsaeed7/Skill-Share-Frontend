@@ -5,7 +5,7 @@ import Card from '../../components/common/Card/Card';
 import Button from '../../components/common/Button/Button';
 
 import { MdEmail } from 'react-icons/md';
-import UserService from '../../services/userService';
+import UserService from '../../services/UserService';
 import ProfileService from '../../services/profileService';
 
 const VerifyEmail = () => {
@@ -32,7 +32,7 @@ const VerifyEmail = () => {
                 if (user?.isVerified === true || user?.emailVerified === true) {
                     // check user profile completeness
                     if (profileComplete == true) {
-                        navigate('/dashboard');
+                        navigate('/skills');
                     } else {
                         navigate('/complete-profile');
                     }
@@ -68,7 +68,7 @@ const VerifyEmail = () => {
             
             const profileComplete = await ProfileService.isUserProfileComplete();
             if (profileComplete == true) {
-                navigate('/dashboard');
+                navigate('/skills');
             } else {
                 navigate('/complete-profile');
             }

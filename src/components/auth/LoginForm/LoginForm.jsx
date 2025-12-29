@@ -5,7 +5,7 @@ import Button from '../../common/Button/Button';
 import Input from '../../common/Input/Input';
 
 import styles from './LoginForm.module.css';
-import UserService from '../../../services/userService';
+import UserService from '../../../services/UserService';
 import ProfileService from '../../../services/profileService';
 
 const LoginForm = () => {
@@ -34,7 +34,7 @@ const LoginForm = () => {
             const profileComplete = await ProfileService.isUserProfileComplete();
             console.log(profileComplete);
             if (profileComplete == true) {
-                navigate('/dashboard');
+                navigate('/skills');
             }
             else {
                 navigate('/complete-profile');
