@@ -32,7 +32,7 @@ const VerifyEmail = () => {
                 if (user?.isVerified === true || user?.emailVerified === true) {
                     // check user profile completeness
                     if (profileComplete == true) {
-                        navigate('/dashboard');
+                        navigate('/skills');
                     } else {
                         navigate('/complete-profile');
                     }
@@ -68,7 +68,7 @@ const VerifyEmail = () => {
 
             const profileComplete = await ProfileService.isUserProfileComplete();
             if (profileComplete == true) {
-                navigate('/dashboard');
+                navigate('/skills');
             } else {
                 navigate('/complete-profile');
             }

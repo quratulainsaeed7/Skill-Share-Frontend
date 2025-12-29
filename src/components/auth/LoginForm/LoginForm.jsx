@@ -34,7 +34,7 @@ const LoginForm = () => {
             const profileComplete = await ProfileService.isUserProfileComplete();
             console.log(profileComplete);
             if (profileComplete == true) {
-                navigate('/dashboard');
+                navigate('/skills');
             }
             else {
                 navigate('/complete-profile');

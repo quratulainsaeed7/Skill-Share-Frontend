@@ -4,7 +4,7 @@ import Button from '../Button/Button';
 import ThemeToggle from '../ThemeToggle/ThemeToggle';
 import styles from './Navbar.module.css';
 import dropdownStyles from './NavbarDropdown.module.css';
-import { MdPerson, MdWallet, MdSettings, MdLogout, MdDashboard, MdBook } from 'react-icons/md';
+import { MdPerson, MdWallet, MdSettings, MdLogout, MdBook } from 'react-icons/md';
 import UserService from '../../../services/UserService';
 
 const Navbar = () => {
@@ -60,26 +60,6 @@ const Navbar = () => {
 
                 {
                     <>
-                        {/* Learner Links */}
-                        {(userRole === 'LEARNER' || userRole === 'BOTH') && (
-                            <NavLink
-                                to="/dashboard"
-                                className={({ isActive }) => `${styles.navLink} ${isActive ? styles.active : ''}`}
-                            >
-                                My Learnings
-                            </NavLink>
-                        )}
-
-                        {/* Mentor Links */}
-                        {(userRole === 'MENTOR' || userRole === 'BOTH') && (
-                            <NavLink
-                                to="/dashboard?view=mentor"
-                                className={({ isActive }) => `${styles.navLink} ${isActive ? styles.active : ''}`}
-                            >
-                                My Bookings
-                            </NavLink>
-                        )}
-
                         {/* My Meetings - Show for both Learners and Mentors, but only once */}
                         {(userRole === 'LEARNER' || userRole === 'MENTOR' || userRole === 'BOTH') && (
                             <NavLink

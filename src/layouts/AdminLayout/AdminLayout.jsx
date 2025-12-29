@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import {
-    MdDashboard,
     MdPeople,
     MdClass,
     MdAttachMoney,
@@ -24,7 +23,6 @@ const AdminLayout = () => {
     };
 
     const navItems = [
-        { path: '/admin/dashboard', label: 'Dashboard', icon: <MdDashboard /> },
         { path: '/admin/users', label: 'User Management', icon: <MdPeople /> },
         { path: '/admin/skills', label: 'Skills & Courses', icon: <MdClass /> },
         { path: '/admin/finance', label: 'Finance', icon: <MdAttachMoney /> },
