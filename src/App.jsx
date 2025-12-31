@@ -66,10 +66,6 @@ function App() {
                 } />
 
                 {/* Public routes */}
-                <Route path="/skills" element={<Skills />} />
-                <Route path="/skills/:skillId" element={<SkillDetails />} />
-                <Route path="/mentors/:mentorId" element={<MentorProfile />} />
-
 
 
                 {/* Protected Routes */}
@@ -79,6 +75,9 @@ function App() {
                   <Route path="/wallet" element={<Wallet />} />
                   <Route path="/meetings" element={<Meetings />} />
                   <Route path="/settings" element={<Settings />} />
+                  <Route path="/skills" element={<Skills />} />
+                  <Route path="/skills/:skillId" element={<SkillDetails />} />
+                  <Route path="/mentors/:mentorId" element={<MentorProfile />} />
                 </Route>
               </Route>
             </Routes>

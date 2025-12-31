@@ -45,7 +45,7 @@ const ProfileSetup = () => {
         try {
             // Use AuthContext's completeProfile to update user and refresh JWT
             await completeProfile(profile);
-            navigate('/');
+            navigate('/skills');
         } catch (error) {
             console.error('❌ Profile completion failed:', error);
             alert(error.message || 'Failed to complete profile');
