@@ -1,10 +1,16 @@
-// src/components/common/Card/Card.jsx
-import React from 'react';
-import PropTypes from 'prop-types';
+// src/components/common/Card/Card.tsx
+import React, { ReactNode, HTMLAttributes } from 'react';
 import clsx from 'clsx';
 import styles from './Card.module.css';
 
-const Card = ({
+export interface CardProps extends HTMLAttributes<HTMLDivElement> {
+    children?: ReactNode;
+    padding?: 'none' | 'sm' | 'md' | 'lg';
+    hoverable?: boolean;
+    className?: string;
+}
+
+const Card: React.FC<CardProps> = ({
     children,
     padding = 'md',
     hoverable = false,
@@ -24,13 +30,6 @@ const Card = ({
             {children}
         </div>
     );
-};
-
-Card.propTypes = {
-    children: PropTypes.node.isRequired,
-    padding: PropTypes.oneOf(['none', 'sm', 'md', 'lg']),
-    hoverable: PropTypes.bool,
-    className: PropTypes.string,
 };
 
 export default Card;

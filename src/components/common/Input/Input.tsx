@@ -1,10 +1,20 @@
-// src/components/common/Input/Input.jsx
-import React from 'react';
-import PropTypes from 'prop-types';
+// src/components/common/Input/Input.tsx
+import React, { InputHTMLAttributes } from 'react';
 import clsx from 'clsx';
 import styles from './Input.module.css';
 
-const Input = ({
+export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+    label?: string;
+    type?: string;
+    placeholder?: string;
+    error?: string;
+    helperText?: string;
+    disabled?: boolean;
+    className?: string;
+    id?: string;
+}
+
+const Input: React.FC<InputProps> = ({
     label,
     type = 'text',
     placeholder,
@@ -38,17 +48,6 @@ const Input = ({
             {!error && helperText && <span className={styles.helperText}>{helperText}</span>}
         </div>
     );
-};
-
-Input.propTypes = {
-    label: PropTypes.string,
-    type: PropTypes.string,
-    placeholder: PropTypes.string,
-    error: PropTypes.string,
-    helperText: PropTypes.string,
-    disabled: PropTypes.bool,
-    className: PropTypes.string,
-    id: PropTypes.string,
 };
 
 export default Input;

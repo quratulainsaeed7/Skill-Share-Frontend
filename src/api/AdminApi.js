@@ -1,6 +1,6 @@
 import request from './apiClient';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+const API_BASE_URL = import.meta.env.API_BASE_URL || 'http://72.62.176.58.sslip.io:3000';
 
 export const AdminApi = {
     getUsers: async () => {
@@ -14,7 +14,7 @@ export const AdminApi = {
         });
     },
 
-    deleteUser: async (id, force = false) => {
+    deleteUser: async (id, force = true) => {
         return request(`${API_BASE_URL}/api/admin/users/${id}?force=${force}`, {
             method: 'DELETE'
         });

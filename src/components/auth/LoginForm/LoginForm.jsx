@@ -32,9 +32,14 @@ const LoginForm = () => {
         try {
             const user = await login(formData.email, formData.password);
 
-            // Workflow-based navigation (JWT claims drive redirects)
-            // ProtectedRoute will handle automatic redirects based on emailVerified and profileCompleted
-            navigate('/skills');
+            // Redirect admin users to admin dashboard
+            if (user.role === 'ADMIN') {
+                navigate('/admin');
+            } else {
+                // Workflow-based navigation (JWT claims drive redirects)
+                // ProtectedRoute will handle automatic redirects based on emailVerified and profileCompleted
+                navigate('/skills');
+            }
         } catch (err) {
             setError(err.message || 'Login failed');
         } finally {

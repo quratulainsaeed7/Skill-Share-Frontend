@@ -51,7 +51,7 @@ const VerifyEmail = () => {
                 }, 2000);
             } else {
                 // User not logged in - verify directly without JWT refresh
-                const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'}/api/users/verify-email`, {
+                const response = await fetch(`${import.meta.env.API_BASE_URL || 'http://72.62.176.58.sslip.io:3000'}/api/users/verify-email`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ token }),
@@ -85,7 +85,7 @@ const VerifyEmail = () => {
         }
 
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'}/api/users/resend-verification`, {
+            const response = await fetch(`${import.meta.env.API_BASE_URL || 'http://72.62.176.58.sslip.io:3000'}/api/users/resend-verification`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: user.email }),

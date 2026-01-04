@@ -5,7 +5,7 @@ import { Elements, CardElement, useStripe, useElements } from '@stripe/react-str
 import styles from './AddPaymentMethod.module.css';
 import Button from '../../common/Button/Button';
 
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_dummy');
+const stripePromise = loadStripe(import.meta.env.STRIPE_PUBLISHABLE_KEY || 'pk_test_51PWIT0E0bLkt7rhgSpfXvTF9LkczjM94AaiWgbn7BXhQN0zJAQxHf0g6ceikq7lEdxd2b6BjTCFrlZNiIfYoSKif00I3jlA96e');
 
 const AddPaymentMethodForm = ({ onAdd, onCancel }) => {
     const stripe = useStripe();

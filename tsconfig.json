@@ -6,6 +6,10 @@
             "DOM.Iterable",
             "ESNext"
         ],
+        "types": [
+            "jest",
+            "node"
+        ],
         "allowJs": true,
         "skipLibCheck": true,
         "esModuleInterop": true,
@@ -21,6 +25,7 @@
     },
     "include": [
         "src/**/*",
-        "src/**/*.d.ts"
+        "src/**/*.d.ts",
+        "src/test/jest.d.ts"
     ]
 }

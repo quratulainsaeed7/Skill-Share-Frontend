@@ -2,7 +2,7 @@ import request from '../api/apiClient';
 
 const TOKEN_KEY = 'skillshare_token';
 const USER_KEY = 'skillshare_user';
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+const API_BASE_URL = import.meta.env.API_BASE_URL || 'http://72.62.176.58.sslip.io:3000';
 
 interface RegisterUserData {
     name: string;

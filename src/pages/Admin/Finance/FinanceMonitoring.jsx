@@ -10,16 +10,31 @@ const FinanceMonitoring = () => {
     useEffect(() => {
         const fetchFinance = async () => {
             try {
-                const res = await fetch(`${import.meta.env.VITE_ADMIN_SERVICE_URL || 'http://localhost:4008'}/admin/finance`);
+                const API_BASE_URL = import.meta.env.API_BASE_URL || 'http://72.62.176.58.sslip.io:3000';
+                const token = sessionStorage.getItem('skillshare_token');
+                const res = await fetch(`${API_BASE_URL}/api/admin/finance`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+
+                if (!res.ok) {
+                    throw new Error(`Failed to fetch finance: ${res.status}`);
+                }
+
                 const data = await res.json();
-                setPayments(data);
+                setPayments(Array.isArray(data) ? data : []);
                 setLoading(false);
-            } catch (error) { console.error(error); }
+            } catch (error) {
+                console.error(error);
+                setPayments([]);
+                setLoading(false);
+            }
         };
         fetchFinance();
     }, []);
 
-    const totalRevenue = payments.reduce((acc, curr) => acc + parseFloat(curr.amount), 0);
+    const totalRevenue = payments.reduce((acc, curr) => acc + parseFloat(curr.amount || 0), 0);
     const platformFees = totalRevenue * 0.1; // Assuming 10% fee
 
     const handleSort = (key) => {

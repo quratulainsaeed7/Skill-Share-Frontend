@@ -1,44 +1,7 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+import request from './apiClient';
+
+const API_BASE_URL = import.meta.env.API_BASE_URL || 'http://72.62.176.58.sslip.io:3000';
 const USERS_ENDPOINT = `${API_BASE_URL}/api/users`;
-import axios from "axios";
-
-const request = async (url, options = {}) => {
-    const method = options.method || 'GET';
-    const headers = {
-        'Content-Type': 'application/json',
-        ...(options.headers || {}),
-    };
-    const data = options.body;
-
-    try {
-        const response = await axios({
-            url,
-            method,
-            headers,
-            data,
-            // We want to manually handle non-2xx like fetch does
-            validateStatus: () => true,
-        });
-
-        const resData = response.data ?? null;
-
-        if (response.status < 200 || response.status >= 300) {
-            const errorMessage = resData?.message || resData?.error || `HTTP ${response.status}: ${response.statusText || ''}`.trim();
-            throw new Error(Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage);
-        }
-
-        return resData;
-    } catch (error) {
-        // Axios throws for network errors (no response)
-        if (!error.response) {
-            throw new Error('Network error: Unable to reach the server. Is the backend running?');
-        }
-
-        const { status, statusText, data: errData } = error.response;
-        const errorMessage = errData?.message || errData?.error || `HTTP ${status}: ${statusText || ''}`.trim();
-        throw new Error(Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage);
-    }
-};
 
 export const UserApi = {
     // Registration now goes through auth-service which:

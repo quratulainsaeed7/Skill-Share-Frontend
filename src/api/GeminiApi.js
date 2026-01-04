@@ -9,14 +9,14 @@
  */
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_AI_SERVICE_URL || 'http://localhost:4011';
-const AI_ENDPOINT = `${API_BASE_URL}/ai`;
+const API_BASE_URL = import.meta.env.API_BASE_URL || 'http://72.62.176.58.sslip.io:3000';
+const AI_ENDPOINT = `${API_BASE_URL}/api/ai`;
 
 /**
- * Get auth token from localStorage
+ * Get auth token from sessionStorage
  */
 const getAuthToken = () => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('skillshare_token');
     return token;
 };
 

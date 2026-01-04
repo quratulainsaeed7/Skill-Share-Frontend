@@ -15,12 +15,25 @@ const CategoryManagement = () => {
 
     const fetchCategories = async () => {
         try {
-            const res = await fetch(`${import.meta.env.VITE_ADMIN_SERVICE_URL || 'http://localhost:4008'}/admin/categories`);
+            const API_BASE_URL = import.meta.env.API_BASE_URL || 'http://72.62.176.58.sslip.io:3000';
+            const token = sessionStorage.getItem('skillshare_token');
+            const res = await fetch(`${API_BASE_URL}/api/admin/categories`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            if (!res.ok) {
+                throw new Error(`Failed to fetch categories: ${res.status}`);
+            }
+
             const data = await res.json();
-            setCategories(data);
+            setCategories(Array.isArray(data) ? data : []);
             setLoading(false);
         } catch (error) {
             console.error(error);
+            setCategories([]);
+            setLoading(false);
         }
     };
 
@@ -28,15 +41,19 @@ const CategoryManagement = () => {
         e.preventDefault();
         const tagsArray = newCategory.tags.split(',').map(t => t.trim());
         try {
-            const baseUrl = import.meta.env.VITE_ADMIN_SERVICE_URL || 'http://localhost:4008';
+            const API_BASE_URL = import.meta.env.API_BASE_URL || 'http://72.62.176.58.sslip.io:3000';
+            const token = sessionStorage.getItem('skillshare_token');
             const url = editingCategoryId
-                ? `${baseUrl}/admin/categories/${editingCategoryId}`
-                : `${baseUrl}/admin/categories`;
+                ? `${API_BASE_URL}/api/admin/categories/${editingCategoryId}`
+                : `${API_BASE_URL}/api/admin/categories`;
             const method = editingCategoryId ? 'PATCH' : 'POST';
 
             await fetch(url, {
                 method: method,
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
                 body: JSON.stringify({ ...newCategory, tags: tagsArray })
             });
             setNewCategory({ name: '', description: '', tags: '' });
@@ -64,7 +81,14 @@ const CategoryManagement = () => {
     const handleDelete = async (id) => {
         if (!window.confirm('Are you sure?')) return;
         try {
-            await fetch(`${import.meta.env.VITE_ADMIN_SERVICE_URL || 'http://localhost:4008'}/admin/categories/${id}`, { method: 'DELETE' });
+            const API_BASE_URL = import.meta.env.API_BASE_URL || 'http://72.62.176.58.sslip.io:3000';
+            const token = sessionStorage.getItem('skillshare_token');
+            await fetch(`${API_BASE_URL}/api/admin/categories/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
             fetchCategories();
         } catch (error) {
             console.error(error);

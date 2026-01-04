@@ -110,7 +110,7 @@ export const AuthProvider = ({ children }) => {
         try {
             console.log('🔐 Verifying email with token:', verificationToken);
             // Verify email via user-service - NO AUTH REQUIRED
-            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'}/api/users/verify-email`, {
+            const response = await fetch(`${import.meta.env.API_BASE_URL || 'http://72.62.176.58.sslip.io:3000'}/api/users/verify-email`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

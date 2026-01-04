@@ -26,6 +26,7 @@ import AdminLayout from './layouts/AdminLayout/AdminLayout';
 import UserManagement from './pages/Admin/Users/UserManagement';
 import CategoryManagement from './pages/Admin/Categories/CategoryManagement';
 import FinanceMonitoring from './pages/Admin/Finance/FinanceMonitoring';
+import AdminDashboard from './pages/Admin/Dashboard/AdminDashboard';
 
 function App() {
   return (
@@ -36,7 +37,8 @@ function App() {
             <Routes>
               {/* Admin Routes */}
               <Route path="/admin" element={<AdminLayout />}>
-                <Route index element={<Navigate to="users" replace />} />
+                <Route index element={<Navigate to="dashboard" replace />} />
+                <Route path="dashboard" element={<AdminDashboard />} />
                 <Route path="users" element={<UserManagement />} />
                 <Route path="categories" element={<CategoryManagement />} />
                 <Route path="finance" element={<FinanceMonitoring />} />

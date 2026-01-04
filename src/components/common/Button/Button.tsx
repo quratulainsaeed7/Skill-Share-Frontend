@@ -1,10 +1,19 @@
-// src/components/common/Button/Button.jsx
-import React from 'react';
-import PropTypes from 'prop-types';
+// src/components/common/Button/Button.tsx
+import React, { ReactNode, ButtonHTMLAttributes } from 'react';
 import clsx from 'clsx';
 import styles from './Button.module.css';
 
-const Button = ({
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+    children: ReactNode;
+    type?: 'button' | 'submit' | 'reset';
+    variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
+    size?: 'sm' | 'md' | 'lg';
+    fullWidth?: boolean;
+    disabled?: boolean;
+    className?: string;
+}
+
+const Button: React.FC<ButtonProps> = ({
     children,
     type = 'button',
     variant = 'primary',
@@ -30,16 +39,6 @@ const Button = ({
             {children}
         </button>
     );
-};
-
-Button.propTypes = {
-    children: PropTypes.node.isRequired,
-    type: PropTypes.oneOf(['button', 'submit', 'reset']),
-    variant: PropTypes.oneOf(['primary', 'secondary', 'outline', 'ghost']),
-    size: PropTypes.oneOf(['sm', 'md', 'lg']),
-    fullWidth: PropTypes.bool,
-    disabled: PropTypes.bool,
-    className: PropTypes.string,
 };
 
 export default Button;

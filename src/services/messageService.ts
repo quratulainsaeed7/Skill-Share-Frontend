@@ -45,7 +45,7 @@ class MessageService {
    * Initialize WebSocket connection
    */
   connectSocket(userId: string): void {
-    const SOCKET_URL = import.meta.env.VITE_MESSAGING_API_URL || 'http://localhost:4007';
+    const SOCKET_URL = import.meta.env.VITE_MESSAGING_API_URL || 'http://72.62.176.58.sslip.io:3000';
 
     if (this.socket?.connected) {
       return;

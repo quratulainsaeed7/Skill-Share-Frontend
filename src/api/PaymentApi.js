@@ -1,6 +1,6 @@
 import request from './apiClient';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+const API_BASE_URL = import.meta.env.API_BASE_URL || 'http://72.62.176.58.sslip.io:3000';
 const PAYMENTS_ENDPOINT = `${API_BASE_URL}/api/payment`;
 const PAYMENT_METHODS_ENDPOINT = `${PAYMENTS_ENDPOINT}/methods`;
 
