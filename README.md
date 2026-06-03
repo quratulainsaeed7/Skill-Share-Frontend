@@ -7,7 +7,7 @@ An intuitive, responsive, and user-centric web interface designed for a decentra
 This repository contains the complete, publicly accessible frontend codebase for the Skill-Share Platform. The user interface is engineered using React to provide a seamless, dynamic user experience, connecting securely via REST APIs to a private backend microservices architecture.
 
 *   **Live Frontend Repository:** Publicly available for code evaluation and UI/UX design review.
-*   **Backend Architecture:** Connects to a microservice ecosystem built with NestJS and PostgreSQL[cite: 1], which is maintained in a private repository by project collaborators for security.
+*   **Backend Architecture:** Connects to a microservice ecosystem built with NestJS and PostgreSQL, which is maintained in a private repository by project collaborators for security.
 ---
 
 ## Key Features Implemented
