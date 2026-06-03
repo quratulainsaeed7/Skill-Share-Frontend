@@ -1,16 +1,42 @@
-# React + Vite
+# Skill-Share Platform (Frontend)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An intuitive, responsive, and user-centric web interface designed for a decentralized microservices application where students and professionals can exchange skills using a unique time-credit barter system.
 
-Currently, two official plugins are available:
+## Project Overview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This repository contains the complete, publicly accessible frontend codebase for the Skill-Share Platform. The user interface is engineered using React to provide a seamless, dynamic user experience, connecting securely via REST APIs to a private backend microservices architecture.
 
-## React Compiler
+*   **Live Frontend Repository:** Publicly available for code evaluation and UI/UX design review.
+*   **Backend Architecture:** Connects to a microservice ecosystem built with NestJS and PostgreSQL[cite: 1], which is maintained in a private repository by project collaborators for security.
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Key Features Implemented
 
-## Expanding the ESLint configuration
+*   **Time-Credit Barter System Dashboard:** An interactive interface tracking user balances and transactional history based on hours of skill-sharing instead of cash.
+*   **Real-Time Communication:** Integrated frontend views for live messaging and peer-to-peer coordination.
+*   **Secure Payment Integration:** Seamless UI workflows for processing secure cash payments when upgrading features or buying additional credits.
+*   **Responsive Web Design:** Fully optimized using fluid grids and flexible elements to ensure cross-device and cross-browser compatibility.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## Tech Stack & Methodologies
+
+*   **Core Library:** React.js
+*   **State Management & Routing:** React Context API / React Router
+*   **Styling & UI:** Responsive CSS3 / Modern Layout Frameworks
+*   **Version Control:** Git / GitHub
+*   **Testing Methodology:** Rigorous **Black-box Testing** to validate UI workflows, state transitions, component rendering, and seamless REST API integrations.
+
+---
+
+## Development & Setup Instructions
+
+To get a local copy of this frontend up and running, follow these simple steps:
+
+### Prerequisites
+Ensure you have [Node.js](https://nodejs.org/) installed on your machine.
+
+### 1. Clone the Repository
+```bash
+git clone [https://github.com/your-username/skill-share-frontend.git](https://github.com/your-username/skill-share-frontend.git)
+cd skill-share-frontend
